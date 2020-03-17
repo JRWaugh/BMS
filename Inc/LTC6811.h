@@ -10,8 +10,8 @@
 
 #include "stm32f4xx_hal.h"
 #include "Status.h"
-#include "NLG5.h"
 #include <array>
+#include <gsl/span>
 #include "Reverse.h"
 #include <algorithm>
 
@@ -57,10 +57,9 @@ class LTC6820 {
 public:
 	LTC6820(SPI_HandleTypeDef& hspi,
 			Status& status,
-			NLG5& nlg5,
 			CAN_HandleTypeDef& hcan,
 			Mode mode = Mode::Normal, DCP dcp = DCP::Disabled, CellCh cell = CellCh::All, AuxCh aux = AuxCh::All, STSCh sts = STSCh::All)
-: 	hspi{ hspi }, status{ status }, nlg5 { nlg5 }, hcan { hcan } {
+: 	hspi{ hspi }, status{ status }, hcan { hcan } {
 	uint16_t pec;
 	uint8_t md_bits = (static_cast<uint8_t>(mode) & 0x02) >> 1;
 
@@ -295,26 +294,16 @@ int8_t ReadStatusRegisterB(uint8_t (&r_config)[IC_NUM][8]) {
 	return pec_error;
 }
 
-auto GetLimping() const {
-	return limp_counter > kLimpCountLimit;
-}
-
 private:
 SPI_HandleTypeDef& hspi;
 Status& status;
-NLG5& nlg5;
 CAN_HandleTypeDef& hcan;
 CAN_TxHeaderTypeDef TxHeader;
-
 std::array<uint8_t, 100> buffer;
 
 uint8_t ADCV[4]; 	// Cell Voltage conversion command
 uint8_t ADAX[4]; 	// GPIO conversion command
 uint8_t ADSTAT[4]; 	// STAT conversion command
-
-int32_t current = 0;
-int32_t power = 0;
-uint32_t limp_counter = 0;
 
 void adcv(void); /* Starts cell voltage conversion. */
 void adax(void); /* Start an GPIO Conversion. */
@@ -326,17 +315,9 @@ int8_t ReadTemperatureHelper(TempRegisters& temp_data); /* Reads and parses the 
 int16_t CalcTemp(uint16_t ntc_voltage); /* Calculates the temperature from thermistor voltage using lookup table. */
 uint16_t PEC15Calc(uint8_t const * const data, size_t data_length);
 
+static constexpr uint8_t kCellsInReg { 3 };
+static constexpr uint8_t kBytesInReg { 6 };
 static constexpr uint8_t kDelta = 100;
-static constexpr int32_t kMaxPower { 8000000 };
-static constexpr uint16_t kMaxVoltage = 42000;
-static constexpr uint16_t kMinVoltage = 31000;
-static constexpr int16_t kMaxTemp = 5900;
-static constexpr int16_t kMinTemp = -1500;
-static constexpr int16_t kMaxChargeTemp = 4400;
-static constexpr uint16_t kLimpMinVoltage = 34000.0;
-static constexpr uint8_t kLimpCountLimit { 2 };
-static constexpr uint16_t kChargerDis { 41800 };
-static constexpr uint16_t kChargerEn { 41500 };
 };
 
 #endif /* LTC6811_H_ */

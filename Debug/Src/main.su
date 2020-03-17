@@ -1,60 +1,59 @@
-Status.h:48:2:Status::Status(uint8_t)	16	static
-Status.h:58:7:void Status::CloseAIR() const	16	static
-Status.h:64:7:void Status::OpenAIR() const	16	static
-Status.h:70:7:void Status::ClosePRE()	16	static
-Status.h:77:7:void Status::OpenPRE()	16	static
-Status.h:83:7:void Status::IncreasePecCounter()	16	static
-Status.h:87:7:auto Status::GetPecChange()	24	static
-Status.h:95:7:void Status::GoToSafeState(Status::ErrorEvent)	16	static
-Status.h:119:7:void Status::SetFanDutyCycle(uint8_t)	16	static
-Status.h:129:20:constexpr uint8_t Status::CalcDutyCycle()	16	static
-Status.h:140:9:int8_t Status::TestLimits()	16	static
-Status.h:156:9:int8_t Status::ErrorHandler(Status::ErrorEvent, bool)	16	static
-IVT.h:16:2:IVT::IVT(Status&)	16	static
-IVT.h:18:9:int8_t IVT::SetCurrent(int32_t)	16	static
-IVT.h:27:7:void IVT::SetVoltage(int32_t)	16	static
-IVT.h:33:9:int8_t IVT::SetVoltage2(int32_t)	16	static
-IVT.h:53:7:bool IVT::CheckVoltageMatch()	24	static
 NLG5.h:23:2:NLG5::NLG5(uint16_t, uint16_t, uint16_t)	24	static
+Status.h:49:2:Status::Status(uint8_t, NLG5&)	24	static
+Status.h:59:7:void Status::CloseAIR() const	16	static
+Status.h:65:7:void Status::OpenAIR() const	16	static
+Status.h:71:7:void Status::ClosePRE()	16	static
+Status.h:78:7:void Status::OpenPRE()	16	static
+Status.h:84:7:void Status::IncreasePecCounter()	16	static
+Status.h:88:7:auto Status::GetPecChange()	24	static
+Status.h:96:7:void Status::GoToSafeState(Status::ErrorEvent)	16	static
+Status.h:120:7:void Status::SetFanDutyCycle(uint8_t)	16	static
+Status.h:130:20:constexpr uint8_t Status::CalcDutyCycle()	16	static
+Status.h:184:7:auto Status::GetLimping() const	16	static
+Status.h:188:9:int8_t Status::SetCurrent(int32_t)	16	static
+Status.h:197:7:void Status::SetAccuVoltage(int32_t)	16	static
+Status.h:203:9:int8_t Status::SetAccuVoltage2(int32_t)	24	static
+Status.h:229:9:int8_t Status::TestLimits()	16	static
+Status.h:245:9:int8_t Status::ErrorCheck(Status::ErrorEvent, bool)	16	static
+Status.h:292:7:bool Status::CheckVoltageMatch()	24	static
 gthr-default.h:229:1:int __gthread_key_delete(__gthread_key_t)	16	static
-LTC6811.h:58:2:LTC6820::LTC6820(SPI_HandleTypeDef&, Status&, NLG5&, CAN_HandleTypeDef&, Mode, DCP, CellCh, AuxCh, STSCh)	32	static
-LTC6811.h:92:6:void LTC6820::WakeFromIdle()	24	static
-LTC6811.h:109:6:void LTC6820::WakeFromSleep()	24	static
+LTC6811.h:58:2:LTC6820::LTC6820(SPI_HandleTypeDef&, Status&, CAN_HandleTypeDef&, Mode, DCP, CellCh, AuxCh, STSCh)	32	static
+LTC6811.h:91:6:void LTC6820::WakeFromIdle()	24	static
+LTC6811.h:108:6:void LTC6820::WakeFromSleep()	24	static
 Reverse.h:30:6:auto reverse(const Range&) [with Range = unsigned char [12][6]]	24	static
 Reverse.h:18:10:auto Reverse<Range>::begin() const [with Range = unsigned char [12][6]]	16	static
 Reverse.h:21:10:auto Reverse<Range>::end() const [with Range = unsigned char [12][6]]	16	static
-LTC6811.h:120:6:void LTC6820::WriteConfigRegister(uint8_t (&)[12][6])	72	static
-LTC6811.h:137:6:void LTC6820::ReadWriteConfigRegisters(uint8_t (&)[12][6], uint8_t (&)[12][8], const uint16_t (&)[12][12])	112	static
-LTC6811.h:188:8:int8_t LTC6820::ReadConfigRegister(uint8_t (&)[12][8])	56	static
-LTC6811.h:206:8:int8_t LTC6820::ReadVoltage(uint16_t (&)[12][12])	24	static
-LTC6811.h:227:8:int8_t LTC6820::ReadTemperature(int16_t (&)[12][6])	24	static
-LTC6811.h:298:6:auto LTC6820::GetLimping() const	16	static
-main.cpp:85:5:int main()	40	static
-main.cpp:178:6:void SystemClock_Config()	184	static
-main.cpp:231:13:void MX_CAN1_Init()	48	static
-main.cpp:343:13:void MX_CAN2_Init()	8	static
-main.cpp:380:13:void MX_SDIO_SD_Init()	4	static
-main.cpp:408:13:void MX_SPI1_Init()	8	static
-main.cpp:446:13:void MX_GPIO_Init()	48	static
-main.cpp:514:6:void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*)	56	static
-main.cpp:530:6:void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef*)	56	static
-main.cpp:603:8:int8_t core_routine()	16	static
-main.cpp:618:6:void datalog_routine()	64	static
-main.cpp:645:6:void SetCharger()	16	static
-main.cpp:662:9:int32_t can0_test()	16	static
-main.cpp:675:8:int8_t CANTxVoltage()	56	static
-main.cpp:710:8:int8_t CANTxVoltageLimpTotal()	24	static
-main.cpp:734:8:int8_t CANTxTemperature()	56	static
-main.cpp:766:9:int32_t CANTxUptime()	16	static
-main.cpp:793:9:int32_t CanTxOpMode()	16	static
-main.cpp:816:9:int32_t CanTxError()	24	static
-main.cpp:844:9:int32_t CANTxDCfg()	40	static
-main.cpp:869:9:int32_t CANTxNLGAControl()	16	static
-main.cpp:891:9:int32_t CANTxNLGBControl()	16	static
-main.cpp:912:9:int32_t CANTxVolumeSize(uint32_t)	24	static
-main.cpp:931:6:void canresp_get_volume_size()	8	static
-main.cpp:938:6:void canresp_delete_logfile()	8	static
-main.cpp:951:6:void Error_Handler()	4	static
+LTC6811.h:119:6:void LTC6820::WriteConfigRegister(uint8_t (&)[12][6])	72	static
+LTC6811.h:136:6:void LTC6820::ReadWriteConfigRegisters(uint8_t (&)[12][6], uint8_t (&)[12][8], const uint16_t (&)[12][12])	112	static
+LTC6811.h:187:8:int8_t LTC6820::ReadConfigRegister(uint8_t (&)[12][8])	56	static
+LTC6811.h:205:8:int8_t LTC6820::ReadVoltage(uint16_t (&)[12][12])	24	static
+LTC6811.h:226:8:int8_t LTC6820::ReadTemperature(int16_t (&)[12][6])	24	static
+main.cpp:83:5:int main()	40	static
+main.cpp:175:6:void SystemClock_Config()	184	static
+main.cpp:228:13:void MX_CAN1_Init()	48	static
+main.cpp:340:13:void MX_CAN2_Init()	8	static
+main.cpp:377:13:void MX_SDIO_SD_Init()	4	static
+main.cpp:405:13:void MX_SPI1_Init()	8	static
+main.cpp:443:13:void MX_GPIO_Init()	48	static
+main.cpp:511:6:void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*)	56	static
+main.cpp:527:6:void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef*)	56	static
+main.cpp:600:8:int8_t core_routine()	16	static
+main.cpp:615:6:void datalog_routine()	64	static
+main.cpp:642:6:void SetCharger()	16	static
+main.cpp:659:9:int32_t can0_test()	16	static
+main.cpp:672:8:int8_t CANTxVoltage()	56	static
+main.cpp:707:8:int8_t CANTxVoltageLimpTotal()	24	static
+main.cpp:731:8:int8_t CANTxTemperature()	56	static
+main.cpp:763:9:int32_t CANTxUptime()	16	static
+main.cpp:790:9:int32_t CanTxOpMode()	16	static
+main.cpp:813:9:int32_t CanTxError()	24	static
+main.cpp:841:9:int32_t CANTxDCfg()	40	static
+main.cpp:866:9:int32_t CANTxNLGAControl()	16	static
+main.cpp:888:9:int32_t CANTxNLGBControl()	16	static
+main.cpp:909:9:int32_t CANTxVolumeSize(uint32_t)	24	static
+main.cpp:928:6:void canresp_get_volume_size()	8	static
+main.cpp:935:6:void canresp_delete_logfile()	8	static
+main.cpp:948:6:void Error_Handler()	4	static
 Reverse.h:16:5:Reverse<Range>::Reverse(const Range&) [with Range = unsigned char [12][6]]	16	static
 range_access.h:97:5:constexpr _Tp* std::end(_Tp (&)[_Nm]) [with _Tp = const unsigned char [6]; unsigned int _Nm = 12]	16	static
 stl_iterator.h:416:5:std::reverse_iterator<_Iterator> std::make_reverse_iterator(_Iterator) [with _Iterator = const unsigned char (*)[6]]	16	static

@@ -28,61 +28,33 @@ void LTC6820::adstat(void) {
 
 /* Reads and parses the LTC6804 cell voltage registers. */
 uint8_t LTC6820::ReadVoltageHelper(VoltageRegisters& cell_data) {
-	uint8_t const bytes_in_reg = 6, cells_in_reg = 3;
 	uint8_t pec_error;
 	status.sum_of_cells = 0;
 	// TODO min and max might need to be reset
 	for (uint8_t reg = 0; reg < 4; ++reg) {
 		uint8_t data_counter = 0;
-		ReadVoltageRegister(reg);
+		ReadVoltageRegister(reg + 1);
 
 		for (auto& row : cell_data) {
-			for (auto voltage = std::begin(row) + reg * cells_in_reg; voltage != std::begin(row) + (reg + 1) * cells_in_reg; ++voltage, data_counter += 2) {
-				*voltage = buffer[data_counter + 1] << 8 | buffer[data_counter];
-				status.sum_of_cells += *voltage;
+			for (auto& voltage : gsl::span<uint16_t>{ row + reg * kCellsInReg, kCellsInReg }) {
+				status.sum_of_cells += voltage = buffer[data_counter + 1] << 8 | buffer[data_counter];
+				data_counter += 2;
 
-				if (*voltage < status.min_voltage && *voltage > 5000) {
-					status.min_voltage = *voltage;
-					status.min_voltage_id = std::distance(*cell_data, voltage);
-#if TEST_UNDERVOLTAGE
-					if (status.ErrorHandler(Status::Undervoltage, status.min_voltage < kMinVoltage))
-						return Status::Undervoltage;
-
-					if (status.min_voltage < kLimpMinVoltage) { // TODO might only want to check this at the end of the loop
-						if (++limp_counter > kLimpCountLimit)
-							limp_counter += 9; // We have this here so it takes a bit of time for bms to exit limp mode once it enters
-					} else if (limp_counter > 0)
-						--limp_counter;
-#endif
-				} else if (*voltage > status.max_voltage) {
-					status.max_voltage = *voltage;
-					status.max_voltage_id = std::distance(*cell_data, voltage);
-
-					if (status.max_voltage > kChargerDis)
-						nlg5.ctrl = 0;
-					else if (status.max_voltage < kChargerEn)
-						nlg5.ctrl = NLG5::C_C_EN;
-#if TEST_OVERVOLTAGE
-					if (status.ErrorHandler(Status::Overvoltage, status.max_voltage > kMaxVoltage))
-						return Status::Overvoltage;
-#endif
-				}
+				if (voltage < status.min_voltage && voltage > 5000)
+					status.SetMinVoltage(voltage, std::distance(*cell_data, &voltage));
+				else if (voltage > status.max_voltage)
+					status.SetMaxVoltage(voltage, std::distance(*cell_data, &voltage));
 			}
 
-			if ((buffer[data_counter + 1] | buffer[data_counter] << 8) != PEC15Calc(&buffer[data_counter - bytes_in_reg], bytes_in_reg))
+			if ((buffer[data_counter + 1] | buffer[data_counter] << 8) != PEC15Calc(&buffer[data_counter - kBytesInReg], kBytesInReg))
 				pec_error = Status::PecError;
 
 			data_counter += 2;
 		}
-
-		power = current * status.sum_of_cells / 10000; // TODO: current is not being assigned to anywhere at all. sum_of_cells on Atmel was being divided by 10000
-#if TEST_OVERPOWER
-		if (status.ErrorHandler(Status::Overpower, power > kMaxPower))
-			return Status::Overpower;
-#endif
+		status.CalcPower(); // TODO: current is not being assigned to anywhere at all. sum_of_cells on Atmel was being divided by 10000
 	}
 	return pec_error;
-/*
+	/*
 		for (uint8_t current_ic = 0; current_ic < IC_NUM; current_ic++, data_counter += 2) {
 			for (uint8_t current_cell = 0; current_cell < cells_in_reg; current_cell++, data_counter += 2) {
 				uint16_t voltage = buffer[data_counter + 1] << 8 | buffer[data_counter];
@@ -128,7 +100,7 @@ uint8_t LTC6820::ReadVoltageHelper(VoltageRegisters& cell_data) {
 			return 1;
 #endif
 	}
- */
+	 */
 
 }
 
@@ -145,7 +117,6 @@ void LTC6820::ReadVoltageRegister(uint8_t reg) {
 
 /* Reads and parses the LTC6804 auxiliary registers. */
 int8_t LTC6820::ReadTemperatureHelper(TempRegisters& temp_data) {
-	uint8_t const bytes_in_reg = 6, gpios_in_reg = 3;
 	uint8_t pec_error;
 
 	for (uint8_t reg = 0; reg < 2; ++reg) {
@@ -153,29 +124,16 @@ int8_t LTC6820::ReadTemperatureHelper(TempRegisters& temp_data) {
 		ReadAuxRegister(reg + 1);
 
 		for (auto& row : temp_data) {
-			for (auto temperature = std::begin(row) + reg * gpios_in_reg; temperature != std::begin(row) + (reg + 1) * gpios_in_reg; ++temperature, data_counter += 2) {
-				*temperature = CalcTemp(buffer[data_counter + 1] << 8 | buffer[data_counter]);
-				if (*temperature < status.min_temp) {
-					status.min_temp = *temperature;
-					status.min_temp_id = std::distance(*temp_data, temperature); // TODO again, could be off by one
-#if TEST_UNDERTEMPERATURE
-					if (status.ErrorHandler(Status::Undertemp, status.min_temp < kMinTemp))
-						return Status::Undertemp;
-#endif
-				} else if (*temperature > status.max_temp) {
-					status.max_temp = *temperature;
-					status.max_temp_id = std::distance(*temp_data, temperature);
-#if TEST_OVERTEMPERATURE
-					if (status.ErrorHandler(Status::Overtemp, status.max_temp > kMaxTemp))
-						return Status::Overtemp;
-#endif
-#if TEST_OVERTEMPERATURE_CHARGING
-					if (status.op_mode & 1 << 2 && status.ErrorHandler(Status::OvertempCharging, status.max_temp > kMaxChargeTemp))
-						return Status::OvertempCharging;
-#endif
-				}
+			for (auto& temperature : gsl::span<int16_t>{ row + reg * kCellsInReg, kCellsInReg }) {
+				temperature = CalcTemp(buffer[data_counter + 1] << 8 | buffer[data_counter]);
+				data_counter += 2;
+
+				if (temperature < status.min_temp)
+					status.SetMinTemp(temperature, std::distance(*temp_data, &temperature)); // TODO could be off by one
+				else if (temperature > status.max_temp)
+					status.SetMaxTemp(temperature, std::distance(*temp_data, &temperature));
 			}
-			if ((buffer[data_counter] << 8 | buffer[data_counter + 1]) != PEC15Calc(&buffer[data_counter - bytes_in_reg], bytes_in_reg))
+			if ((buffer[data_counter] << 8 | buffer[data_counter + 1]) != PEC15Calc(&buffer[data_counter - kBytesInReg], kBytesInReg))
 				pec_error = Status::PecError;
 
 			data_counter += 2;

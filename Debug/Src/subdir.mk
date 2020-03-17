@@ -15,13 +15,11 @@ C_SRCS += \
 ../Src/system_stm32f4xx.c 
 
 CPP_SRCS += \
-../Src/IVT.cpp \
 ../Src/LTC6811.cpp \
 ../Src/Status.cpp \
 ../Src/main.cpp 
 
 OBJS += \
-./Src/IVT.o \
 ./Src/LTC6811.o \
 ./Src/Status.o \
 ./Src/bsp_driver_sd.o \
@@ -47,15 +45,12 @@ C_DEPS += \
 ./Src/system_stm32f4xx.d 
 
 CPP_DEPS += \
-./Src/IVT.d \
 ./Src/LTC6811.d \
 ./Src/Status.d \
 ./Src/main.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
-Src/IVT.o: ../Src/IVT.cpp
-	arm-none-eabi-g++ "$<" -mcpu=cortex-m4 -std=gnu++14 -g3 -DUSE_HAL_DRIVER -DSTM32F446xx -DDEBUG -c -I../Inc -I../Drivers/CMSIS/Include -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Middlewares/Third_Party/FatFs/src -O0 -ffunction-sections -fdata-sections -fno-exceptions -fno-rtti -fno-threadsafe-statics -fno-use-cxa-atexit -Wall -fstack-usage -MMD -MP -MF"Src/IVT.d" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
 Src/LTC6811.o: ../Src/LTC6811.cpp
 	arm-none-eabi-g++ "$<" -mcpu=cortex-m4 -std=gnu++14 -g3 -DUSE_HAL_DRIVER -DSTM32F446xx -DDEBUG -c -I../Inc -I../Drivers/CMSIS/Include -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Middlewares/Third_Party/FatFs/src -O0 -ffunction-sections -fdata-sections -fno-exceptions -fno-rtti -fno-threadsafe-statics -fno-use-cxa-atexit -Wall -fstack-usage -MMD -MP -MF"Src/LTC6811.d" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
 Src/Status.o: ../Src/Status.cpp

@@ -22,7 +22,6 @@
 #include "main.h"
 #include "fatfs.h"
 #include "Status.h"
-#include "IVT.h"
 
 #include "LTC6811.h"
 /* Private includes ----------------------------------------------------------*/
@@ -58,7 +57,6 @@ uint8_t rtc_event_flag;
 NLG5* nlg5;
 Status* status;
 LTC6820* ltc6820;
-IVT* ivt;
 
 /* USER CODE END PV */
 
@@ -114,9 +112,8 @@ int main(void)
 	MX_FATFS_Init();
 	/* USER CODE BEGIN 2 */
 	nlg5 = new NLG5;
-	status = new Status(Status::Core | Status::Logging);
-	ltc6820 = new LTC6820(hspi1, *status, *nlg5, hcan1); // TODO could be hcan2!
-	ivt = new IVT(*status);
+	status = new Status(Status::Core | Status::Logging, *nlg5);
+	ltc6820 = new LTC6820(hspi1, *status, hcan1); // TODO could be hcan2!
 	f_mount(&SDFatFS, "", 0);
 	f_open(&SDFile, "data.csv", FA_WRITE | FA_OPEN_APPEND);
 
@@ -582,15 +579,15 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
 #if CHECK_IVT
 			case CAN_ID_IVT_U1:
 				// Data[0] and Data[1] contain information that is not relevant.
-				ivt->SetVoltage(static_cast<int32_t>(data[2] << 24 | data[3] << 16 | data[4] << 8 | data[5]));
+				status->SetAccuVoltage(static_cast<int32_t>(data[2] << 24 | data[3] << 16 | data[4] << 8 | data[5]));
 				break;
 
 			case CAN_ID_IVT_U2:
-				ivt->SetVoltage2(static_cast<int32_t>(data[2] << 24 | data[3] << 16 | data[4] << 8 | data[5]));
+				status->SetAccuVoltage2(static_cast<int32_t>(data[2] << 24 | data[3] << 16 | data[4] << 8 | data[5]));
 				break;
 
 			case CAN_ID_IVT_I:
-				ivt->SetCurrent(static_cast<int32_t>(data[2] << 24 | data[3] << 16 | data[4] << 8 | data[5]));
+				status->SetCurrent(static_cast<int32_t>(data[2] << 24 | data[3] << 16 | data[4] << 8 | data[5]));
 				break;
 #endif
 
@@ -722,7 +719,7 @@ int8_t CANTxVoltageLimpTotal(void) {
 			0xCD,
 			0xAB,
 			0,
-			ltc6820->GetLimping()
+			status->GetLimping()
 	};
 
 	if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
@@ -799,7 +796,7 @@ int32_t CanTxOpMode(void) {
 	uint8_t data[8] = {
 			status->precharge_flag,
 			static_cast<uint8_t>(status->max_temp >> 8), // Why are we ruining a 16 bit int like this?
-			status->reason_code,
+			status->last_error,
 			status->safe_state_executed,
 			static_cast<uint8_t>(status->min_voltage & 0xFF), // This one too
 			static_cast<uint8_t>(status->min_voltage >> 8),
