@@ -602,19 +602,18 @@ int8_t core_routine() {
 		ltc6820->ReadWriteConfigRegisters(slave_cfg_Tx, slave_cfg_rx, cell_data);
 	ltc6820->ReadVoltage(cell_data);
 	ltc6820->ReadTemperature(temp_data);
-	status->SetFanDutyCycle(status->CalcDutyCycle());// TODO set_fan_duty_cycle(get_duty_cycle(status_data.max_temp), status_data.manual_fan_dc);
+	status->SetFanDutyCycle(status->CalcDutyCycle());
 	CANTxUptime();
 	CanTxOpMode();
-
-	// Should only be called once per cycle, but pec errors will be 0 if core mode isn't enabled anyway, so not sending it won't matter then
 	CanTxError();
 	CANTxVoltageLimpTotal();
 	return status->TestLimits();
+	// do tested stuff here cos it might be wrong currently
 }
 
 void datalog_routine(void) {
 	FILINFO inf;
-	if (BSP_SD_IsDetected()) { // Will need to check the short circuit eval here. Should be okay.
+	if (BSP_SD_IsDetected()) {
 		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_2); // led 2
 		if (f_stat("/hpf20", &inf) == FR_NO_FILE)
 			f_mkdir("/hpf20");
@@ -640,7 +639,7 @@ void datalog_routine(void) {
 /* Send charger command message on CAN bus. Every fifth time the charger_event_flag is set a reset command is sent,
  * if charger is in fault state. Otherwise a charge command is sent. */
 void SetCharger(void) {
-	uint8_t charger_event_flag = true; // just to get things to compile // would be set to true every 1s in the old system by a timer
+	uint8_t charger_event_flag = true; // TODO would be set to true every 1s in the old system by a timer
 	if (charger_event_flag) {
 		if((nlg5->a_buffer[0] == 136 || nlg5->a_buffer[0] == 152) && (nlg5->b_buffer[0] == 136 || nlg5->b_buffer[0] == 152)) {
 			// Empty for now. No need for this check.

@@ -99,7 +99,7 @@ public:
 			duty_cycle = kFanDCMin;
 
 		if (!manual_mode);
-		//pwm_channel_update_duty(PWM, &g_pwm_channel_fan, dc);
+		// TODO pwm_channel_update_duty(PWM, &g_pwm_channel_fan, dc);
 	}
 
 	constexpr uint8_t CalcDutyCycle() { // TODO could be private if the fan stuff was reworked a bit
@@ -182,8 +182,8 @@ public:
 #if TEST_ACCU_UNDERVOLTAGE
 		ErrorCheck(Status::AccuUndervoltage, AccuVoltage2 < kAccuMinVoltage);
 #endif
-		float precharge_percentage = AccuVoltage * 100 / AccuVoltage2;
 
+		float precharge_percentage = AccuVoltage * 100 / AccuVoltage2;
 		if (precharge_percentage >= 95 && CheckVoltageMatch() && AccuVoltage > kPrechargeMinStartVoltage && AccuVoltage2 > kPrechargeMinStartVoltage)
 			ClosePRE();
 		else if (AccuVoltage < kPrechargeMaxEndVoltage || AccuVoltage2 < kPrechargeMaxEndVoltage) // TODO think there was a bug here in old system
@@ -205,6 +205,7 @@ public:
 #if IVT_TIMEOUT
 		ErrorCheck(Status::IVTLost, received_update);
 #endif
+		received_update = false;
 		return 0;
 	}
 

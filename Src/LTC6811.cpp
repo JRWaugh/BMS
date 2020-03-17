@@ -51,7 +51,7 @@ uint8_t LTC6820::ReadVoltageHelper(VoltageRegisters& cell_data) {
 
 			data_counter += 2;
 		}
-		status.CalcPower(); // TODO: current is not being assigned to anywhere at all. sum_of_cells on Atmel was being divided by 10000
+		status.CalcPower(); // TODO: sum_of_cells on Atmel was being divided by 10000
 	}
 	return pec_error;
 	/*
