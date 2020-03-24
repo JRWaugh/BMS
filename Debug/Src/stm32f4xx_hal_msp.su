@@ -4,4 +4,4 @@ stm32f4xx_hal_msp.c:161:6:HAL_CAN_MspDeInit	16	static
 stm32f4xx_hal_msp.c:219:6:HAL_SD_MspInit	48	static
 stm32f4xx_hal_msp.c:268:6:HAL_SD_MspDeInit	16	static
 stm32f4xx_hal_msp.c:304:6:HAL_SPI_MspInit	48	static
-stm32f4xx_hal_msp.c:341:6:HAL_SPI_MspDeInit	16	static
+stm32f4xx_hal_msp.c:350:6:HAL_SPI_MspDeInit	16	static

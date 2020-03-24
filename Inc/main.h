@@ -77,14 +77,10 @@ void Error_Handler(void);
 /* USER CODE BEGIN EFP */
 
 /*** BMS.H function prototypes ***/
-int8_t 	core_routine();
-void 	datalog_routine(void);
-void    set_fan_duty_cycle(uint8_t dc, uint8_t manual_mode_bit);
 void    SetCharger(void);
-void 	fan_energize(void);
-int32_t can0_test(void);
+int32_t CAN0_Test(void);
 int8_t  CANTxVoltage(void);
-int8_t CANTxVoltageLimpTotal(void);
+int8_t 	CANTxVoltageLimpTotal(void);
 int32_t CANTxUptime(void);
 int32_t CanTxOpMode(void);
 int32_t CanTxError(void);

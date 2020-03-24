@@ -8,9 +8,10 @@
 #ifndef STATUS_H_
 #define STATUS_H_
 
-#include "stm32f4xx_hal.h"
+//#include "stm32f4xx_hal.h"
 #include "NLG5.h"
 #include <ctime>
+#include <utility>
 
 /*** Debug functionality enable/disable ***/
 #define CAN_DEBUG					1
@@ -53,6 +54,7 @@ public:
 	};
 
 	uint8_t op_mode;
+	uint8_t discharge_mode { 0 };
 	bool manual_mode { false };
 
 	/* Energize AIR (Accumulator Indicator Relay). */
@@ -83,6 +85,8 @@ public:
 
 	void IncreasePecCounter() {
 		pec_average = static_cast<float>(++pec_counter) / uptime;
+
+		ErrorCheck(Status::PecError, pec_average > pec_counter); // TODO figure out what this should be
 	}
 
 	auto GetPecChange() {
@@ -111,45 +115,50 @@ public:
 			return (max_temp * kT2DC_M) + (kFanLowDutyCycle - kT2DC_M * kT2DCLowTemp);
 	};
 
-	void SetMinVoltage(uint16_t min_voltage, uint8_t min_voltage_id) {
+	void SetMinVoltage(uint16_t min_voltage, const std::pair<uint8_t, uint8_t>& min_voltage_index) {
 		this->min_voltage = min_voltage;
-		this->min_voltage_id = min_voltage_id;
+		this->min_voltage_index = min_voltage_index;
 		if (this->min_voltage < kLimpMinVoltage) { // TODO might be checking this too often
 			if (++limp_counter > kLimpCountLimit)
 				limp_counter += 9;
 		} else if (limp_counter > 0)
 			--limp_counter;
+
 #if TEST_UNDERVOLTAGE
 		ErrorCheck(Status::Undervoltage, min_voltage < kMinVoltage);
 #endif
 	}
 
-	void SetMaxVoltage(uint16_t max_voltage, uint8_t max_voltage_id) {
+	void SetMaxVoltage(uint16_t max_voltage, const std::pair<uint8_t, uint8_t>& max_voltage_index) {
 		this->max_voltage = max_voltage;
-		this->max_voltage_id = max_voltage_id;
+		this->max_voltage_index = max_voltage_index;
 		if (this->max_voltage > kChargerDis)
 			nlg5.ctrl = 0;
 		else if (this->max_voltage < kChargerEn)
 			nlg5.ctrl = NLG5::C_C_EN;
+
 #if TEST_OVERVOLTAGE
 		ErrorCheck(Status::Overvoltage, this->max_voltage > kMaxVoltage);
 #endif
 	}
 
-	void SetMinTemp(int16_t min_temp, uint8_t min_temp_id) {
+	void SetMinTemp(int16_t min_temp, const std::pair<uint8_t, uint8_t>& min_temp_index) {
 		this->min_temp = min_temp;
-		this->min_temp_id = min_temp_id;
+		this->min_temp_index = min_temp_index;
+
 #if TEST_UNDERTEMPERATURE
 		ErrorCheck(Status::Undertemp, this->min_temp < kMinTemp);
 #endif
 	}
 
-	void SetMaxTemp(int16_t max_temp, uint8_t max_temp_id) {
+	void SetMaxTemp(int16_t max_temp, const std::pair<uint8_t, uint8_t>& max_temp_index) {
 		this->max_temp = max_temp;
-		this->max_temp_id = max_temp_id;
+		this->max_temp_index = max_temp_index;
+
 #if TEST_OVERTEMPERATURE
 		ErrorCheck(Status::Overtemp, this->max_temp > kMaxTemp);
 #endif
+
 #if TEST_OVERTEMPERATURE_CHARGING
 		if (op_mode & Charging)
 			ErrorCheck(Status::OvertempCharging, this->max_temp > kMaxChargeTemp);
@@ -163,9 +172,11 @@ public:
 	int8_t SetCurrent(int32_t raw_current) {
 		current = static_cast<float>(raw_current) / 1000;
 		received_update = true;
+
 #if TEST_OVERCURRENT
 		ErrorCheck(Status::Overcurrent, current > kMaxCurrent);
 #endif
+
 		return 0;
 	}
 
@@ -218,15 +229,15 @@ public:
 	struct tm rtc = { 0 };
 
 	uint16_t min_voltage = 0;
-	uint8_t min_voltage_id = 0;
 	uint16_t max_voltage = 0;
-	uint8_t max_voltage_id = 0;
+	std::pair<uint8_t, uint8_t> min_voltage_index = { 0, 0 };
+	std::pair<uint8_t, uint8_t> max_voltage_index = { 0, 0 };
 	uint16_t sum_of_cells = 0;
 
 	int16_t min_temp = 0;
 	int16_t max_temp = 0;
-	uint8_t min_temp_id = 0;
-	uint8_t max_temp_id = 0;
+	std::pair<uint8_t, uint8_t> min_temp_index = { 0, 0 };
+	std::pair<uint8_t, uint8_t> max_temp_index = { 0, 0 };
 
 	int32_t current = 0;
 	int32_t power = 0;
@@ -248,11 +259,11 @@ private:
 		return percentage < 10 && percentage > -10;
 	}
 
-	int8_t ErrorCheck(ErrorEvent e, bool error) {
+	uint8_t ErrorCheck(ErrorEvent e, bool error) {
 		if (error) {
 			if (++error_counters[e] > kErrorLimit || !tested) {
 				GoToSafeState(e);
-				return -1;
+				return 1;
 			}
 		} else if (error_counters[e] > 0)
 			--error_counters[e];
@@ -292,7 +303,6 @@ private:
 	static constexpr  uint8_t kErrorLimit { 2 };
 	static constexpr  uint8_t kFanDCMax { 100 };
 	static constexpr  uint8_t kFanDCMin { 0 };
-
 	static constexpr int32_t kMaxPower { 8000000 };
 	static constexpr uint16_t kMaxVoltage = 42000;
 	static constexpr uint16_t kMinVoltage = 31000;

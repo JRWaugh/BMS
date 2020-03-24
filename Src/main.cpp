@@ -21,11 +21,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "fatfs.h"
-#include "Status.h"
-
-#include "LTC6811.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "Status.h"
+#include "LTC6811.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -34,6 +33,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+void BuildDischargeConfig(LTC6811Register<uint8_t>& cfg_tx, LTC6811Register<uint8_t>& cfg_rx, std::array<LTC6811Register<uint16_t>, 4>& cell_data);
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -49,14 +49,14 @@ SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN PV */
 CAN_TxHeaderTypeDef TxHeader;
-VoltageRegisters cell_data { 0 };
-TempRegisters temp_data { 0 };
-CfgTxRegisters slave_cfg_Tx { 0xFE };
-CfgRxRegisters slave_cfg_rx { 0 };
+std::array<LTC6811Register<uint16_t>, 4> cell_data;
+std::array<LTC6811Register<int16_t>, 2> temp_data;
+LTC6811Register<uint8_t> slave_cfg_tx;
+LTC6811Register<uint8_t> slave_cfg_rx;
 uint8_t rtc_event_flag;
 NLG5* nlg5;
 Status* status;
-LTC6820* ltc6820;
+LTC6811* ltc6811;
 
 /* USER CODE END PV */
 
@@ -111,9 +111,12 @@ int main(void)
 	MX_SPI1_Init();
 	MX_FATFS_Init();
 	/* USER CODE BEGIN 2 */
+	slave_cfg_tx.fill({ 0xFE, 0, 0, 0, 0, 0 });
+	test4[0] = 0;
+	test4[1] = 0xFF;
 	nlg5 = new NLG5;
 	status = new Status(Status::Core | Status::Logging, *nlg5);
-	ltc6820 = new LTC6820(hspi1, *status, hcan1); // TODO could be hcan2!
+	ltc6811 = new LTC6811(hspi1, *status, hcan1); // TODO could be hcan2!
 	f_mount(&SDFatFS, "", 0);
 	f_open(&SDFile, "data.csv", FA_WRITE | FA_OPEN_APPEND);
 
@@ -140,12 +143,23 @@ int main(void)
 
 		/* USER CODE BEGIN 3 */
 		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_0);
+
 		/* Each bit of opmode represents a different mode. */
-		if (status->op_mode & Status::Core)
-			core_routine();
+		if (status->op_mode & Status::Core) {
+			if (!(status->op_mode & Status::Balance))
+				BuildDischargeConfig(slave_cfg_tx, slave_cfg_rx, cell_data);
+			ltc6811->ReadVoltage(cell_data);
+			ltc6811->ReadTemperature(temp_data);
+			status->SetFanDutyCycle(status->CalcDutyCycle());
+			CANTxUptime();
+			CanTxOpMode();
+			CanTxError();
+			CANTxVoltageLimpTotal();
+			status->CheckIVTLost();
+		}
 
 		if (status->op_mode & Status::Balance)
-			ltc6820->ReadWriteConfigRegisters(slave_cfg_Tx, slave_cfg_rx, cell_data);
+			BuildDischargeConfig(slave_cfg_tx, slave_cfg_rx, cell_data);
 
 #if CAN_ENABLED
 		/* 	Charging routine. CAN buffers for charger messages are checked, and charger command message is sent. */
@@ -162,8 +176,44 @@ int main(void)
 			CanTxOpMode();
 		}
 #endif
-		if (status->op_mode & Status::Logging)
-			datalog_routine();
+		if (status->op_mode & Status::Logging) {
+			FILINFO inf;
+			if (BSP_SD_IsDetected()) {
+				HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_2); // led 2
+				if (f_stat("/hpf20", &inf) == FR_NO_FILE)
+					f_mkdir("/hpf20");
+
+				// TODO Magic number below that needs fixing
+				if (f_size(&SDFile) < 524288000 && f_open(&SDFile, "/hpf20/data.csv", FA_WRITE | FA_OPEN_APPEND) == FR_OK) {
+					f_printf(&SDFile, "%u,", status->uptime);
+					/* ISO 8601 Notation (yyyy-mm-ddThh:mm:ss) */
+					f_printf(&SDFile, "%02u-%02u-%02uT%02u:%02u:%02u,",
+							status->rtc.tm_year, status->rtc.tm_mon, status->rtc.tm_mday, status->rtc.tm_hour, status->rtc.tm_min, status->rtc.tm_sec);
+
+					UINT number_written = 0;
+					uint8_t write_error{ 0 };
+
+					// TODO error handling isn't really done yet
+					for (auto& reg : cell_data) {
+						auto serialized_reg = gsl::as_bytes(span(reg));
+						f_write(&SDFile, (uint8_t *) serialized_reg.data(), kBytesPerRegister * kDaisyChainLength, &number_written);
+						if (number_written != kBytesPerRegister * kDaisyChainLength)
+							write_error = 1;
+					}
+
+					for (auto& reg : temp_data) {
+						auto serialized_reg = gsl::as_bytes(span(reg));
+						f_write(&SDFile, (uint8_t *) serialized_reg.data(), kBytesPerRegister * kDaisyChainLength, &number_written);
+						if (number_written != kBytesPerRegister * kDaisyChainLength)
+							write_error = 1;
+					}
+
+					f_sync(&SDFile);
+					f_close(&SDFile);
+				}
+			}
+
+		}
 	}
 	/* USER CODE END 3 */
 }
@@ -567,7 +617,7 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
 			break;
 
 			case CAN_ID_SETTING:
-				ltc6820->discharge_mode = data[0];
+				status->discharge_mode = data[0];
 				status->op_mode = data[1];
 
 				/* data[4] == fanduty */
@@ -597,45 +647,6 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
 	}
 }
 
-int8_t core_routine() {
-	if ((status->op_mode & 0x02) == 0)
-		ltc6820->ReadWriteConfigRegisters(slave_cfg_Tx, slave_cfg_rx, cell_data);
-	ltc6820->ReadVoltage(cell_data);
-	ltc6820->ReadTemperature(temp_data);
-	status->SetFanDutyCycle(status->CalcDutyCycle());
-	CANTxUptime();
-	CanTxOpMode();
-	CanTxError();
-	CANTxVoltageLimpTotal();
-	return status->TestLimits();
-	// do tested stuff here cos it might be wrong currently
-}
-
-void datalog_routine(void) {
-	FILINFO inf;
-	if (BSP_SD_IsDetected()) {
-		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_2); // led 2
-		if (f_stat("/hpf20", &inf) == FR_NO_FILE)
-			f_mkdir("/hpf20");
-
-		// TODO Magic number below that needs fixing
-		if (f_size(&SDFile) < 524288000 && f_open(&SDFile, "/hpf20/data.csv", FA_WRITE | FA_OPEN_APPEND) == FR_OK) {
-			f_printf(&SDFile, "%u,", status->uptime);
-			/* ISO 8601 Notation (yyyy-mm-ddThh:mm:ss) */
-			f_printf(&SDFile, "%02u-%02u-%02uT%02u:%02u:%02u,",
-					status->rtc.tm_year, status->rtc.tm_mon, status->rtc.tm_mday, status->rtc.tm_hour, status->rtc.tm_min, status->rtc.tm_sec);
-			// send error message if number written doesn't match what was expected
-			UINT number_written;
-			f_write(&SDFile, *cell_data, sizeof(cell_data), &number_written);
-			f_write(&SDFile, *temp_data, sizeof(temp_data), &number_written);
-
-			f_sync(&SDFile);
-			f_close(&SDFile);
-		}
-	}
-
-}
-
 /* Send charger command message on CAN bus. Every fifth time the charger_event_flag is set a reset command is sent,
  * if charger is in fault state. Otherwise a charge command is sent. */
 void SetCharger(void) {
@@ -655,7 +666,76 @@ void SetCharger(void) {
 	}
 }
 
-int32_t can0_test(void) {
+void BuildDischargeConfig(
+		LTC6811Register<uint8_t>& cfg_tx,
+		LTC6811Register<uint8_t>& cfg_rx,
+		std::array<LTC6811Register<uint16_t>, 4>& cell_data) {
+	uint16_t DCCx = 0;
+	uint8_t ic_index{ 0 }, cell_index{ 0 }, reg_index{ 0 };
+
+	uint16_t avg_cell = status->sum_of_cells / 144;
+	if (status->op_mode & Status::Balance) {
+		switch (status->discharge_mode) {
+		case 0: //Discharge all above (min_voltage + delta)
+			for (const auto& reg : cell_data) {
+				ic_index = 0;
+
+				for (const auto& ic : reg) {
+					// Starting index of cells within each LTC6811 register. Will repeat { 0, 1, 2 } on 0th register, { 3, 4, 5 } on 1st, and so on.
+					// TODO: Figure out a better algorithm for this, especially for case 1 below.
+					cell_index = reg_index * LTC6811::kCellsInReg;
+
+					std::for_each(ic.begin(), ic.begin() + LTC6811::kCellsInReg, [&](auto& voltage) {
+						if (voltage > status->min_voltage + LTC6811::kDelta)
+							DCCx |= 1 << cell_index;
+						++cell_index;
+					});
+
+					cfg_tx[ic_index][4] |= DCCx & 0xFF;
+					cfg_tx[ic_index++][5] |= DCCx >> 8 & 0xF;
+					DCCx = 0;
+				}
+				++reg_index;
+			}
+			break;
+
+		case 1: //Discharge only the max_voltage cell.
+			if (status->max_voltage - status->min_voltage > LTC6811::kDelta) {
+				DCCx |= 1 << status->max_voltage_index.second;
+				cfg_tx[status->max_voltage_index.first][4] = DCCx & 0xFF;
+				cfg_tx[status->max_voltage_index.first][5] = DCCx >> 8 & 0xF;
+			}
+			break;
+
+		case 2: //Discharge all cells that are above (average cell voltage + delta)
+			for (const auto& reg : cell_data) {
+				ic_index = 0;
+				cell_index = reg_index * LTC6811::kCellsInReg;
+				DCCx = 0;
+				for (const auto& ic : reg) {
+					std::for_each(ic.begin(), ic.begin() + LTC6811::kCellsInReg, [&](auto& voltage) {
+						if (voltage > avg_cell + LTC6811::kDelta)
+							DCCx |= 1 << cell_index;
+						++cell_index;
+					});
+					cfg_tx[ic_index][4] |= DCCx & 0xFF;
+					cfg_tx[ic_index++][5] |= DCCx >> 8 & 0xF;
+				}
+				++reg_index;
+			}
+			break;
+		}
+	} else
+		for (auto& ic : cfg_tx)
+			ic[4] = ic[5] = 0;
+
+	ltc6811->WakeFromSleep();
+	ltc6811->WriteConfigRegister(cfg_tx);
+	HAL_Delay(500);
+	ltc6811->ReadConfigRegister(cfg_rx);
+}
+
+int32_t CAN0_Test(void) {
 	TxHeader.StdId = CAN_ID_TMP_TESTING;
 	TxHeader.IDE = CAN_ID_STD;
 	TxHeader.DLC = 8;
@@ -673,9 +753,6 @@ int8_t CANTxVoltage(void) {
 	TxHeader.IDE = CAN_ID_STD;
 	TxHeader.DLC = 8;
 
-	uint8_t data[8];
-	uint8_t byte_position = 0;
-
 #if NOT_WORKING
 	for (auto it = cell_data.begin(); it != cell_data.end(); it += 8) {
 		if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, it, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
@@ -684,22 +761,17 @@ int8_t CANTxVoltage(void) {
 		++TxHeader.StdId;
 	}
 	return 0;
-#endif
 
-	for (const auto& row : cell_data) {
-		for (const auto& voltage : row) {
-			data[byte_position++] = static_cast<uint8_t>(voltage >> 8);
-			data[byte_position++] = static_cast<uint8_t>(voltage);
 
-			if (byte_position == 8) {
-				if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
-					return -1;
+	for (auto& reg : cell_data) {
+		for (auto& ic : reg) { //TODO This used to not send PEC data
+			if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, ic.data(), (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
+				return -1;
 
-				++TxHeader.StdId;
-				byte_position = 0;
-			}
+			++TxHeader.StdId;
 		}
 	}
+#endif
 	return 0;
 }
 
@@ -732,21 +804,18 @@ int8_t CANTxTemperature(void) {
 	TxHeader.IDE = CAN_ID_STD;
 	TxHeader.DLC = 8;
 
+#if 0
 	uint8_t data[8];
 	uint8_t byte_position = 0;
 
-	for (const auto& row : temp_data) {
-		for (const auto& temperature : row) {
-			data[byte_position++] = static_cast<uint8_t>(temperature >> 8);
-			data[byte_position++] = static_cast<uint8_t>(temperature);
+	for (auto& reg : temp_data) {
+		for (auto& ic : reg) {
+			if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, ic.data()->data(), (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
+				return -1;
 
-			if (byte_position == 8) {
-				if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
-					return -1;
+			++TxHeader.StdId;
+			byte_position = 0;
 
-				++TxHeader.StdId;
-				byte_position = 0;
-			}
 		}
 	}
 
@@ -755,7 +824,7 @@ int8_t CANTxTemperature(void) {
 
 	if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
 		return -1;
-
+#endif
 	return 0;
 }
 
@@ -799,7 +868,7 @@ int32_t CanTxOpMode(void) {
 			status->safe_state_executed,
 			static_cast<uint8_t>(status->min_voltage & 0xFF), // This one too
 			static_cast<uint8_t>(status->min_voltage >> 8),
-			status->min_voltage_id,
+			status->min_voltage_index.first, // TODO this is messed up for now
 			status->op_mode
 	};
 
@@ -845,16 +914,16 @@ int32_t CANTxDCfg(void) {
 	uint8_t data[8] = { 0 };
 	uint8_t byte_position = 0;
 
-	for (const auto& row : slave_cfg_rx) {
-		data[byte_position++] = row[5];
-		data[byte_position++] = row[4];
+	for (auto& ic : slave_cfg_rx) {
+		data[byte_position++] = ic[5];
+		data[byte_position++] = ic[4];
 
 		if (byte_position == 8) {
 			if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
 				return -1;
 
-		byte_position = 0;
-		++TxHeader.StdId;
+			byte_position = 0;
+			++TxHeader.StdId;
 		}
 	}
 
@@ -910,7 +979,6 @@ int32_t CANTxVolumeSize(uint32_t size_of_log) {
 	TxHeader.IDE = CAN_ID_STD;
 	TxHeader.DLC = 4;
 
-	// TODO possible that size_of_log can just be cast to a pointer to an 8 bit int
 	uint8_t data[] = {
 			static_cast<uint8_t>(size_of_log >> 24),
 			static_cast<uint8_t>(size_of_log >> 16),

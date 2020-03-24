@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=C:/Users/User/Desktop/BMS/Inc
+HeaderPath=C:/Users/User/Projects/CPPProjects/BMS/Inc
 HeaderFiles=stm32f4xx_it.h;stm32f4xx_hal_conf.h;main.h;ffconf.h;bsp_driver_sd.h;sd_diskio.h;fatfs.h;fatfs_platform.h;
-SourcePath=C:/Users/User/Desktop/BMS/Src
+SourcePath=C:/Users/User/Projects/CPPProjects/BMS/Src
 SourceFiles=stm32f4xx_it.c;stm32f4xx_hal_msp.c;main.c;bsp_driver_sd.c;sd_diskio.c;fatfs.c;fatfs_platform.c;
 
 [PreviousLibFiles]

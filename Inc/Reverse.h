@@ -13,7 +13,7 @@
 template<typename Range>
 class Reverse {
 public:
-    Reverse(Range const& range) : range { range } {}
+    Reverse(Range const& range) : range{ range } {}
 
     auto begin() const {
     	return std::make_reverse_iterator(std::end(range));
