@@ -8,7 +8,6 @@
 #ifndef STATUS_H_
 #define STATUS_H_
 
-//#include "stm32f4xx_hal.h"
 #include "NLG5.h"
 #include <ctime>
 #include <utility>

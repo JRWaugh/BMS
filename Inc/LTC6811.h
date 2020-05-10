@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <cmath>
 #include <optional>
-#include "dwt_delay.h"
+
 
 /* Timing of states (in microseconds) */
 #define T_WAKE_MAX		400
@@ -81,37 +81,8 @@ enum Group { A = 0, B, C, D };
 
 class LTC6811 {
 public:
-    template<Mode mode = Mode::Normal, DCP dcp = DCP::Disabled, CellCh cell = CellCh::All, AuxCh aux = AuxCh::All, STSCh sts = STSCh::All>
-    constexpr LTC6811(SPI_HandleTypeDef& hspi, Status& status) : hspi{ hspi }, status{ status } {
-        uint8_t md_bits = (static_cast<uint8_t>(mode) & 0x02) >> 1;
-        uint16_t PEC{ 0 };
-
-        ADCV[0]   = md_bits + 0x02;
-        ADAX[0]   = md_bits + 0x04;
-        ADSTAT[0] = md_bits + 0x04;
-
-        md_bits   = (static_cast<uint8_t>(mode) & 0x01) << 7;
-        ADCV[1]   = md_bits + 0x60 + (static_cast<uint8_t>(dcp) << 4) + static_cast<uint8_t>(cell);
-        ADAX[1]   = md_bits + 0x60 + static_cast<uint8_t>(aux);
-        ADSTAT[1] = md_bits + 0x68 + static_cast<uint8_t>(sts);
-
-        PEC = PEC15Calc(ADCV, 2);
-        ADCV[2] = static_cast<uint8_t>(PEC >> 8);
-        ADCV[3] = static_cast<uint8_t>(PEC);
-
-        PEC = PEC15Calc(ADAX, 2);
-        ADAX[2] = static_cast<uint8_t>(PEC >> 8);
-        ADAX[3] = static_cast<uint8_t>(PEC);
-
-        PEC = PEC15Calc(ADSTAT, 2);
-        ADSTAT[2] = static_cast<uint8_t>(PEC >> 8);
-        ADSTAT[3] = static_cast<uint8_t>(PEC);
-
-        slave_cfg_tx.register_group.fill({ 0xFE, 0, 0, 0, 0, 0 });
-
-        DWT_Init();
-        WakeFromSleep(); // TODO Takes 2.2s to fall asleep so if this has to be called ever again, we have bigger problems
-    }
+    LTC6811(SPI_HandleTypeDef& hspi, Status& status, Mode mode = Mode::Normal, DCP dcp = DCP::Disabled,
+            CellCh cell = CellCh::All, AuxCh aux = AuxCh::All, STSCh sts = STSCh::All);
 
     void WakeFromSleep(void);
     void WakeFromIdle(void);

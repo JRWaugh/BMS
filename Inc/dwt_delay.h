@@ -21,13 +21,24 @@
  */
 
 #include <stdint.h>
+#include "stm32f4xx_hal.h"
 
 #ifndef INC_DWT_DELAY_H_
 #define INC_DWT_DELAY_H_
 
-#define DWT_DELAY_NEWBIE 0
+void DWT_Init(void) {
+    if (!(CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk)) {
+        CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+        DWT->CYCCNT = 0;
+        DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+    }
+}
 
-void DWT_Init(void);
-void DWT_Delay(uint32_t us);
+void DWT_Delay(uint32_t microseconds) {
+    uint32_t startTick  = DWT->CYCCNT;
+    uint32_t delayTicks = microseconds * SystemCoreClock / 1000000;
+
+    while (DWT->CYCCNT - startTick < delayTicks);
+}
 
 #endif /* INC_DWT_DELAY_DWT_DELAY_H_ */

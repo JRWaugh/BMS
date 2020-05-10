@@ -1,23 +1,23 @@
 NLG5.h:23:5:NLG5::NLG5(uint16_t, uint16_t, uint16_t)	24	static
-Status.h:50:5:Status::Status(uint8_t, NLG5&)	24	static
-Status.h:66:10:void Status::OpenAIR() const	16	static
-Status.h:72:10:void Status::ClosePRE()	16	static
-Status.h:79:10:void Status::OpenPRE()	16	static
-Status.h:85:10:void Status::IncreasePecCounter()	16	static
-Status.h:91:10:auto Status::GetPecChange()	24	static
-Status.h:98:10:void Status::SetFanDutyCycle(uint8_t)	16	static
-Status.h:108:23:constexpr uint8_t Status::CalcDutyCycle()	16	static
-Status.h:169:10:auto Status::GetLimping() const	16	static
-Status.h:173:12:int8_t Status::SetCurrent(int32_t)	16	static
-Status.h:184:10:void Status::SetAccuVoltage(int32_t)	16	static
-Status.h:190:12:int8_t Status::SetAccuVoltage2(int32_t)	24	static
-Status.h:218:12:int8_t Status::CheckIVTLost()	16	static
-Status.h:260:10:bool Status::CheckVoltageMatch()	24	static
-Status.h:265:13:uint8_t Status::ErrorCheck(Status::ErrorEvent, bool)	16	static
-Status.h:278:10:void Status::GoToSafeState(Status::ErrorEvent)	16	static
+Status.h:49:5:Status::Status(uint8_t, NLG5&)	24	static
+Status.h:65:10:void Status::OpenAIR() const	16	static
+Status.h:71:10:void Status::ClosePRE()	16	static
+Status.h:78:10:void Status::OpenPRE()	16	static
+Status.h:84:10:void Status::IncreasePecCounter()	16	static
+Status.h:90:10:auto Status::GetPecChange()	24	static
+Status.h:97:10:void Status::SetFanDutyCycle(uint8_t)	16	static
+Status.h:107:23:constexpr uint8_t Status::CalcDutyCycle()	16	static
+Status.h:168:10:auto Status::GetLimping() const	16	static
+Status.h:172:12:int8_t Status::SetCurrent(int32_t)	16	static
+Status.h:183:10:void Status::SetAccuVoltage(int32_t)	16	static
+Status.h:189:12:int8_t Status::SetAccuVoltage2(int32_t)	24	static
+Status.h:217:12:int8_t Status::CheckIVTLost()	16	static
+Status.h:259:10:bool Status::CheckVoltageMatch()	24	static
+Status.h:264:13:uint8_t Status::ErrorCheck(Status::ErrorEvent, bool)	16	static
+Status.h:277:10:void Status::GoToSafeState(Status::ErrorEvent)	16	static
 gthr-default.h:229:1:int __gthread_key_delete(__gthread_key_t)	16	static
 optional:97:3:void std::__throw_bad_optional_access()	8	static
-LTC6811.h:146:10:void LTC6811::SetDischargeMode(uint8_t)	16	static
+LTC6811.h:117:10:void LTC6811::SetDischargeMode(uint8_t)	16	static
 optional:718:22:constexpr bool std::optional<_Tp>::has_value() const [with _Tp = LTC6811VoltageStatus]	16	static
 optional:385:22:constexpr bool std::_Optional_base<_Tp>::_M_is_engaged() const [with _Tp = LTC6811VoltageStatus]	16	static
 optional:718:22:constexpr bool std::optional<_Tp>::has_value() const [with _Tp = LTC6811TempStatus]	16	static
@@ -47,24 +47,6 @@ main.cpp:935:9:int32_t CANTxVolumeSize(uint32_t)	24	static
 main.cpp:953:6:void canresp_get_volume_size()	8	static
 main.cpp:960:6:void canresp_delete_logfile()	8	static
 main.cpp:973:6:void Error_Handler()	4	static
-move.h:98:5:constexpr typename std::remove_reference< <template-parameter-1-1> >::type&& std::move(_Tp&&) [with _Tp = std::array<unsigned char, 4>&]	16	static
-LTC6811.h:62:5:LTC6811RegisterGroup<T>::LTC6811RegisterGroup(LTC6811Command&&) [with T = unsigned char]	16	static
-LTC6811.h:62:5:LTC6811RegisterGroup<T>::LTC6811RegisterGroup(LTC6811Command&&) [with T = short unsigned int]	16	static
-LTC6811.h:62:5:LTC6811RegisterGroup<T>::LTC6811RegisterGroup(LTC6811Command&&) [with T = short int]	16	static
-LTC6811.h:85:15:constexpr LTC6811::LTC6811(SPI_HandleTypeDef&, Status&) [with Mode mode = (Mode)2; DCP dcp = (DCP)0; CellCh cell = (CellCh)0; AuxCh aux = (AuxCh)0; STSCh sts = (STSCh)0]	88	static
 optional:722:7:constexpr const _Tp& std::optional<_Tp>::value() const & [with _Tp = LTC6811TempStatus]	16	static
 optional:394:7:constexpr const _Tp& std::_Optional_base<_Tp>::_M_get() const [with _Tp = LTC6811VoltageStatus]	16	static
-array:185:7:constexpr std::array<_Tp, _Nm>::value_type& std::array<_Tp, _Nm>::operator[](std::array<_Tp, _Nm>::size_type) [with _Tp = unsigned char; unsigned int _Nm = 4]	16	static
-array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = unsigned char; unsigned int _Nm = 4]	16	static
-array:238:7:constexpr const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = unsigned char; unsigned int _Nm = 4]	16	static
-LTC6811.h:233:31:static constexpr uint16_t LTC6811::PEC15Calc(const std::array<_Tp, _Nm>&, size_t) [with T = unsigned char; unsigned int S = 4]	32	static
-array:126:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::begin() [with _Tp = LTC6811Register<unsigned char>; unsigned int _Nm = 12]	16	static
-array:175:7:constexpr std::array<_Tp, _Nm>::size_type std::array<_Tp, _Nm>::size() const [with _Tp = LTC6811Register<unsigned char>; unsigned int _Nm = 12]	16	static
-array:116:7:void std::array<_Tp, _Nm>::fill(const value_type&) [with _Tp = LTC6811Register<unsigned char>; unsigned int _Nm = 12]	24	static
 optional:394:7:constexpr const _Tp& std::_Optional_base<_Tp>::_M_get() const [with _Tp = LTC6811TempStatus]	16	static
-array:55:7:static constexpr _Tp& std::__array_traits<_Tp, _Nm>::_S_ref(const _Tp (&)[_Nm], std::size_t) [with _Tp = unsigned char; unsigned int _Nm = 4]	16	static
-array:234:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::data() [with _Tp = LTC6811Register<unsigned char>; unsigned int _Nm = 12]	16	static
-stl_algobase.h:784:5:_OI std::fill_n(_OI, _Size, const _Tp&) [with _OI = LTC6811Register<unsigned char>*; _Size = unsigned int; _Tp = LTC6811Register<unsigned char>]	24	static
-array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = LTC6811Register<unsigned char>; unsigned int _Nm = 12]	16	static
-stl_algobase.h:277:5:_Iterator std::__niter_base(_Iterator) [with _Iterator = LTC6811Register<unsigned char>*]	16	static
-stl_algobase.h:738:5:typename __gnu_cxx::__enable_if<(! std::__is_scalar<_Tp>::__value), _OutputIterator>::__type std::__fill_n_a(_OutputIterator, _Size, const _Tp&) [with _OutputIterator = LTC6811Register<unsigned char>*; _Size = unsigned int; _Tp = LTC6811Register<unsigned char>]	32	static

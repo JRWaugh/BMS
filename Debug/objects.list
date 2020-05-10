@@ -24,7 +24,6 @@
 "Src/LTC6811.o"
 "Src/Status.o"
 "Src/bsp_driver_sd.o"
-"Src/dwt_delay.o"
 "Src/fatfs.o"
 "Src/fatfs_platform.o"
 "Src/main.o"
