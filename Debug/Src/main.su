@@ -1,159 +1,70 @@
-NLG5.h:23:2:NLG5::NLG5(uint16_t, uint16_t, uint16_t)	24	static
-Status.h:50:2:Status::Status(uint8_t, NLG5&)	56	static
-Status.h:61:7:void Status::CloseAIR() const	16	static
-Status.h:67:7:void Status::OpenAIR() const	16	static
-Status.h:73:7:void Status::ClosePRE()	16	static
-Status.h:80:7:void Status::OpenPRE()	16	static
-Status.h:86:7:void Status::IncreasePecCounter()	16	static
-Status.h:92:7:auto Status::GetPecChange()	24	static
-Status.h:99:7:void Status::SetFanDutyCycle(uint8_t)	16	static
-Status.h:109:20:constexpr uint8_t Status::CalcDutyCycle()	16	static
-Status.h:168:7:auto Status::GetLimping() const	16	static
-Status.h:172:9:int8_t Status::SetCurrent(int32_t)	16	static
-Status.h:183:7:void Status::SetAccuVoltage(int32_t)	16	static
-Status.h:189:9:int8_t Status::SetAccuVoltage2(int32_t)	24	static
-Status.h:215:9:int8_t Status::CheckIVTLost()	16	static
-Status.h:257:7:bool Status::CheckVoltageMatch()	24	static
-Status.h:262:10:uint8_t Status::ErrorCheck(Status::ErrorEvent, bool)	16	static
-Status.h:275:7:void Status::GoToSafeState(Status::ErrorEvent)	16	static
+NLG5.h:23:5:NLG5::NLG5(uint16_t, uint16_t, uint16_t)	24	static
+Status.h:50:5:Status::Status(uint8_t, NLG5&)	24	static
+Status.h:66:10:void Status::OpenAIR() const	16	static
+Status.h:72:10:void Status::ClosePRE()	16	static
+Status.h:79:10:void Status::OpenPRE()	16	static
+Status.h:85:10:void Status::IncreasePecCounter()	16	static
+Status.h:91:10:auto Status::GetPecChange()	24	static
+Status.h:98:10:void Status::SetFanDutyCycle(uint8_t)	16	static
+Status.h:108:23:constexpr uint8_t Status::CalcDutyCycle()	16	static
+Status.h:169:10:auto Status::GetLimping() const	16	static
+Status.h:173:12:int8_t Status::SetCurrent(int32_t)	16	static
+Status.h:184:10:void Status::SetAccuVoltage(int32_t)	16	static
+Status.h:190:12:int8_t Status::SetAccuVoltage2(int32_t)	24	static
+Status.h:218:12:int8_t Status::CheckIVTLost()	16	static
+Status.h:260:10:bool Status::CheckVoltageMatch()	24	static
+Status.h:265:13:uint8_t Status::ErrorCheck(Status::ErrorEvent, bool)	16	static
+Status.h:278:10:void Status::GoToSafeState(Status::ErrorEvent)	16	static
 gthr-default.h:229:1:int __gthread_key_delete(__gthread_key_t)	16	static
-gsl_assert:104:30:void gsl::details::terminate()	8	static
-span:370:28:constexpr gsl::details::extent_type<4294967295>::extent_type(gsl::details::extent_type<4294967295>::size_type)	16	static
-span:375:29:constexpr gsl::details::extent_type<4294967295>::size_type gsl::details::extent_type<4294967295>::size() const	16	static
-LTC6811.h:63:2:LTC6811::LTC6811(SPI_HandleTypeDef&, Status&, CAN_HandleTypeDef&, Mode, DCP, CellCh, AuxCh, STSCh)	40	static
-LTC6811.h:95:6:void LTC6811::WakeFromSleep()	24	static
-LTC6811.h:107:6:void LTC6811::WakeFromIdle()	24	static
-span:574:23:constexpr gsl::span<ElementType, Extent>::element_type* gsl::span<ElementType, Extent>::data() const [with ElementType = const gsl::byte; unsigned int Extent = 4294967295]	16	static
-span:657:27:constexpr gsl::span<ElementType, Extent>::element_type* gsl::span<ElementType, Extent>::storage_type<ExtentType>::data() const [with ExtentType = gsl::details::extent_type<4294967295>; ElementType = const gsl::byte; unsigned int Extent = 4294967295]	16	static
-LTC6811.h:124:9:uint8_t LTC6811::WriteRegister(const LTC6811Command&, gsl::span<const gsl::byte>)	32	static
-span:574:23:constexpr gsl::span<ElementType, Extent>::element_type* gsl::span<ElementType, Extent>::data() const [with ElementType = gsl::byte; unsigned int Extent = 4294967295]	16	static
-span:657:27:constexpr gsl::span<ElementType, Extent>::element_type* gsl::span<ElementType, Extent>::storage_type<ExtentType>::data() const [with ExtentType = gsl::details::extent_type<4294967295>; ElementType = gsl::byte; unsigned int Extent = 4294967295]	16	static
-LTC6811.h:145:9:uint8_t LTC6811::ReadRegister(const LTC6811Command&, gsl::span<gsl::byte>)	32	static
-LTC6811.h:159:6:void LTC6811::WriteConfigRegister(LTC6811Register<unsigned char>&)	32	static
-LTC6811.h:166:6:void LTC6811::ReadConfigRegister(LTC6811Register<unsigned char>&)	24	static
-LTC6811.h:174:9:uint8_t LTC6811::ReadVoltage(std::array<std::array<std::array<short unsigned int, 4>, 12>, 4>&)	24	static
-LTC6811.h:192:9:uint8_t LTC6811::ReadTemperature(std::array<std::array<std::array<short int, 4>, 12>, 2>&)	24	static
-LTC6811.h:56:6:auto span(LTC6811Register<T>&) [with T = unsigned char]	24	static
-LTC6811.h:56:6:auto span(LTC6811Register<T>&) [with T = short unsigned int]	24	static
-LTC6811.h:56:6:auto span(LTC6811Register<T>&) [with T = short int]	24	static
-main.cpp:83:5:int main()	168	static
-main.cpp:227:6:void SystemClock_Config()	184	static
-main.cpp:280:13:void MX_CAN1_Init()	48	static
-main.cpp:392:13:void MX_CAN2_Init()	8	static
-main.cpp:429:13:void MX_SDIO_SD_Init()	4	static
-main.cpp:457:13:void MX_SPI1_Init()	8	static
-main.cpp:495:13:void MX_GPIO_Init()	48	static
-main.cpp:563:6:void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*)	56	static
-main.cpp:579:6:void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef*)	56	static
-main.cpp:654:6:void SetCharger()	16	static
-main.cpp:671:6:void BuildDischargeConfig(LTC6811Register<unsigned char>&, LTC6811Register<unsigned char>&, std::array<std::array<std::array<short unsigned int, 4>, 12>, 4>&)	184	static
-main.cpp:740:9:int32_t CAN0_Test()	16	static
-main.cpp:753:8:int8_t CANTxVoltage()	4	static
-main.cpp:780:8:int8_t CANTxVoltageLimpTotal()	24	static
-main.cpp:804:8:int8_t CANTxTemperature()	4	static
-main.cpp:833:9:int32_t CANTxUptime()	16	static
-main.cpp:860:9:int32_t CanTxOpMode()	16	static
-main.cpp:883:9:int32_t CanTxError()	24	static
-main.cpp:911:9:int32_t CANTxDCfg()	40	static
-main.cpp:936:9:int32_t CANTxNLGAControl()	16	static
-main.cpp:958:9:int32_t CANTxNLGBControl()	16	static
-main.cpp:979:9:int32_t CANTxVolumeSize(uint32_t)	24	static
-main.cpp:997:6:void canresp_get_volume_size()	8	static
-main.cpp:1004:6:void canresp_delete_logfile()	8	static
-main.cpp:1017:6:void Error_Handler()	4	static
-move.h:73:5:constexpr _Tp&& std::forward(typename std::remove_reference<_From>::type&) [with _Tp = int]	16	static
-stl_pair.h:330:12:constexpr std::pair<_T1, _T2>::pair(_U1&&, _U2&&) [with _U1 = int; _U2 = int; typename std::enable_if<(std::_PCC<true, _T1, _T2>::_MoveConstructiblePair<_U1, _U2>() && std::_PCC<true, _T1, _T2>::_ImplicitlyMoveConvertiblePair<_U1, _U2>()), bool>::type <anonymous> = 1; _T1 = unsigned char; _T2 = unsigned char]	24	static
-array:185:7:std::array<_Tp, _Nm>::value_type& std::array<_Tp, _Nm>::operator[](std::array<_Tp, _Nm>::size_type) [with _Tp = unsigned char; unsigned int _Nm = 4]	16	static
-span:446:15:constexpr gsl::span<ElementType, Extent>::span(std::array<ElementType, N>&) [with unsigned int N = 4; typename std::enable_if<gsl::details::is_allowed_extent_conversion<N, Extent>::value, int>::type <anonymous> = 0; ElementType = unsigned char; unsigned int Extent = 4294967295]	32	static
-span:542:25:constexpr gsl::span<ElementType, Extent>::size_type gsl::span<ElementType, Extent>::size() const [with ElementType = const gsl::byte; unsigned int Extent = 4294967295]	16	static
-LTC6811.h:266:10:static T LTC6811::PEC15Calc(std::array<_Tp, _Nm>) [with T = unsigned char; unsigned int S = 4]	48	static
-array:238:7:const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = unsigned char; unsigned int _Nm = 4]	16	static
-range_access.h:48:5:begin()) std::begin(_Container&) [with _Container = std::array<std::array<unsigned char, 8>, 12>]	16	static
-range_access.h:68:5:end()) std::end(_Container&) [with _Container = std::array<std::array<unsigned char, 8>, 12>]	16	static
-stl_iterator_base_types.h:205:5:constexpr typename std::iterator_traits<_Iterator>::iterator_category std::__iterator_category(const _Iter&) [with _Iter = std::array<unsigned char, 8>*]	16	static
-stl_algo.h:1180:5:void std::reverse(_BIter, _BIter) [with _BIter = std::array<unsigned char, 8>*]	32	static
-LTC6811.h:120:9:uint8_t LTC6811::WriteRegister(const LTC6811Command&, LTC6811Register<T>&) [with T = unsigned char]	40	static
-LTC6811.h:141:9:uint8_t LTC6811::ReadRegister(const LTC6811Command&, LTC6811Register<T>&) [with T = unsigned char]	40	static
-array:234:7:std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::data() [with _Tp = unsigned char; unsigned int _Nm = 4]	16	static
-array:175:7:constexpr std::array<_Tp, _Nm>::size_type std::array<_Tp, _Nm>::size() const [with _Tp = std::array<unsigned char, 8>; unsigned int _Nm = 12]	16	static
-array:116:7:void std::array<_Tp, _Nm>::fill(const value_type&) [with _Tp = std::array<unsigned char, 8>; unsigned int _Nm = 12]	24	static
-array:234:7:std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::data() [with _Tp = std::array<unsigned char, 8>; unsigned int _Nm = 12]	16	static
-array:234:7:std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::data() [with _Tp = unsigned char; unsigned int _Nm = 8]	16	static
-span:651:19:constexpr gsl::span<ElementType, Extent>::storage_type<ExtentType>::storage_type(gsl::span<ElementType, Extent>::pointer, OtherExtentType) [with OtherExtentType = unsigned int; ExtentType = gsl::details::extent_type<4294967295>; ElementType = unsigned char; unsigned int Extent = 4294967295]	24	static
-span:431:15:constexpr gsl::span<ElementType, Extent>::span(gsl::span<ElementType, Extent>::pointer, gsl::span<ElementType, Extent>::pointer) [with ElementType = unsigned char; unsigned int Extent = 4294967295]	24	static
-span:574:23:constexpr gsl::span<ElementType, Extent>::element_type* gsl::span<ElementType, Extent>::data() const [with ElementType = unsigned char; unsigned int Extent = 4294967295]	16	static
-span:657:27:constexpr gsl::span<ElementType, Extent>::element_type* gsl::span<ElementType, Extent>::storage_type<ExtentType>::data() const [with ExtentType = gsl::details::extent_type<4294967295>; ElementType = unsigned char; unsigned int Extent = 4294967295]	16	static
-span:542:25:constexpr gsl::span<ElementType, Extent>::size_type gsl::span<ElementType, Extent>::size() const [with ElementType = unsigned char; unsigned int Extent = 4294967295]	16	static
-span:544:25:constexpr gsl::span<ElementType, Extent>::size_type gsl::span<ElementType, Extent>::size_bytes() const [with ElementType = unsigned char; unsigned int Extent = 4294967295]	16	static
-span:751:1:gsl::span<gsl::byte, gsl::details::calculate_byte_size<ElementType, Extent>::value> gsl::as_writable_bytes(gsl::span<ElementType, Extent>) [with ElementType = unsigned char; unsigned int Extent = 4294967295; typename std::enable_if<(! std::is_const< <template-parameter-1-1> >::value), int>::type <anonymous> = 0]	32	static
-array:126:7:std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::begin() [with _Tp = std::array<std::array<short unsigned int, 4>, 12>; unsigned int _Nm = 4]	16	static
-array:134:7:std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::end() [with _Tp = std::array<std::array<short unsigned int, 4>, 12>; unsigned int _Nm = 4]	16	static
-array:234:7:std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::data() [with _Tp = std::array<short unsigned int, 4>; unsigned int _Nm = 12]	16	static
-array:234:7:std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::data() [with _Tp = short unsigned int; unsigned int _Nm = 4]	16	static
-span:651:19:constexpr gsl::span<ElementType, Extent>::storage_type<ExtentType>::storage_type(gsl::span<ElementType, Extent>::pointer, OtherExtentType) [with OtherExtentType = unsigned int; ExtentType = gsl::details::extent_type<4294967295>; ElementType = short unsigned int; unsigned int Extent = 4294967295]	24	static
-span:431:15:constexpr gsl::span<ElementType, Extent>::span(gsl::span<ElementType, Extent>::pointer, gsl::span<ElementType, Extent>::pointer) [with ElementType = short unsigned int; unsigned int Extent = 4294967295]	24	static
-span:574:23:constexpr gsl::span<ElementType, Extent>::element_type* gsl::span<ElementType, Extent>::data() const [with ElementType = short unsigned int; unsigned int Extent = 4294967295]	16	static
-span:657:27:constexpr gsl::span<ElementType, Extent>::element_type* gsl::span<ElementType, Extent>::storage_type<ExtentType>::data() const [with ExtentType = gsl::details::extent_type<4294967295>; ElementType = short unsigned int; unsigned int Extent = 4294967295]	16	static
-span:542:25:constexpr gsl::span<ElementType, Extent>::size_type gsl::span<ElementType, Extent>::size() const [with ElementType = short unsigned int; unsigned int Extent = 4294967295]	16	static
-span:544:25:constexpr gsl::span<ElementType, Extent>::size_type gsl::span<ElementType, Extent>::size_bytes() const [with ElementType = short unsigned int; unsigned int Extent = 4294967295]	16	static
-span:740:1:gsl::span<const gsl::byte, gsl::details::calculate_byte_size<ElementType, Extent>::value> gsl::as_bytes(gsl::span<ElementType, Extent>) [with ElementType = short unsigned int; unsigned int Extent = 4294967295]	32	static
-array:126:7:std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::begin() [with _Tp = std::array<std::array<short int, 4>, 12>; unsigned int _Nm = 2]	16	static
-array:134:7:std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::end() [with _Tp = std::array<std::array<short int, 4>, 12>; unsigned int _Nm = 2]	16	static
-array:234:7:std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::data() [with _Tp = std::array<short int, 4>; unsigned int _Nm = 12]	16	static
-array:234:7:std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::data() [with _Tp = short int; unsigned int _Nm = 4]	16	static
-span:651:19:constexpr gsl::span<ElementType, Extent>::storage_type<ExtentType>::storage_type(gsl::span<ElementType, Extent>::pointer, OtherExtentType) [with OtherExtentType = unsigned int; ExtentType = gsl::details::extent_type<4294967295>; ElementType = short int; unsigned int Extent = 4294967295]	24	static
-span:431:15:constexpr gsl::span<ElementType, Extent>::span(gsl::span<ElementType, Extent>::pointer, gsl::span<ElementType, Extent>::pointer) [with ElementType = short int; unsigned int Extent = 4294967295]	24	static
-span:574:23:constexpr gsl::span<ElementType, Extent>::element_type* gsl::span<ElementType, Extent>::data() const [with ElementType = short int; unsigned int Extent = 4294967295]	16	static
-span:657:27:constexpr gsl::span<ElementType, Extent>::element_type* gsl::span<ElementType, Extent>::storage_type<ExtentType>::data() const [with ExtentType = gsl::details::extent_type<4294967295>; ElementType = short int; unsigned int Extent = 4294967295]	16	static
-span:542:25:constexpr gsl::span<ElementType, Extent>::size_type gsl::span<ElementType, Extent>::size() const [with ElementType = short int; unsigned int Extent = 4294967295]	16	static
-span:544:25:constexpr gsl::span<ElementType, Extent>::size_type gsl::span<ElementType, Extent>::size_bytes() const [with ElementType = short int; unsigned int Extent = 4294967295]	16	static
-span:740:1:gsl::span<const gsl::byte, gsl::details::calculate_byte_size<ElementType, Extent>::value> gsl::as_bytes(gsl::span<ElementType, Extent>) [with ElementType = short int; unsigned int Extent = 4294967295]	32	static
-array:130:7:const value_type* std::array<_Tp, _Nm>::begin() const [with _Tp = std::array<short unsigned int, 4>; unsigned int _Nm = 12]	16	static
-array:138:7:const value_type* std::array<_Tp, _Nm>::end() const [with _Tp = std::array<short unsigned int, 4>; unsigned int _Nm = 12]	16	static
-array:130:7:const value_type* std::array<_Tp, _Nm>::begin() const [with _Tp = short unsigned int; unsigned int _Nm = 4]	16	static
-main.cpp:690:84:BuildDischargeConfig(LTC6811Register<unsigned char>&, LTC6811Register<unsigned char>&, std::array<std::array<std::array<short unsigned int, 4>, 12>, 4>&)::<lambda(auto:1&)> [with auto:1 = const short unsigned int]	16	static
-stl_algo.h:3878:5:_Funct std::for_each(_IIter, _IIter, _Funct) [with _IIter = const short unsigned int*; _Funct = BuildDischargeConfig(LTC6811Register<unsigned char>&, LTC6811Register<unsigned char>&, std::array<std::array<std::array<short unsigned int, 4>, 12>, 4>&)::<lambda(auto:1&)>]	24	static
-array:185:7:std::array<_Tp, _Nm>::value_type& std::array<_Tp, _Nm>::operator[](std::array<_Tp, _Nm>::size_type) [with _Tp = std::array<unsigned char, 8>; unsigned int _Nm = 12]	16	static
-array:185:7:std::array<_Tp, _Nm>::value_type& std::array<_Tp, _Nm>::operator[](std::array<_Tp, _Nm>::size_type) [with _Tp = unsigned char; unsigned int _Nm = 8]	16	static
-main.cpp:718:84:BuildDischargeConfig(LTC6811Register<unsigned char>&, LTC6811Register<unsigned char>&, std::array<std::array<std::array<short unsigned int, 4>, 12>, 4>&)::<lambda(auto:2&)> [with auto:2 = const short unsigned int]	16	static
-stl_algo.h:3878:5:_Funct std::for_each(_IIter, _IIter, _Funct) [with _IIter = const short unsigned int*; _Funct = BuildDischargeConfig(LTC6811Register<unsigned char>&, LTC6811Register<unsigned char>&, std::array<std::array<std::array<short unsigned int, 4>, 12>, 4>&)::<lambda(auto:2&)>]	32	static
-array:126:7:std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::begin() [with _Tp = std::array<unsigned char, 8>; unsigned int _Nm = 12]	16	static
-array:134:7:std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::end() [with _Tp = std::array<unsigned char, 8>; unsigned int _Nm = 12]	16	static
-array:55:7:static constexpr _Tp& std::__array_traits<_Tp, _Nm>::_S_ref(const _Tp (&)[_Nm], std::size_t) [with _Tp = unsigned char; unsigned int _Nm = 4]	16	static
-span:644:19:constexpr gsl::span<ElementType, Extent>::storage_type<ExtentType>::storage_type(gsl::span<ElementType, Extent>::KnownNotNull, OtherExtentType) [with OtherExtentType = gsl::details::extent_type<4>; ExtentType = gsl::details::extent_type<4294967295>; ElementType = unsigned char; unsigned int Extent = 4294967295]	32	static
-span:740:1:gsl::span<const gsl::byte, gsl::details::calculate_byte_size<ElementType, Extent>::value> gsl::as_bytes(gsl::span<ElementType, Extent>) [with ElementType = unsigned char; unsigned int Extent = 4294967295]	32	static
-span:556:25:constexpr gsl::span<ElementType, Extent>::element_type& gsl::span<ElementType, Extent>::operator[](gsl::span<ElementType, Extent>::size_type) const [with ElementType = const gsl::byte; unsigned int Extent = 4294967295]	16	static
+optional:97:3:void std::__throw_bad_optional_access()	8	static
+LTC6811.h:146:10:void LTC6811::SetDischargeMode(uint8_t)	16	static
+optional:718:22:constexpr bool std::optional<_Tp>::has_value() const [with _Tp = LTC6811VoltageStatus]	16	static
+optional:385:22:constexpr bool std::_Optional_base<_Tp>::_M_is_engaged() const [with _Tp = LTC6811VoltageStatus]	16	static
+optional:718:22:constexpr bool std::optional<_Tp>::has_value() const [with _Tp = LTC6811TempStatus]	16	static
+optional:385:22:constexpr bool std::_Optional_base<_Tp>::_M_is_engaged() const [with _Tp = LTC6811TempStatus]	16	static
+optional:722:7:constexpr const _Tp& std::optional<_Tp>::value() const & [with _Tp = LTC6811VoltageStatus]	16	static
+main.cpp:78:5:int main()	112	static
+main.cpp:249:6:void SystemClock_Config()	184	static
+main.cpp:302:13:void MX_CAN1_Init()	48	static
+main.cpp:414:13:void MX_CAN2_Init()	8	static
+main.cpp:451:13:void MX_SDIO_SD_Init()	4	static
+main.cpp:479:13:void MX_SPI1_Init()	8	static
+main.cpp:517:13:void MX_GPIO_Init()	48	static
+main.cpp:585:6:void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*)	56	static
+main.cpp:601:6:void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef*)	56	static
+main.cpp:676:6:void SetCharger()	16	static
+main.cpp:695:9:int32_t CAN0_Test()	16	static
+main.cpp:708:8:int8_t CANTxVoltage()	4	static
+main.cpp:735:8:int8_t CANTxVoltageLimpTotal()	24	static
+main.cpp:759:8:int8_t CANTxTemperature()	4	static
+main.cpp:788:9:int32_t CANTxUptime()	16	static
+main.cpp:815:9:int32_t CanTxOpMode()	16	static
+main.cpp:838:9:int32_t CanTxError()	24	static
+main.cpp:866:9:int32_t CANTxDCfg()	24	static
+main.cpp:892:9:int32_t CANTxNLGAControl()	16	static
+main.cpp:914:9:int32_t CANTxNLGBControl()	16	static
+main.cpp:935:9:int32_t CANTxVolumeSize(uint32_t)	24	static
+main.cpp:953:6:void canresp_get_volume_size()	8	static
+main.cpp:960:6:void canresp_delete_logfile()	8	static
+main.cpp:973:6:void Error_Handler()	4	static
+move.h:98:5:constexpr typename std::remove_reference< <template-parameter-1-1> >::type&& std::move(_Tp&&) [with _Tp = std::array<unsigned char, 4>&]	16	static
+LTC6811.h:62:5:LTC6811RegisterGroup<T>::LTC6811RegisterGroup(LTC6811Command&&) [with T = unsigned char]	16	static
+LTC6811.h:62:5:LTC6811RegisterGroup<T>::LTC6811RegisterGroup(LTC6811Command&&) [with T = short unsigned int]	16	static
+LTC6811.h:62:5:LTC6811RegisterGroup<T>::LTC6811RegisterGroup(LTC6811Command&&) [with T = short int]	16	static
+LTC6811.h:85:15:constexpr LTC6811::LTC6811(SPI_HandleTypeDef&, Status&) [with Mode mode = (Mode)2; DCP dcp = (DCP)0; CellCh cell = (CellCh)0; AuxCh aux = (AuxCh)0; STSCh sts = (STSCh)0]	88	static
+optional:722:7:constexpr const _Tp& std::optional<_Tp>::value() const & [with _Tp = LTC6811TempStatus]	16	static
+optional:394:7:constexpr const _Tp& std::_Optional_base<_Tp>::_M_get() const [with _Tp = LTC6811VoltageStatus]	16	static
+array:185:7:constexpr std::array<_Tp, _Nm>::value_type& std::array<_Tp, _Nm>::operator[](std::array<_Tp, _Nm>::size_type) [with _Tp = unsigned char; unsigned int _Nm = 4]	16	static
 array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = unsigned char; unsigned int _Nm = 4]	16	static
-stl_algo.h:1152:5:void std::__reverse(_RandomAccessIterator, _RandomAccessIterator, std::random_access_iterator_tag) [with _RandomAccessIterator = std::array<unsigned char, 8>*]	24	static
-stl_algobase.h:784:5:_OI std::fill_n(_OI, _Size, const _Tp&) [with _OI = std::array<unsigned char, 8>*; _Size = unsigned int; _Tp = std::array<unsigned char, 8>]	24	static
-array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = std::array<unsigned char, 8>; unsigned int _Nm = 12]	16	static
-array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = unsigned char; unsigned int _Nm = 8]	16	static
-span:651:19:constexpr gsl::span<ElementType, Extent>::storage_type<ExtentType>::storage_type(gsl::span<ElementType, Extent>::pointer, OtherExtentType) [with OtherExtentType = unsigned int; ExtentType = gsl::details::extent_type<4294967295>; ElementType = gsl::byte; unsigned int Extent = 4294967295]	24	static
-span:426:15:constexpr gsl::span<ElementType, Extent>::span(gsl::span<ElementType, Extent>::pointer, gsl::span<ElementType, Extent>::size_type) [with ElementType = gsl::byte; unsigned int Extent = 4294967295]	24	static
-array:234:7:std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::data() [with _Tp = std::array<std::array<short unsigned int, 4>, 12>; unsigned int _Nm = 4]	16	static
-array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = std::array<short unsigned int, 4>; unsigned int _Nm = 12]	16	static
-array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = short unsigned int; unsigned int _Nm = 4]	16	static
-span:651:19:constexpr gsl::span<ElementType, Extent>::storage_type<ExtentType>::storage_type(gsl::span<ElementType, Extent>::pointer, OtherExtentType) [with OtherExtentType = unsigned int; ExtentType = gsl::details::extent_type<4294967295>; ElementType = const gsl::byte; unsigned int Extent = 4294967295]	24	static
-span:426:15:constexpr gsl::span<ElementType, Extent>::span(gsl::span<ElementType, Extent>::pointer, gsl::span<ElementType, Extent>::size_type) [with ElementType = const gsl::byte; unsigned int Extent = 4294967295]	24	static
-array:234:7:std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::data() [with _Tp = std::array<std::array<short int, 4>, 12>; unsigned int _Nm = 2]	16	static
-array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = std::array<short int, 4>; unsigned int _Nm = 12]	16	static
-array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = short int; unsigned int _Nm = 4]	16	static
-array:238:7:const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = std::array<short unsigned int, 4>; unsigned int _Nm = 12]	16	static
-array:238:7:const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = short unsigned int; unsigned int _Nm = 4]	16	static
-array:55:7:static constexpr _Tp& std::__array_traits<_Tp, _Nm>::_S_ref(const _Tp (&)[_Nm], std::size_t) [with _Tp = std::array<unsigned char, 8>; unsigned int _Nm = 12]	16	static
-array:55:7:static constexpr _Tp& std::__array_traits<_Tp, _Nm>::_S_ref(const _Tp (&)[_Nm], std::size_t) [with _Tp = unsigned char; unsigned int _Nm = 8]	16	static
-span:367:28:constexpr gsl::details::extent_type<4294967295>::extent_type(gsl::details::extent_type<Other>) [with unsigned int Other = 4]	16	static
-stl_algobase.h:120:5:void std::iter_swap(_ForwardIterator1, _ForwardIterator2) [with _ForwardIterator1 = std::array<unsigned char, 8>*; _ForwardIterator2 = std::array<unsigned char, 8>*]	16	static
-stl_algobase.h:277:5:_Iterator std::__niter_base(_Iterator) [with _Iterator = std::array<unsigned char, 8>*]	16	static
-stl_algobase.h:738:5:typename __gnu_cxx::__enable_if<(! std::__is_scalar<_Tp>::__value), _OutputIterator>::__type std::__fill_n_a(_OutputIterator, _Size, const _Tp&) [with _OutputIterator = std::array<unsigned char, 8>*; _Size = unsigned int; _Tp = std::array<unsigned char, 8>]	32	static
-array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = std::array<std::array<short unsigned int, 4>, 12>; unsigned int _Nm = 4]	16	static
-array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = std::array<std::array<short int, 4>, 12>; unsigned int _Nm = 2]	16	static
-span:357:29:constexpr gsl::details::extent_type<Ext>::size_type gsl::details::extent_type<Ext>::size() const [with unsigned int Ext = 4]	16	static
-array:294:5:typename std::enable_if<typename std::__array_traits<_Tp, _Nm>::_Is_swappable:: value>::type std::swap(std::array<_Tp, _Nm>&, std::array<_Tp, _Nm>&) [with _Tp = unsigned char; unsigned int _Nm = 8]	16	static
-array:120:7:void std::array<_Tp, _Nm>::swap(std::array<_Tp, _Nm>&) [with _Tp = unsigned char; unsigned int _Nm = 8]	24	static
-array:126:7:std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::begin() [with _Tp = unsigned char; unsigned int _Nm = 8]	16	static
-array:134:7:std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::end() [with _Tp = unsigned char; unsigned int _Nm = 8]	16	static
-stl_algobase.h:166:5:_ForwardIterator2 std::swap_ranges(_ForwardIterator1, _ForwardIterator1, _ForwardIterator2) [with _ForwardIterator1 = unsigned char*; _ForwardIterator2 = unsigned char*]	24	static
-stl_algobase.h:120:5:void std::iter_swap(_ForwardIterator1, _ForwardIterator2) [with _ForwardIterator1 = unsigned char*; _ForwardIterator2 = unsigned char*]	16	static
-move.h:98:5:constexpr typename std::remove_reference< <template-parameter-1-1> >::type&& std::move(_Tp&&) [with _Tp = unsigned char&]	16	static
-move.h:187:5:typename std::enable_if<std::__and_<std::__not_<std::__is_tuple_like<_Tp> >, std::is_move_constructible<_Tp>, std::is_move_assignable<_Tp> >::value>::type std::swap(_Tp&, _Tp&) [with _Tp = unsigned char]	24	static
+array:238:7:constexpr const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = unsigned char; unsigned int _Nm = 4]	16	static
+LTC6811.h:233:31:static constexpr uint16_t LTC6811::PEC15Calc(const std::array<_Tp, _Nm>&, size_t) [with T = unsigned char; unsigned int S = 4]	32	static
+array:126:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::begin() [with _Tp = LTC6811Register<unsigned char>; unsigned int _Nm = 12]	16	static
+array:175:7:constexpr std::array<_Tp, _Nm>::size_type std::array<_Tp, _Nm>::size() const [with _Tp = LTC6811Register<unsigned char>; unsigned int _Nm = 12]	16	static
+array:116:7:void std::array<_Tp, _Nm>::fill(const value_type&) [with _Tp = LTC6811Register<unsigned char>; unsigned int _Nm = 12]	24	static
+optional:394:7:constexpr const _Tp& std::_Optional_base<_Tp>::_M_get() const [with _Tp = LTC6811TempStatus]	16	static
+array:55:7:static constexpr _Tp& std::__array_traits<_Tp, _Nm>::_S_ref(const _Tp (&)[_Nm], std::size_t) [with _Tp = unsigned char; unsigned int _Nm = 4]	16	static
+array:234:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::data() [with _Tp = LTC6811Register<unsigned char>; unsigned int _Nm = 12]	16	static
+stl_algobase.h:784:5:_OI std::fill_n(_OI, _Size, const _Tp&) [with _OI = LTC6811Register<unsigned char>*; _Size = unsigned int; _Tp = LTC6811Register<unsigned char>]	24	static
+array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = LTC6811Register<unsigned char>; unsigned int _Nm = 12]	16	static
+stl_algobase.h:277:5:_Iterator std::__niter_base(_Iterator) [with _Iterator = LTC6811Register<unsigned char>*]	16	static
+stl_algobase.h:738:5:typename __gnu_cxx::__enable_if<(! std::__is_scalar<_Tp>::__value), _OutputIterator>::__type std::__fill_n_a(_OutputIterator, _Size, const _Tp&) [with _OutputIterator = LTC6811Register<unsigned char>*; _Size = unsigned int; _Tp = LTC6811Register<unsigned char>]	32	static

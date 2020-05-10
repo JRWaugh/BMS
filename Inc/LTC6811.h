@@ -8,19 +8,18 @@
 #ifndef LTC6811_H_
 #define LTC6811_H_
 
-//#include "stm32f4xx_hal.h"
 #include "Status.h"
 #include <array>
-#include <gsl/span>
 #include <algorithm>
+#include <cmath>
+#include <optional>
+#include "dwt_delay.h"
 
-/* Timing of states (in microseconds) */ // TODO need to implement a microsecond delay
+/* Timing of states (in microseconds) */
 #define T_WAKE_MAX		400
 #define T_READY			10
 #define T_IDLE_MIN		4300
 #define T_REFUP_MAX		4400
-
-/* Measurement + Calibration Cycle Time When Starting from the REFUP State in Fast Mode */
 #define T_CYCLE_FAST_MAX	1185	// Measure 12 Cells
 
 /* Conversion mode */
@@ -38,242 +37,210 @@ enum class STSCh  { All, SOC, ITMP, VA, VD };
 /* Controls if Discharging transistors are enabled or disabled during Cell conversions. */
 enum class DCP { Disabled, Enabled };
 
-/* Relevant CAN codes */
-#define CAN_ID_VOLT_TOTAL	11
-#define CAN_ID_VOLT			1912
-#define CAN_ID_TEMP			1948
+static constexpr size_t kBytesPerRegister{ 8 };
+static constexpr size_t kDaisyChainLength{ 12 };
+static constexpr size_t kCommandLength{ 4 };
 
-static constexpr uint8_t kBytesPerRegister{ 8 };
-static constexpr uint8_t kDaisyChainLength{ 12 };
-static constexpr uint8_t kCommandLength{ 4 };
+void DWT_Init(void);
+
+void DWT_Delay(uint32_t us);
 
 using LTC6811Command = std::array<uint8_t, kCommandLength>;
 
 template <typename T>
-using LTC6811Register = std::array<std::array<T, kBytesPerRegister / sizeof(T)>, kDaisyChainLength>;
+struct LTC6811Register {
+    /* An LTC6811 register is 8 bytes: 6 bytes of data, and 2 bytes of PEC. sizeof(LTC6811<T>) will always return 8 */
+    std::array<T, 6 / sizeof(T)> data;
+    uint16_t PEC;
+};
 
-template <typename T>
-auto span(LTC6811Register<T>& data) {
-    // This is naughty!
-    return gsl::span<T>(data.data()->data(), data.data()->data() + kDaisyChainLength * kBytesPerRegister / sizeof(T));
-}
+template<typename T>
+struct LTC6811RegisterGroup {
+    /* This class bundles together the command to access some register group and data sent/received after that command */
+    LTC6811Command const command;
+    std::array<LTC6811Register<T>, kDaisyChainLength> register_group;
+    LTC6811RegisterGroup(LTC6811Command&& command) : command{ std::move(command) } {};
+};
+
+struct LTC6811VoltageStatus {
+    size_t sum{ 0 };
+    uint16_t min{ std::numeric_limits<uint16_t>::max() };
+    size_t min_id{ 0 };
+    uint16_t max{ std::numeric_limits<uint16_t>::min() };
+    size_t max_id{ 0 };
+};
+
+struct LTC6811TempStatus {
+    int16_t min{ std::numeric_limits<int16_t>::max() };
+    size_t min_id{ 0 };
+    int16_t max{ std::numeric_limits<int16_t>::min() };
+    size_t max_id{ 0 };
+};
+
+enum Group { A = 0, B, C, D };
 
 class LTC6811 {
 public:
-    LTC6811(SPI_HandleTypeDef& hspi,
-            Status& status,
-            CAN_HandleTypeDef& hcan,
-            Mode mode = Mode::Normal, DCP dcp = DCP::Disabled, CellCh cell = CellCh::All, AuxCh aux = AuxCh::All, STSCh sts = STSCh::All)
-: 	hspi{ hspi }, status{ status }, hcan { hcan } {
-    uint8_t md_bits = (static_cast<uint8_t>(mode) & 0x02) >> 1;
-    uint16_t pec{ 0 };
-    ADCV[0]   = md_bits + 0x02;
-    ADAX[0]   = md_bits + 0x04;
-    ADSTAT[0] = md_bits + 0x04;
+    template<Mode mode = Mode::Normal, DCP dcp = DCP::Disabled, CellCh cell = CellCh::All, AuxCh aux = AuxCh::All, STSCh sts = STSCh::All>
+    constexpr LTC6811(SPI_HandleTypeDef& hspi, Status& status) : hspi{ hspi }, status{ status } {
+        uint8_t md_bits = (static_cast<uint8_t>(mode) & 0x02) >> 1;
+        uint16_t PEC{ 0 };
 
-    md_bits   = (static_cast<uint8_t>(mode) & 0x01) << 7;
-    ADCV[1]   =	md_bits	+ 0x60 + (static_cast<uint8_t>(dcp) << 4) + static_cast<uint8_t>(cell);
-    ADAX[1]   =	md_bits	+ 0x60 + static_cast<uint8_t>(aux);
-    ADSTAT[1] = md_bits + 0x68 + static_cast<uint8_t>(sts);
+        ADCV[0]   = md_bits + 0x02;
+        ADAX[0]   = md_bits + 0x04;
+        ADSTAT[0] = md_bits + 0x04;
 
-    pec = PEC15Calc(ADCV);
-    ADCV[2] = static_cast<uint8_t>(pec >> 8);
-    ADCV[3] = static_cast<uint8_t>(pec);
+        md_bits   = (static_cast<uint8_t>(mode) & 0x01) << 7;
+        ADCV[1]   = md_bits + 0x60 + (static_cast<uint8_t>(dcp) << 4) + static_cast<uint8_t>(cell);
+        ADAX[1]   = md_bits + 0x60 + static_cast<uint8_t>(aux);
+        ADSTAT[1] = md_bits + 0x68 + static_cast<uint8_t>(sts);
 
-    pec = PEC15Calc(ADAX);
-    ADAX[2] = static_cast<uint8_t>(pec >> 8);
-    ADAX[3] = static_cast<uint8_t>(pec);
+        PEC = PEC15Calc(ADCV, 2);
+        ADCV[2] = static_cast<uint8_t>(PEC >> 8);
+        ADCV[3] = static_cast<uint8_t>(PEC);
 
-    pec = PEC15Calc(ADAX);
-    ADSTAT[2] = static_cast<uint8_t>(pec >> 8);
-    ADSTAT[3] = static_cast<uint8_t>(pec);
-}
+        PEC = PEC15Calc(ADAX, 2);
+        ADAX[2] = static_cast<uint8_t>(PEC >> 8);
+        ADAX[3] = static_cast<uint8_t>(PEC);
 
-static constexpr uint8_t kCellsInReg { 3 };
-static constexpr uint8_t kDelta = 100;
+        PEC = PEC15Calc(ADSTAT, 2);
+        ADSTAT[2] = static_cast<uint8_t>(PEC >> 8);
+        ADSTAT[3] = static_cast<uint8_t>(PEC);
 
-void WakeFromSleep(void) {
-    uint8_t data = 0xFF;
+        slave_cfg_tx.register_group.fill({ 0xFE, 0, 0, 0, 0, 0 });
 
-    HAL_SPI_Transmit(&hspi, &data, 1, 10);
-    HAL_Delay(kDaisyChainLength * T_WAKE_MAX);
-
-#if (kDaisyChainLength * T_WAKE_MAX >= T_IDLE_MIN)
-    HAL_SPI_Transmit(&hspi, &data, 1, 10);
-    HAL_Delay(kDaisyChainLength * T_READY);
-#endif
-}
-
-void WakeFromIdle(void) {
-    uint8_t data = 0xFF;
-
-    HAL_SPI_Transmit(&hspi, &data, 1, 10);
-    HAL_Delay(kDaisyChainLength * T_READY);
-}
-
-
-/** Write Register Function Overloads **
- ** Return 0 if success, 1 if failure. */
-
-/* Takes 2D LTC6811Register array of T type and serialises the data as  bytes */
-template <typename T>
-uint8_t WriteRegister(LTC6811Command const& command, LTC6811Register<T>& reg) {
-    return WriteRegister(command, gsl::as_bytes(span(reg)));
-}
-
-uint8_t WriteRegister(LTC6811Command const& command, gsl::span<const gsl::byte> data) {
-    //WakeFromSleep(); probably want this
-    WakeFromIdle();
-
-    // NSS PIN (PA4) low
-    if (HAL_SPI_Transmit(&hspi, command.data(), kCommandLength, 100) != HAL_ERROR)
-        if (HAL_SPI_Transmit(&hspi, (uint8_t *) data.data(), kBytesPerRegister * kDaisyChainLength, 100) == HAL_ERROR) //TODO dunno if this data thing will work...
-            return 1;
-    return 0;
-    // NSS PIN (PA4) high
-}
-
-/** Read Register Function Overloads  **
- ** Return 0 if success, 1 if failure. */
-
-/* Takes 2D LTC6811Register array of T type and serialises the data as bytes */
-template <typename T>
-uint8_t ReadRegister(LTC6811Command const& command, LTC6811Register<T>& reg) {
-    return ReadRegister(command, gsl::as_writable_bytes(span(reg)));
-}
-
-uint8_t ReadRegister(LTC6811Command const& command, gsl::span<gsl::byte> data) {
-    //WakeFromSleep(); probably want this
-    WakeFromIdle();
-    // NSS PIN (PA4) low
-    if (HAL_SPI_Transmit(&hspi, command.data(), kCommandLength, 100) != HAL_ERROR) {
-        // NSS PIN (PA4) high
-        if (HAL_SPI_Receive(&hspi, (uint8_t *) data.data(), kBytesPerRegister * kDaisyChainLength, 100) == HAL_ERROR)
-            return 1;
+        DWT_Init();
+        WakeFromSleep(); // TODO Takes 2.2s to fall asleep so if this has to be called ever again, we have bigger problems
     }
-    return 0;
-}
 
-/* Write to the configuration registers of the LTC6811s in the daisy chain.
- * The configuration is written in descending order so the 2D array is reversed before writing. */
-void WriteConfigRegister(LTC6811Register<uint8_t>& cfg_tx) {
-    LTC6811Command command = { 0x00, 0x01, 0x3D, 0x6E };
-    std::reverse(std::begin(cfg_tx), std::end(cfg_tx));
-    WriteRegister(command, cfg_tx);
-}
+    void WakeFromSleep(void);
+    void WakeFromIdle(void);
 
-/* Read configuration registers of a LTC6811 daisy chain */
-void ReadConfigRegister(LTC6811Register<uint8_t>& cfg_rx) {
-    LTC6811Command command = { 0x00, 0x02, 0x2B, 0x0A };
-    ReadRegister(command, cfg_rx);
-}
+    /* Read from an LTC6811 cell voltage register group. */
+    uint8_t ReadVoltageRegisterGroup(Group const group);
 
-/* Read all cell voltages from LTC6811 daisy chain.
- * Up to five consecutive reads are performed in case of PEC errors.
- * Return 1 on PEC error, 0 on successful read. */
-uint8_t ReadVoltage(std::array<LTC6811Register<uint16_t>, 4>& cell_data) {
-    WakeFromSleep();
-    adcv();
-    HAL_Delay((T_REFUP_MAX + T_CYCLE_FAST_MAX) / 1000); // Was a microsecond delay on old board.
-    WakeFromIdle(); // Make sure isoSPI port is active. Probably not necessary?
+    /* Read from an LTC6811 auxiliary register group. */
+    uint8_t ReadAuxRegisterGroup(Group const group);
 
-    for (uint8_t i = 0; i < 5; ++i)	{
-        if (ReadVoltageHelper(cell_data))
-            status.IncreasePecCounter();
-        else
-            return 0;
-    }
-    return 1;
-}
+    /* Read from an LTC6811 status register group. */
+    uint8_t ReadStatusRegisterGroup(Group const group);
 
-/* Read all auxiliary voltages from LTC6811 daisy chain.
- * Up to five consecutive reads are performed in case of PEC errors.
- * Return 1 on PEC error, 0 on successful read. */
-uint8_t ReadTemperature(std::array<LTC6811Register<int16_t>, 2>& temp_data) {
-    WakeFromSleep();
-    adax();
-    HAL_Delay((T_REFUP_MAX + T_CYCLE_FAST_MAX) / 1000);
-    WakeFromIdle();
+    /* Read from an LTC6811 configuration register group */
+    uint8_t ReadConfigRegisterGroup(void);
 
-    for (uint8_t i = 0; i < 5; ++i)	{
-        if (ReadTemperatureHelper(temp_data))
-            status.IncreasePecCounter();
-        else
-            return 0;
-    }
-    return 1;
-}
+    /* Write to the configuration registers of the LTC6811s in the daisy chain. */
+    uint8_t WriteConfigRegisterGroup(void);
 
-/* Clear the LTC6811 cell voltage registers. */
-void ClearVoltageRegisters(void) {
-    LTC6811Command command = { 0x07, 0x11 };
-    auto result = PEC15Calc(command);
-    command[2] = static_cast<uint8_t>(result >> 8);
-    command[3] = static_cast<uint8_t>(result);
+    /* Clear the LTC6811 cell voltage registers. */
+    void ClearVoltageRegisters(void);
 
-    WakeFromIdle();
-    HAL_SPI_Transmit(&hspi, command.data(), 4, 10);
-}
+    /* Clear the LTC6811 Auxiliary registers. */
+    void ClearAuxRegisters(void);
 
+    std::optional<LTC6811VoltageStatus> GetVoltageStatus(void);
 
-/* Clear the LTC6811 Auxiliary registers. */
-void ClearAuxRegisters(void) {
-    LTC6811Command command = { 0x07, 0x12 };
-    auto result = PEC15Calc(command);
-    command[2] = static_cast<uint8_t>(result >> 8);
-    command[3] = static_cast<uint8_t>(result);
+    std::optional<LTC6811TempStatus> GetTemperatureStatus(void);
 
-    WakeFromIdle();
-    HAL_SPI_Transmit(&hspi, command.data(), 4, 10);
-}
+    void BuildDischargeConfig(const LTC6811VoltageStatus& voltage_status);
 
-/* Read status registers A of a LTC6811 daisy chain. */
-uint8_t ReadStatusRegisterA(LTC6811Register<uint8_t>& r_config) {
-    LTC6811Command command = { 0x00, 0x10, 0xED, 0x72 };
-    return ReadRegister(command, r_config);
-}
+    void SetDischargeMode(uint8_t const discharge_mode) noexcept {
+        this->discharge_mode = discharge_mode;
+    };
 
-
-/* Read status registers B of a LTC6811 daisy chain. */
-uint8_t ReadStatusRegisterB(LTC6811Register<uint8_t>& r_config) {
-    LTC6811Command command = { 0x00, 0x12, 0x70, 0x24 };
-    return ReadRegister(command, r_config);
-}
+    const auto& GetCellData() { return cell_data; };
 
 private:
-SPI_HandleTypeDef& hspi;
-Status& status;
-CAN_HandleTypeDef& hcan;
-CAN_TxHeaderTypeDef TxHeader;
+    SPI_HandleTypeDef& hspi;
+    Status& status;
 
-LTC6811Command ADCV; 	// Cell Voltage conversion command
-LTC6811Command ADAX; 	// GPIO conversion command
-LTC6811Command ADSTAT; 	// STAT conversion command
+    uint8_t discharge_mode{ 0 }; // TODO change to enum once I think of good names
 
-void adcv(void); /* Starts cell voltage conversion. */
-void adax(void); /* Start an GPIO Conversion. */
-void adstat(void); /* Start a STATUS register Conversion. */
-uint8_t ReadVoltageRegister(uint8_t reg_id, LTC6811Register<uint16_t>& reg); /* Read the raw data from the LTC6804 cell voltage register. */
-uint8_t ReadVoltageHelper(std::array<LTC6811Register<uint16_t>, 4>& cell_data); /* Reads and parses the LTC6804 cell voltage registers. */
-uint8_t ReadAuxRegister(uint8_t reg_id, LTC6811Register<int16_t>& reg); /* Read the raw data from the LTC6804 auxiliary register.*/
-uint8_t ReadTemperatureHelper(std::array<LTC6811Register<int16_t>, 2>& temp_data); /* Reads and parses the LTC6804 auxiliary registers. */
-int16_t CalcTemp(uint16_t ntc_voltage); /* Calculates the temperature from thermistor voltage using lookup table. */
+    LTC6811RegisterGroup<uint8_t> slave_cfg_tx{ LTC6811Command{ 0x00, 0x01, 0x3D, 0x6E } };
+    LTC6811RegisterGroup<uint8_t> slave_cfg_rx{ LTC6811Command{ 0x00, 0x02, 0x2B, 0x0A } };
 
-static uint16_t crc15Table[256];
+    std::array<LTC6811RegisterGroup<uint16_t>, 4> cell_data{
+        LTC6811Command{ 0, 4, 7, 194}, LTC6811Command{ 0, 6, 154, 148 }, LTC6811Command{ 0, 8, 94, 82 }, LTC6811Command{ 0, 10, 195, 4 }
+    };
+    std::array<LTC6811RegisterGroup<int16_t>, 2> temp_data{
+        LTC6811Command{ 0, 12, 239, 204 }, LTC6811Command{ 0, 14, 114, 154 }
+    };
 
-/* 	Calculates and returns the CRC15 */
-template <typename T, size_t S>
-static T PEC15Calc(std::array<T, S> data) {
-    uint16_t remainder = 16, addr;
-    auto data_as_bytes = gsl::as_bytes(gsl::span<T>(data));
+    std::array<LTC6811RegisterGroup<uint8_t>, 2> status_registers { LTC6811Command{ 0x00, 0x10, 0xED, 0x72 }, LTC6811Command{ 0x00, 0x12, 0x70, 0x24 } };
 
-    for (uint8_t i = 0; i < data_as_bytes.size() - 2; ++i) {
-        addr = (remainder >> 7 ^ (uint8_t)data_as_bytes[i]) & 0xFF;
-        remainder <<= 8 ^ LTC6811::crc15Table[addr];
+    LTC6811Command ADCV; 	// Cell Voltage conversion command
+    LTC6811Command ADAX; 	// Aux conversion command
+    LTC6811Command ADSTAT; 	// Status conversion command
+
+    /* Start a Cell Voltage, Aux, Status, etc. Conversion */
+    void StartConversion(const LTC6811Command& command);
+
+    /* Write Register Function. Return 0 if success, 1 if failure. */
+    template <typename T>
+    uint8_t WriteRegister(LTC6811RegisterGroup<T>& register_group) {
+        WakeFromIdle();
+
+        auto serialized_data = reinterpret_cast<uint8_t*>(&register_group);
+
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+        auto result = HAL_SPI_Transmit(&hspi, serialized_data, sizeof(register_group), 100);
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+
+        return result;
     }
 
-    return remainder * 2;
-}
+    /* Read Register Function. Return 0 if success, 1 if failure. */
+    template <typename T>
+    uint8_t ReadRegisterGroup(LTC6811RegisterGroup<T>& register_group) {
+        WakeFromIdle();
+
+        auto serialized_data = reinterpret_cast<uint8_t*>(register_group.register_group.begin());
+
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+        auto result = HAL_SPI_Transmit(&hspi, register_group.command.data(), kCommandLength, 100);
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+
+        if (result == HAL_ERROR || HAL_SPI_Receive(&hspi, serialized_data, kBytesPerRegister * kDaisyChainLength, 100) == HAL_ERROR)
+            return 1; // SPI error
+        else {
+            for (auto& Register : register_group.register_group)
+                if (Register.PEC != PEC15Calc(Register.data))
+                    return 1; // PEC error
+            return 0; // Success
+        }
+    }
+
+    constexpr static uint16_t crc15Table[256] {
+        0x0000, 0xc599, 0xceab, 0x0b32, 0xd8cf, 0x1d56, 0x1664, 0xd3fd, 0xf407, 0x319e, 0x3aac, 0xff35, 0x2cc8, 0xe951, 0xe263, 0x27fa,
+        0xad97, 0x680e, 0x633c, 0xa6a5, 0x7558, 0xb0c1, 0xbbf3, 0x7e6a, 0x5990, 0x9c09, 0x973b, 0x52a2, 0x815f, 0x44c6, 0x4ff4, 0x8a6d,
+        0x5b2e, 0x9eb7, 0x9585, 0x501c, 0x83e1, 0x4678, 0x4d4a, 0x88d3, 0xaf29, 0x6ab0, 0x6182, 0xa41b, 0x77e6, 0xb27f, 0xb94d, 0x7cd4,
+        0xf6b9, 0x3320, 0x3812, 0xfd8b, 0x2e76, 0xebef, 0xe0dd, 0x2544, 0x02be, 0xc727, 0xcc15, 0x098c, 0xda71, 0x1fe8, 0x14da, 0xd143,
+        0xf3c5, 0x365c, 0x3d6e, 0xf8f7, 0x2b0a, 0xee93, 0xe5a1, 0x2038, 0x07c2, 0xc25b, 0xc969, 0x0cf0, 0xdf0d, 0x1a94, 0x11a6, 0xd43f,
+        0x5e52, 0x9bcb, 0x90f9, 0x5560, 0x869d, 0x4304, 0x4836, 0x8daf, 0xaa55, 0x6fcc, 0x64fe, 0xa167, 0x729a, 0xb703, 0xbc31, 0x79a8,
+        0xa8eb, 0x6d72, 0x6640, 0xa3d9, 0x7024, 0xb5bd, 0xbe8f, 0x7b16, 0x5cec, 0x9975, 0x9247, 0x57de, 0x8423, 0x41ba, 0x4a88, 0x8f11,
+        0x057c, 0xc0e5, 0xcbd7, 0x0e4e, 0xddb3, 0x182a, 0x1318, 0xd681, 0xf17b, 0x34e2, 0x3fd0, 0xfa49, 0x29b4, 0xec2d, 0xe71f, 0x2286,
+        0xa213, 0x678a, 0x6cb8, 0xa921, 0x7adc, 0xbf45, 0xb477, 0x71ee, 0x5614, 0x938d, 0x98bf, 0x5d26, 0x8edb, 0x4b42, 0x4070, 0x85e9,
+        0x0f84, 0xca1d, 0xc12f, 0x04b6, 0xd74b, 0x12d2, 0x19e0, 0xdc79, 0xfb83, 0x3e1a, 0x3528, 0xf0b1, 0x234c, 0xe6d5, 0xede7, 0x287e,
+        0xf93d, 0x3ca4, 0x3796, 0xf20f, 0x21f2, 0xe46b, 0xef59, 0x2ac0, 0x0d3a, 0xc8a3, 0xc391, 0x0608, 0xd5f5, 0x106c, 0x1b5e, 0xdec7,
+        0x54aa, 0x9133, 0x9a01, 0x5f98, 0x8c65, 0x49fc, 0x42ce, 0x8757, 0xa0ad, 0x6534, 0x6e06, 0xab9f, 0x7862, 0xbdfb, 0xb6c9, 0x7350,
+        0x51d6, 0x944f, 0x9f7d, 0x5ae4, 0x8919, 0x4c80, 0x47b2, 0x822b, 0xa5d1, 0x6048, 0x6b7a, 0xaee3, 0x7d1e, 0xb887, 0xb3b5, 0x762c,
+        0xfc41, 0x39d8, 0x32ea, 0xf773, 0x248e, 0xe117, 0xea25, 0x2fbc, 0x0846, 0xcddf, 0xc6ed, 0x0374, 0xd089, 0x1510, 0x1e22, 0xdbbb,
+        0x0af8, 0xcf61, 0xc453, 0x01ca, 0xd237, 0x17ae, 0x1c9c, 0xd905, 0xfeff, 0x3b66, 0x3054, 0xf5cd, 0x2630, 0xe3a9, 0xe89b, 0x2d02,
+        0xa76f, 0x62f6, 0x69c4, 0xac5d, 0x7fa0, 0xba39, 0xb10b, 0x7492, 0x5368, 0x96f1, 0x9dc3, 0x585a, 0x8ba7, 0x4e3e, 0x450c, 0x8095
+    };
+
+    /* This has been tested against the original code and is working properly */
+    template <typename T, size_t S>
+    constexpr static uint16_t PEC15Calc(const std::array<T, S>& data, size_t size = S * sizeof(T)) {
+        uint16_t PEC = 16, addr;
+        auto serialized_data = reinterpret_cast<uint8_t const *>(data.data());
+
+        for (uint8_t i = 0; i < size; ++i) {
+            addr = (PEC >> 7 ^ serialized_data[i]) & 0xFF;
+            PEC = PEC << 8 ^ crc15Table[addr];
+        }
+
+        return PEC << 1; // From documentation: The final PEC is the 15-bit value in the PEC register with a 0 bit appended to its LSB.
+    }
 };
 
 #endif /* LTC6811_H_ */

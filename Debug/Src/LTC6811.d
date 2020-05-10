@@ -27,8 +27,8 @@ Src/LTC6811.o: ../Src/LTC6811.cpp ../Inc/LTC6811.h ../Inc/Status.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_sd.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_sdmmc.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h ../Inc/gsl/span \
- ../Inc/gsl/gsl_assert ../Inc/gsl/gsl_byte ../Inc/gsl/gsl_util
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
+ ../Inc/dwt_delay.h
 
 ../Inc/LTC6811.h:
 
@@ -94,10 +94,4 @@ Src/LTC6811.o: ../Src/LTC6811.cpp ../Inc/LTC6811.h ../Inc/Status.h \
 
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h:
 
-../Inc/gsl/span:
-
-../Inc/gsl/gsl_assert:
-
-../Inc/gsl/gsl_byte:
-
-../Inc/gsl/gsl_util:
+../Inc/dwt_delay.h:

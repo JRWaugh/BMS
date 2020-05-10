@@ -33,7 +33,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-void BuildDischargeConfig(LTC6811Register<uint8_t>& cfg_tx, LTC6811Register<uint8_t>& cfg_rx, std::array<LTC6811Register<uint16_t>, 4>& cell_data);
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -49,10 +48,6 @@ SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN PV */
 CAN_TxHeaderTypeDef TxHeader;
-std::array<LTC6811Register<uint16_t>, 4> cell_data;
-std::array<LTC6811Register<int16_t>, 2> temp_data;
-LTC6811Register<uint8_t> slave_cfg_tx;
-LTC6811Register<uint8_t> slave_cfg_rx;
 uint8_t rtc_event_flag;
 NLG5* nlg5;
 Status* status;
@@ -111,14 +106,21 @@ int main(void)
     MX_SPI1_Init();
     MX_FATFS_Init();
     /* USER CODE BEGIN 2 */
-    slave_cfg_tx.fill({ 0xFE, 0, 0, 0, 0, 0 });
-    test4[0] = 0;
-    test4[1] = 0xFF;
     nlg5 = new NLG5;
     status = new Status(Status::Core | Status::Logging, *nlg5);
-    ltc6811 = new LTC6811(hspi1, *status, hcan1); // TODO could be hcan2!
+    ltc6811 = new LTC6811(hspi1, *status); // TODO could be hcan2!
     f_mount(&SDFatFS, "", 0);
     f_open(&SDFile, "data.csv", FA_WRITE | FA_OPEN_APPEND);
+#if SPITEST
+    while (true) {
+        const uint8_t bytes[2] { 1, 0 };
+        const uint16_t test = bytes[1] << 8 | bytes[0];
+        const uint16_t test2 = *reinterpret_cast<uint16_t const *>(bytes);
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+        HAL_SPI_Transmit(&hspi1, reinterpret_cast<uint8_t const *>(&bytes), 2, HAL_MAX_DELAY);
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+    }
+#endif
 
     /* USER CODE END 2 */
 
@@ -129,14 +131,14 @@ int main(void)
     HAL_Delay(5000);
     status->ClosePRE();
 #else
-    if (!core_routine()) {	// Initial check before closing AIRs
-        HAL_Delay(1000);	// This small delay may not be necessary
-        status->closeAIR(); //bmsrelay
+    //if (!core_routine()) {    // Initial check before closing AIRs
+    //  HAL_Delay(1000);    // This small delay may not be necessary
+    //status->CloseAIR(); //bmsrelay
 #if !CHECK_IVT
-        HAL_Delay(5000);
-        status->closePRE();
+    HAL_Delay(5000);
+    status->closePRE();
 #endif
-    }
+    //}
 #endif
     while (1) {
         /* USER CODE END WHILE */
@@ -146,28 +148,45 @@ int main(void)
 
         /* Each bit of opmode represents a different mode. */
         if (status->op_mode & Status::Core) {
-            if (!(status->op_mode & Status::Balance))
-                BuildDischargeConfig(slave_cfg_tx, slave_cfg_rx, cell_data);
-            ltc6811->ReadVoltage(cell_data);
-            ltc6811->ReadTemperature(temp_data);
+            auto const voltage_status = ltc6811->GetVoltageStatus();
+            if (!voltage_status.has_value()) {
+                status->IncreasePecCounter();
+            } else {
+                // Test limits
+                voltage_status.value().max;
+                voltage_status.value().min;
+            }
+
+            auto const temp_status = ltc6811->GetTemperatureStatus();
+            if (!temp_status.has_value())
+                status->IncreasePecCounter();
+            else {
+                // Test limits
+                temp_status.value().max;
+                temp_status.value().min;
+            }
+
             status->SetFanDutyCycle(status->CalcDutyCycle());
             CANTxUptime();
             CanTxOpMode();
             CanTxError();
             CANTxVoltageLimpTotal();
             status->CheckIVTLost();
+
+            if (status->op_mode & Status::Balance)
+                ltc6811->BuildDischargeConfig(voltage_status.value());
+
         }
 
-        if (status->op_mode & Status::Balance)
-            BuildDischargeConfig(slave_cfg_tx, slave_cfg_rx, cell_data);
+
 
 #if CAN_ENABLED
-        /* 	Charging routine. CAN buffers for charger messages are checked, and charger command message is sent. */
+        /*  Charging routine. CAN buffers for charger messages are checked, and charger command message is sent. */
         if (status->op_mode & Status::Charging)
             SetCharger();
 #endif
 #if CAN_DEBUG
-        /*	Functions for debugging and untested code. */
+        /*  Functions for debugging and untested code. */
         if (status->op_mode & Status::Debug) {
             CANTxVoltage();
             CANTxTemperature();
@@ -194,20 +213,25 @@ int main(void)
                     uint8_t write_error{ 0 };
 
                     // TODO error handling isn't really done yet
+#if 0
                     for (auto& reg : cell_data) {
-                        auto serialized_reg = gsl::as_bytes(span(reg));
-                        f_write(&SDFile, (uint8_t *) serialized_reg.data(), kBytesPerRegister * kDaisyChainLength, &number_written);
+                        auto serialized_reg = reinterpret_cast<uint8_t*>(reg.data.data()->data());
+
+                        f_write(&SDFile, serialized_reg, kBytesPerRegister * kDaisyChainLength, &number_written);
+
                         if (number_written != kBytesPerRegister * kDaisyChainLength)
                             write_error = 1;
                     }
 
                     for (auto& reg : temp_data) {
-                        auto serialized_reg = gsl::as_bytes(span(reg));
-                        f_write(&SDFile, (uint8_t *) serialized_reg.data(), kBytesPerRegister * kDaisyChainLength, &number_written);
+                        auto serialized_reg = reinterpret_cast<uint8_t*>(reg.data.data()->data());
+
+                        f_write(&SDFile, serialized_reg, kBytesPerRegister * kDaisyChainLength, &number_written);
+
                         if (number_written != kBytesPerRegister * kDaisyChainLength)
                             write_error = 1;
                     }
-
+#endif
                     f_sync(&SDFile);
                     f_close(&SDFile);
                 }
@@ -617,7 +641,7 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
             break;
 
             case CAN_ID_SETTING:
-                status->discharge_mode = data[0];
+                ltc6811->SetDischargeMode(data[0]);
                 status->op_mode = data[1];
 
                 /* data[4] == fanduty */
@@ -666,74 +690,7 @@ void SetCharger(void) {
     }
 }
 
-void BuildDischargeConfig(
-        LTC6811Register<uint8_t>& cfg_tx,
-        LTC6811Register<uint8_t>& cfg_rx,
-        std::array<LTC6811Register<uint16_t>, 4>& cell_data) {
-    uint16_t DCCx = 0;
-    uint8_t ic_index{ 0 }, cell_index{ 0 }, reg_index{ 0 };
 
-    uint16_t avg_cell = status->sum_of_cells / 144;
-    if (status->op_mode & Status::Balance) {
-        switch (status->discharge_mode) {
-        case 0: //Discharge all above (min_voltage + delta)
-            for (const auto& reg : cell_data) {
-                ic_index = 0;
-
-                for (const auto& ic : reg) {
-                    // Starting index of cells within each LTC6811 register. Will repeat { 0, 1, 2 } on 0th register, { 3, 4, 5 } on 1st, and so on.
-                    // TODO: Figure out a better algorithm for this, especially for case 1 below.
-                    cell_index = reg_index * LTC6811::kCellsInReg;
-
-                    std::for_each(ic.begin(), ic.begin() + LTC6811::kCellsInReg, [&](auto& voltage) {
-                        if (voltage > status->min_voltage + LTC6811::kDelta)
-                            DCCx |= 1 << cell_index;
-                        ++cell_index;
-                    });
-
-                    cfg_tx[ic_index][4] |= DCCx & 0xFF;
-                    cfg_tx[ic_index++][5] |= DCCx >> 8 & 0xF;
-                    DCCx = 0;
-                }
-                ++reg_index;
-            }
-            break;
-
-        case 1: //Discharge only the max_voltage cell.
-            if (status->max_voltage - status->min_voltage > LTC6811::kDelta) {
-                DCCx |= 1 << status->max_voltage_index.second;
-                cfg_tx[status->max_voltage_index.first][4] = DCCx & 0xFF;
-                cfg_tx[status->max_voltage_index.first][5] = DCCx >> 8 & 0xF;
-            }
-            break;
-
-        case 2: //Discharge all cells that are above (average cell voltage + delta)
-            for (const auto& reg : cell_data) {
-                ic_index = 0;
-                cell_index = reg_index * LTC6811::kCellsInReg;
-                DCCx = 0;
-                for (const auto& ic : reg) {
-                    std::for_each(ic.begin(), ic.begin() + LTC6811::kCellsInReg, [&](auto& voltage) {
-                        if (voltage > avg_cell + LTC6811::kDelta)
-                            DCCx |= 1 << cell_index;
-                        ++cell_index;
-                    });
-                    cfg_tx[ic_index][4] |= DCCx & 0xFF;
-                    cfg_tx[ic_index++][5] |= DCCx >> 8 & 0xF;
-                }
-                ++reg_index;
-            }
-            break;
-        }
-    } else
-        for (auto& ic : cfg_tx)
-            ic[4] = ic[5] = 0;
-
-    ltc6811->WakeFromSleep();
-    ltc6811->WriteConfigRegister(cfg_tx);
-    HAL_Delay(500);
-    ltc6811->ReadConfigRegister(cfg_rx);
-}
 
 int32_t CAN0_Test(void) {
     TxHeader.StdId = CAN_ID_TMP_TESTING;
@@ -868,7 +825,7 @@ int32_t CanTxOpMode(void) {
             status->safe_state_executed,
             static_cast<uint8_t>(status->min_voltage & 0xFF), // This one too
             static_cast<uint8_t>(status->min_voltage >> 8),
-            status->min_voltage_index.first, // TODO this is messed up for now
+            status->min_voltage_index, // TODO this is messed up for now
             status->op_mode
     };
 
@@ -904,7 +861,7 @@ int32_t CanTxError(void) {
 }
 
 /*!
-	\brief Puts discharge flag data on CAN bus.
+    \brief Puts discharge flag data on CAN bus.
  */
 int32_t CANTxDCfg(void) {
     TxHeader.StdId = CAN_ID_DISHB;
@@ -914,6 +871,7 @@ int32_t CANTxDCfg(void) {
     uint8_t data[8] = { 0 };
     uint8_t byte_position = 0;
 
+    /* TODO
     for (auto& ic : slave_cfg_rx) {
         data[byte_position++] = ic[5];
         data[byte_position++] = ic[4];
@@ -925,7 +883,7 @@ int32_t CANTxDCfg(void) {
             byte_position = 0;
             ++TxHeader.StdId;
         }
-    }
+    }*/
 
     return 0;
 }

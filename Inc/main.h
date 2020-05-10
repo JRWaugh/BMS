@@ -36,6 +36,10 @@ extern "C" {
 #define CAN_ID_OPMODE		9
 #define CAN_ID_ERROR		10 // might change to Data which is basically volt_total with temp data jammed in // voltage data 0 - 3, min 4, min 5, temp_max byte 6
 #define CAN_ID_TMP_TESTING	77
+/* Relevant CAN codes */
+#define CAN_ID_VOLT_TOTAL   11
+#define CAN_ID_VOLT         1912
+#define CAN_ID_TEMP         1948
 
 #define CAN_ID_IVT_I		1313
 #define CAN_ID_IVT_U1		1314
