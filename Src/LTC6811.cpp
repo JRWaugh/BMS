@@ -63,29 +63,29 @@ void LTC6811::WakeFromIdle(void) {
 /* Read a cell voltage register group of an LTC6811 daisy chain.
  * Returns 0 on success, 1 if either PEC or SPI error.
  */
-uint8_t LTC6811::ReadVoltageRegisterGroup(Group const group) {
+bool LTC6811::ReadVoltageRegisterGroup(Group const group) {
     return ReadRegisterGroup(cell_data[group]);
 }
 
 /* Read an auxiliary register group of an LTC6811 daisy chain.
  * Returns 0 on success, 1 if either PEC or SPI error.
  */
-uint8_t LTC6811::ReadAuxRegisterGroup(Group const group) {
+bool LTC6811::ReadAuxRegisterGroup(Group const group) {
     return ReadRegisterGroup(cell_data[group]);
 }
 
 /* Read a status register group of an LTC6811 daisy chain. */
-uint8_t LTC6811::ReadStatusRegisterGroup(Group const group) {
+bool LTC6811::ReadStatusRegisterGroup(Group const group) {
     return ReadRegisterGroup(status_registers[group]);
 }
 
 /* Read the configuration register group of an LTC6811 daisy chain */
-uint8_t LTC6811::ReadConfigRegisterGroup(void) {
+bool LTC6811::ReadConfigRegisterGroup(void) {
     return ReadRegisterGroup(slave_cfg_rx);
 }
 
 /* Write to the configuration register group of an LTC6811 daisy chain. */
-uint8_t LTC6811::WriteConfigRegisterGroup(void) {
+bool LTC6811::WriteConfigRegisterGroup(void) {
     return WriteRegister(slave_cfg_tx);
 }
 
@@ -115,14 +115,14 @@ void LTC6811::ClearAuxRegisters(void) {
  * Returns an LTC6811VoltageStatus on success, nullopt if error
  */
 std::optional<LTC6811VoltageStatus> LTC6811::GetVoltageStatus(void) {
+    LTC6811VoltageStatus status{};
+    size_t count{ 0 };
+
     StartConversion(ADCV);
 
     for (size_t group = A; group <= D; ++group)
         if (!ReadVoltageRegisterGroup(static_cast<Group>(group)))
             return std::nullopt;
-
-    LTC6811VoltageStatus status;
-    size_t count{ 0 };
 
     for (const auto& register_group : cell_data) {
         for (const auto& Register : register_group.register_group) {
@@ -143,16 +143,12 @@ std::optional<LTC6811VoltageStatus> LTC6811::GetVoltageStatus(void) {
     return status;
 }
 
-/* Generate a status report of the cell voltage register groups.
+/* Generate a status report of the current temperatures from aux voltage register groups.
  * Returns an LTC6811TempStatus on success, nullopt if error
  */
 std::optional<LTC6811TempStatus> LTC6811::GetTemperatureStatus() {
-    StartConversion(ADAX);
-
-    for (size_t group = A; group < D; ++group)
-        if (!ReadAuxRegisterGroup(static_cast<Group>(group)))
-            return std::nullopt;
-
+    LTC6811TempStatus status;
+    size_t count{ 0 };
     auto steinharthart = [](int16_t const NTC_voltage) noexcept {
         constexpr auto Vin = 30000.0f; // 3[V], or 30000[V * 10-5]
         constexpr auto KtoC = 27315; // centiKelvin to centiDegCelsius
@@ -165,8 +161,11 @@ std::optional<LTC6811TempStatus> LTC6811::GetTemperatureStatus() {
         return static_cast<int16_t>(100.0f / (A + log * ( B + log * (C + D * log))) - KtoC);
     };
 
-    LTC6811TempStatus status;
-    size_t count{ 0 };
+    StartConversion(ADAX);
+
+    for (size_t group = A; group <= D; ++group)
+        if (!ReadAuxRegisterGroup(static_cast<Group>(group)))
+            return std::nullopt;
 
     for (const auto& register_group : cell_data) {
         for (const auto& Register : register_group.register_group) {
@@ -180,6 +179,7 @@ std::optional<LTC6811TempStatus> LTC6811::GetTemperatureStatus() {
                     status.max = temperature;
                     status.max_id = count;
                 }
+
                 ++count;
             }
         }
@@ -193,26 +193,26 @@ void LTC6811::BuildDischargeConfig(const LTC6811VoltageStatus& voltage_status) {
     uint8_t current_cell{ 0 }, current_ic{ kDaisyChainLength - 1 };
 
     switch (discharge_mode) {
-    case 0: // Discharge all above (min_voltage + delta)
+    case GTMinPlusDelta:
         for (auto& cfg_register : slave_cfg_tx.register_group) {
             DCCx = 0;
             current_cell = 0;
 
             for (const auto& register_group : cell_data) { // 4 voltage register groups
-                for (const auto voltage : register_group.register_group[current_ic].data) { // 3 voltages per IC
+                for (const auto voltage : register_group.register_group[current_ic--].data) { // 3 voltages per IC
                     if (voltage > voltage_status.min + kDelta)
                         DCCx |= 1 << current_cell;
                     ++current_cell;
                 } // 4 * 3 = 12 voltages associated with each LTC6811 in the daisy chain
             }
+
             cfg_register.data[4] |= DCCx & 0xFF;
             cfg_register.data[5] |= DCCx >> 8 & 0xF;
             cfg_register.PEC = PEC15Calc(cfg_register.data);
-            --current_ic;
         }
         break;
 
-    case 1: // Discharge only the max_voltage cell.
+    case MaxOnly:
         if (voltage_status.max - voltage_status.min > kDelta) {
             current_ic = voltage_status.max_id / 3 % 12;
             DCCx |= 1 << voltage_status.max_id % 11;
@@ -222,7 +222,7 @@ void LTC6811::BuildDischargeConfig(const LTC6811VoltageStatus& voltage_status) {
         }
         break;
 
-    case 2: {// Discharge all cells that are above average cell voltage + delta
+    case GTMeanPlusDelta: {
         size_t average_voltage{ voltage_status.sum / (12 * kDaisyChainLength) };
 
         for (auto& cfg_register : slave_cfg_tx.register_group) {
@@ -230,19 +230,19 @@ void LTC6811::BuildDischargeConfig(const LTC6811VoltageStatus& voltage_status) {
             current_cell = 0;
 
             for (const auto& register_group : cell_data) { // 4 voltage register groups
-                for (const auto voltage : register_group.register_group[current_ic].data) { // 3 voltages per IC
+                for (const auto voltage : register_group.register_group[current_ic--].data) { // 3 voltages per IC
                     if (voltage > average_voltage + kDelta)
                         DCCx |= 1 << current_cell;
                     ++current_cell;
                 } // 4 * 3 = 12 voltages associated with each LTC6811 in the daisy chain
             }
+
             cfg_register.data[4] |= DCCx & 0xFF;
             cfg_register.data[5] |= DCCx >> 8 & 0xF;
             cfg_register.PEC = PEC15Calc(cfg_register.data);
-            --current_ic;
         }
     }
-        break;
+    break;
     }
 
     WriteConfigRegisterGroup();

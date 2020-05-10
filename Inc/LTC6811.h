@@ -78,6 +78,7 @@ struct LTC6811TempStatus {
 };
 
 enum Group { A = 0, B, C, D };
+enum DischargeMode { GTMinPlusDelta, MaxOnly, GTMeanPlusDelta };
 
 class LTC6811 {
 public:
@@ -88,19 +89,19 @@ public:
     void WakeFromIdle(void);
 
     /* Read from an LTC6811 cell voltage register group. */
-    uint8_t ReadVoltageRegisterGroup(Group const group);
+    bool ReadVoltageRegisterGroup(Group const group);
 
     /* Read from an LTC6811 auxiliary register group. */
-    uint8_t ReadAuxRegisterGroup(Group const group);
+    bool ReadAuxRegisterGroup(Group const group);
 
     /* Read from an LTC6811 status register group. */
-    uint8_t ReadStatusRegisterGroup(Group const group);
+    bool ReadStatusRegisterGroup(Group const group);
 
     /* Read from an LTC6811 configuration register group */
-    uint8_t ReadConfigRegisterGroup(void);
+    bool ReadConfigRegisterGroup(void);
 
     /* Write to the configuration registers of the LTC6811s in the daisy chain. */
-    uint8_t WriteConfigRegisterGroup(void);
+    bool WriteConfigRegisterGroup(void);
 
     /* Clear the LTC6811 cell voltage registers. */
     void ClearVoltageRegisters(void);
@@ -147,7 +148,7 @@ private:
 
     /* Write Register Function. Return 0 if success, 1 if failure. */
     template <typename T>
-    uint8_t WriteRegister(LTC6811RegisterGroup<T>& register_group) {
+    bool WriteRegister(LTC6811RegisterGroup<T>& register_group) {
         WakeFromIdle();
 
         auto serialized_data = reinterpret_cast<uint8_t*>(&register_group);
@@ -161,7 +162,7 @@ private:
 
     /* Read Register Function. Return 0 if success, 1 if failure. */
     template <typename T>
-    uint8_t ReadRegisterGroup(LTC6811RegisterGroup<T>& register_group) {
+    bool ReadRegisterGroup(LTC6811RegisterGroup<T>& register_group) {
         WakeFromIdle();
 
         auto serialized_data = reinterpret_cast<uint8_t*>(register_group.register_group.begin());

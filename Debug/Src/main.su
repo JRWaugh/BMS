@@ -17,7 +17,7 @@ Status.h:264:13:uint8_t Status::ErrorCheck(Status::ErrorEvent, bool)	16	static
 Status.h:277:10:void Status::GoToSafeState(Status::ErrorEvent)	16	static
 gthr-default.h:229:1:int __gthread_key_delete(__gthread_key_t)	16	static
 optional:97:3:void std::__throw_bad_optional_access()	8	static
-LTC6811.h:117:10:void LTC6811::SetDischargeMode(uint8_t)	16	static
+LTC6811.h:118:10:void LTC6811::SetDischargeMode(uint8_t)	16	static
 optional:718:22:constexpr bool std::optional<_Tp>::has_value() const [with _Tp = LTC6811VoltageStatus]	16	static
 optional:385:22:constexpr bool std::_Optional_base<_Tp>::_M_is_engaged() const [with _Tp = LTC6811VoltageStatus]	16	static
 optional:718:22:constexpr bool std::optional<_Tp>::has_value() const [with _Tp = LTC6811TempStatus]	16	static
