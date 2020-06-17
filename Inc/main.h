@@ -32,31 +32,9 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#define CAN_ID_UPTIME		8
-#define CAN_ID_OPMODE		9
-#define CAN_ID_ERROR		10 // might change to Data which is basically volt_total with temp data jammed in // voltage data 0 - 3, min 4, min 5, temp_max byte 6
-#define CAN_ID_TMP_TESTING	77
-/* Relevant CAN codes */
-#define CAN_ID_VOLT_TOTAL   11
-#define CAN_ID_VOLT         1912
-#define CAN_ID_TEMP         1948
-
-#define CAN_ID_IVT_I		1313
-#define CAN_ID_IVT_U1		1314
-#define CAN_ID_IVT_U2		1315
-#define CAN_ID_IVT_U3		1315
-
-#define CAN_ID_NLGA_STAT	1552
-#define CAN_ID_NLGA_CTRL	1560
-#define CAN_ID_NLGB_STAT	1568
-#define CAN_ID_NLGB_CTRL	1576
-
-#define CANID_FIRST			1900
-#define CAN_ID_SETTING		1902
-#define CAN_ID_DISHB		1909
-
-#define CAN_ID_LOGGER_REQ	1972
-#define CAN_ID_LOGGER_RESP	1973
+enum CAN0_ID { TMPTesting = 77, IVT_I = 1313, IVT_U1, IVT_U2, IVT_U3, IVT_T, IVT_P, IVT_E };
+enum CAN1_ID { OpMode = 8, PECError, Data, VoltTotal, NLGAStat = 1552, NLGACtrl = 1560, NLGBStat = 1568,
+    NLGBCtrl = 1576, SpamStart = 1900, Setting = 1902, DishB = 1909, Volt = 1912, Temp = 1948, SpamEnd = 1971, LoggerReq, LoggerResp };
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -75,26 +53,20 @@ extern "C" {
 
 /* USER CODE END EM */
 
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 
 /*** BMS.H function prototypes ***/
-void    SetCharger(void);
-int32_t CAN0_Test(void);
-int8_t  CANTxVoltage(void);
-int8_t 	CANTxVoltageLimpTotal(void);
-int32_t CANTxUptime(void);
-int32_t CanTxOpMode(void);
-int32_t CanTxError(void);
-int8_t  CANTxTemperature();
-int32_t CANTxDCfg(void);
-int32_t CANTxNLGAControl(void);
-int32_t CANTxNLGBControl(void);
-int32_t CANTxVolumeSize(uint32_t size_of_log);
-void canresp_get_volume_size(void);
-void canresp_delete_logfile(void);
+uint32_t CAN0_Test(void);
+uint32_t CanTxOpMode(void);
+uint32_t CanTxError(void);
+uint32_t CANTxNLGAControl(void);
+uint32_t CANTxNLGBControl(void);
+uint32_t CANTxVolumeSize(uint32_t size_of_log);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -131,6 +103,17 @@ void canresp_delete_logfile(void);
 #define SOS_Pin GPIO_PIN_9
 #define SOS_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
+/*** Test enable/disable ***/
+#define TEST_OVERVOLTAGE                    1
+#define TEST_UNDERVOLTAGE                   1
+#define TEST_OVERTEMPERATURE                1
+#define TEST_UNDERTEMPERATURE               1
+#define TEST_OVERPOWER                      1
+#define TEST_ACCU_UNDERVOLTAGE              1 // This is for testing undervoltage with IVT
+#define CHECK_IVT                           1 // To completely disable IVT TEST_ACCU_UNDERVOLTAGE this needs to be set to 0
+#define TEST_OVERTEMPERATURE_CHARGING       1
+#define TEST_OVERCURRENT                    1
+#define IVT_TIMEOUT                         1
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

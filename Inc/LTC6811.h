@@ -22,28 +22,10 @@
 #define T_REFUP_MAX		4400
 #define T_CYCLE_FAST_MAX	1185	// Measure 12 Cells
 
-/* Conversion mode */
-enum class Mode { Fast = 1, Normal, Filtered };
-
-/* Conversion channels */
-enum class CellCh { All, OneAndSeven, TwoAndEight, ThreeAndNine, FourAndTen, FiveAndEleven, SixAndTwelve };
-
-/* Conversion channels */
-enum class AuxCh  { All, GPIO1, GPIO2, GPIO3, GPIO4, GPIO5, VREF2 };
-
-/* Conversion channels */
-enum class STSCh  { All, SOC, ITMP, VA, VD };
-
-/* Controls if Discharging transistors are enabled or disabled during Cell conversions. */
-enum class DCP { Disabled, Enabled };
-
-static constexpr size_t kBytesPerRegister{ 8 };
-static constexpr size_t kDaisyChainLength{ 12 };
-static constexpr size_t kCommandLength{ 4 };
-
-void DWT_Init(void);
-
-void DWT_Delay(uint32_t us);
+constexpr static size_t kBytesPerRegister{ 8 };
+constexpr static size_t kDaisyChainLength{ 12 };
+constexpr static size_t kCommandLength{ 4 };
+constexpr static uint8_t kDelta{ 100 };
 
 using LTC6811Command = std::array<uint8_t, kCommandLength>;
 
@@ -58,12 +40,12 @@ template<typename T>
 struct LTC6811RegisterGroup {
     /* This class bundles together the command to access some register group and data sent/received after that command */
     LTC6811Command const command;
-    std::array<LTC6811Register<T>, kDaisyChainLength> register_group;
+    std::array<LTC6811Register<T>, kDaisyChainLength> ICDaisyChain;
     LTC6811RegisterGroup(LTC6811Command&& command) : command{ std::move(command) } {};
 };
 
 struct LTC6811VoltageStatus {
-    size_t sum{ 0 };
+    uint32_t sum{ 0 };
     uint16_t min{ std::numeric_limits<uint16_t>::max() };
     size_t min_id{ 0 };
     uint16_t max{ std::numeric_limits<uint16_t>::min() };
@@ -77,13 +59,25 @@ struct LTC6811TempStatus {
     size_t max_id{ 0 };
 };
 
-enum Group { A = 0, B, C, D };
-enum DischargeMode { GTMinPlusDelta, MaxOnly, GTMeanPlusDelta };
-
 class LTC6811 {
 public:
-    LTC6811(SPI_HandleTypeDef& hspi, Status& status, Mode mode = Mode::Normal, DCP dcp = DCP::Disabled,
-            CellCh cell = CellCh::All, AuxCh aux = AuxCh::All, STSCh sts = STSCh::All);
+    /* Conversion mode */
+    enum Mode { Fast = 1, Normal, Filtered };
+    /* Conversion channels */
+    enum CellCh { AllCell, OneAndSeven, TwoAndEight, ThreeAndNine, FourAndTen, FiveAndEleven, SixAndTwelve };
+    /* Conversion channels */
+    enum AuxCh  { AllAux, GPIO1, GPIO2, GPIO3, GPIO4, GPIO5, VREF2 };
+    /* Conversion channels */
+    enum STSCh  { AllStat, SOC, ITMP, VA, VD };
+    /* Controls if Discharging transistors are enabled or disabled during Cell conversions. */
+    enum DCP { Disabled, Enabled };
+
+    enum Group { A, B, C, D };
+
+    enum DischargeMode { GTMinPlusDelta, MaxOnly, GTMeanPlusDelta };
+
+    LTC6811(SPI_HandleTypeDef& hspi, Mode mode = Mode::Normal, DCP dcp = DCP::Disabled,
+            CellCh cell = AllCell, AuxCh aux = AllAux, STSCh sts = AllStat);
 
     void WakeFromSleep(void);
     void WakeFromIdle(void);
@@ -109,35 +103,33 @@ public:
     /* Clear the LTC6811 Auxiliary registers. */
     void ClearAuxRegisters(void);
 
-    std::optional<LTC6811VoltageStatus> GetVoltageStatus(void);
+    [[nodiscard]] std::optional<LTC6811VoltageStatus> GetVoltageStatus(void);
 
-    std::optional<LTC6811TempStatus> GetTemperatureStatus(void);
+    [[nodiscard]] std::optional<LTC6811TempStatus> GetTemperatureStatus(void);
 
     void BuildDischargeConfig(const LTC6811VoltageStatus& voltage_status);
 
-    void SetDischargeMode(uint8_t const discharge_mode) noexcept {
+    void SetDischargeMode(DischargeMode const discharge_mode) noexcept {
         this->discharge_mode = discharge_mode;
     };
 
-    const auto& GetCellData() { return cell_data; };
+    [[nodiscard]] const auto& GetCellData() const noexcept { return cell_data; };
+    [[nodiscard]] const auto& GetTempData() const noexcept { return temp_data; };
+    [[nodiscard]] const auto& GetSlaveCfg() const noexcept { return slave_cfg_rx; };
 
 private:
     SPI_HandleTypeDef& hspi;
-    Status& status;
 
-    uint8_t discharge_mode{ 0 }; // TODO change to enum once I think of good names
+    DischargeMode discharge_mode{ GTMinPlusDelta };
 
     LTC6811RegisterGroup<uint8_t> slave_cfg_tx{ LTC6811Command{ 0x00, 0x01, 0x3D, 0x6E } };
     LTC6811RegisterGroup<uint8_t> slave_cfg_rx{ LTC6811Command{ 0x00, 0x02, 0x2B, 0x0A } };
-
     std::array<LTC6811RegisterGroup<uint16_t>, 4> cell_data{
-        LTC6811Command{ 0, 4, 7, 194}, LTC6811Command{ 0, 6, 154, 148 }, LTC6811Command{ 0, 8, 94, 82 }, LTC6811Command{ 0, 10, 195, 4 }
-    };
+        LTC6811Command{ 0, 4, 7, 194}, LTC6811Command{ 0, 6, 154, 148 }, LTC6811Command{ 0, 8, 94, 82 }, LTC6811Command{ 0, 10, 195, 4 } };
     std::array<LTC6811RegisterGroup<int16_t>, 2> temp_data{
-        LTC6811Command{ 0, 12, 239, 204 }, LTC6811Command{ 0, 14, 114, 154 }
-    };
-
-    std::array<LTC6811RegisterGroup<uint8_t>, 2> status_registers { LTC6811Command{ 0x00, 0x10, 0xED, 0x72 }, LTC6811Command{ 0x00, 0x12, 0x70, 0x24 } };
+        LTC6811Command{ 0, 12, 239, 204 }, LTC6811Command{ 0, 14, 114, 154 } };
+    std::array<LTC6811RegisterGroup<uint8_t>, 2> status_registers{
+        LTC6811Command{ 0x00, 0x10, 0xED, 0x72 }, LTC6811Command{ 0x00, 0x12, 0x70, 0x24 } };
 
     LTC6811Command ADCV; 	// Cell Voltage conversion command
     LTC6811Command ADAX; 	// Aux conversion command
@@ -148,13 +140,13 @@ private:
 
     /* Write Register Function. Return 0 if success, 1 if failure. */
     template <typename T>
-    bool WriteRegister(LTC6811RegisterGroup<T>& register_group) {
+    bool WriteRegisterGroup(LTC6811RegisterGroup<T>& register_group) {
         WakeFromIdle();
 
         auto serialized_data = reinterpret_cast<uint8_t*>(&register_group);
 
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-        auto result = HAL_SPI_Transmit(&hspi, serialized_data, sizeof(register_group), 100);
+        auto result = HAL_SPI_Transmit(&hspi, serialized_data, sizeof(register_group), HAL_MAX_DELAY);
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
 
         return result;
@@ -165,17 +157,17 @@ private:
     bool ReadRegisterGroup(LTC6811RegisterGroup<T>& register_group) {
         WakeFromIdle();
 
-        auto serialized_data = reinterpret_cast<uint8_t*>(register_group.register_group.begin());
+        auto serialized_data = reinterpret_cast<uint8_t*>(register_group.ICDaisyChain.begin());
 
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-        auto result = HAL_SPI_Transmit(&hspi, register_group.command.data(), kCommandLength, 100);
+        auto result = HAL_SPI_Transmit(&hspi, register_group.command.data(), kCommandLength, HAL_MAX_DELAY);
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
 
-        if (result == HAL_ERROR || HAL_SPI_Receive(&hspi, serialized_data, kBytesPerRegister * kDaisyChainLength, 100) == HAL_ERROR)
+        if (result == HAL_ERROR || HAL_SPI_Receive(&hspi, serialized_data, kBytesPerRegister * kDaisyChainLength, HAL_MAX_DELAY) == HAL_ERROR)
             return 1; // SPI error
         else {
-            for (auto& Register : register_group.register_group)
-                if (Register.PEC != PEC15Calc(Register.data))
+            for (auto& IC : register_group.ICDaisyChain)
+                if (IC.PEC != PEC15Calc(IC.data))
                     return 1; // PEC error
             return 0; // Success
         }
@@ -203,7 +195,7 @@ private:
     /* This has been tested against the original code and is working properly */
     template <typename T, size_t S>
     constexpr static uint16_t PEC15Calc(const std::array<T, S>& data, size_t size = S * sizeof(T)) {
-        uint16_t PEC = 16, addr;
+        uint16_t PEC{ 16 }, addr{ 0 };
         auto serialized_data = reinterpret_cast<uint8_t const *>(data.data());
 
         for (uint8_t i = 0; i < size; ++i) {

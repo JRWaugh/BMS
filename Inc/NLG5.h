@@ -9,6 +9,7 @@
 #define NLG5_H_
 
 #include "stm32f4xx_hal.h"
+#include <atomic>
 
 struct NLG5 {
     /*** Bit definitions in NLG5 Control Bitmap (NLG5_CTLB) ***/
@@ -19,6 +20,24 @@ struct NLG5 {
     uint16_t ov_limit;
     uint8_t a_buffer[4];
     uint8_t b_buffer[4];
+    uint8_t event_counter{ 0 };
+    std::atomic<uint32_t> tick{ 0 };
+    std::atomic<uint32_t> previous_tick{ 0 };
+
+    static constexpr uint16_t kChargerDis{ 41800 };
+    static constexpr uint16_t kChargerEn{ 41500 };
+    static constexpr uint8_t kChargerEventTimeout{ 100 }; // time in ms
+
+    void SetChargeCurrent(uint16_t max_voltage) {
+        if (max_voltage > kChargerDis)
+            ctrl = 0;
+        else if (max_voltage < kChargerEn)
+            ctrl = C_C_EN;
+    }
+
+    bool isChargerEvent() const {
+        return tick - previous_tick >= kChargerEventTimeout;
+    }
 
     NLG5(uint16_t mc_limit = 160, uint16_t oc_limit = 60, uint16_t ov_limit = 2990) :
         mc_limit { mc_limit }, oc_limit { oc_limit }, ov_limit { ov_limit } {};

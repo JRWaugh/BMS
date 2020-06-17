@@ -27,11 +27,10 @@
 #define INC_DWT_DELAY_H_
 
 void DWT_Init(void) {
-    if (!(CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk)) {
-        CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-        DWT->CYCCNT = 0;
-        DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
-    }
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+    DWT->CYCCNT = 0;
+    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+
 }
 
 void DWT_Delay(uint32_t microseconds) {
@@ -41,4 +40,7 @@ void DWT_Delay(uint32_t microseconds) {
     while (DWT->CYCCNT - startTick < delayTicks);
 }
 
+[[nodiscard]] auto DWT_GetTicks() {
+    return DWT->CYCCNT;
+}
 #endif /* INC_DWT_DELAY_DWT_DELAY_H_ */

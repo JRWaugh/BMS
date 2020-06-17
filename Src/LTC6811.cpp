@@ -8,19 +8,19 @@
 #include "LTC6811.h"
 #include "dwt_delay.h"
 
-LTC6811::LTC6811(SPI_HandleTypeDef& hspi, Status& status, Mode mode, DCP dcp, CellCh cell, AuxCh aux, STSCh sts)
-: hspi{ hspi }, status{ status } {
-    uint8_t md_bits = (static_cast<uint8_t>(mode) & 0x02) >> 1;
+LTC6811::LTC6811(SPI_HandleTypeDef& hspi, Mode mode, DCP dcp, CellCh cell, AuxCh aux, STSCh sts)
+: hspi{ hspi } {
+    uint8_t md_bits = (mode & 0x02) >> 1;
     uint16_t PEC{ 0 };
 
-    ADCV[0]   = md_bits + 0x02;
-    ADAX[0]   = md_bits + 0x04;
-    ADSTAT[0] = md_bits + 0x04;
+    ADCV[0]   = 0x02 | md_bits;
+    ADAX[0]   = 0x04 | md_bits;
+    ADSTAT[0] = 0x04 | md_bits;
 
-    md_bits   = (static_cast<uint8_t>(mode) & 0x01) << 7;
-    ADCV[1]   = md_bits + 0x60 + (static_cast<uint8_t>(dcp) << 4) + static_cast<uint8_t>(cell);
-    ADAX[1]   = md_bits + 0x60 + static_cast<uint8_t>(aux);
-    ADSTAT[1] = md_bits + 0x68 + static_cast<uint8_t>(sts);
+    md_bits   = (mode & 0x01) << 7;
+    ADCV[1]   = md_bits | 0x60 | dcp << 4 | cell;
+    ADAX[1]   = md_bits | 0x60 | aux;
+    ADSTAT[1] = md_bits | 0x68 | sts;
 
     PEC = PEC15Calc(ADCV, 2);
     ADCV[2] = static_cast<uint8_t>(PEC >> 8);
@@ -34,10 +34,10 @@ LTC6811::LTC6811(SPI_HandleTypeDef& hspi, Status& status, Mode mode, DCP dcp, Ce
     ADSTAT[2] = static_cast<uint8_t>(PEC >> 8);
     ADSTAT[3] = static_cast<uint8_t>(PEC);
 
-    slave_cfg_tx.register_group.fill({ 0xFE, 0, 0, 0, 0, 0 });
+    slave_cfg_tx.ICDaisyChain.fill({ 0xFE, 0, 0, 0, 0, 0 });
 
     DWT_Init();
-    WakeFromSleep(); // TODO Takes 2.2s to fall asleep so if this has to be called after this, we have problems
+    WakeFromSleep(); // NOTE: Takes 2.2s to fall asleep so if this has to be called after this, we have problems
 }
 
 void LTC6811::WakeFromSleep(void) {
@@ -50,11 +50,11 @@ void LTC6811::WakeFromSleep(void) {
 }
 
 void LTC6811::WakeFromIdle(void) {
-    uint8_t data = 0xFF;
+    uint8_t const data = 0xFF;
 
     for (size_t i = 0; i < kDaisyChainLength; ++i) {
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-        HAL_SPI_Transmit(&hspi, &data, 1, 10); //Guarantees the isoSPI will be in ready mode
+        HAL_SPI_Transmit(&hspi, &data, 1, HAL_MAX_DELAY); //Guarantees the isoSPI will be in ready mode
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
     }
 
@@ -86,28 +86,28 @@ bool LTC6811::ReadConfigRegisterGroup(void) {
 
 /* Write to the configuration register group of an LTC6811 daisy chain. */
 bool LTC6811::WriteConfigRegisterGroup(void) {
-    return WriteRegister(slave_cfg_tx);
+    return WriteRegisterGroup(slave_cfg_tx);
 }
 
 /* Clear the LTC6811 cell voltage registers. */
 void LTC6811::ClearVoltageRegisters(void) {
-    static constexpr LTC6811Command command{ 7, 17, 201, 192 };
+    constexpr static LTC6811Command command{ 7, 17, 201, 192 };
 
     WakeFromIdle();
 
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-    HAL_SPI_Transmit(&hspi, command.data(), sizeof(command), 10);
+    HAL_SPI_Transmit(&hspi, command.data(), kCommandLength, HAL_MAX_DELAY);
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
 }
 
 /* Clear the LTC6811 Auxiliary registers. */
 void LTC6811::ClearAuxRegisters(void) {
-    static constexpr LTC6811Command command{ 7, 18, 223, 164 };
+    constexpr static LTC6811Command command{ 7, 18, 223, 164 };
 
     WakeFromIdle();
 
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-    HAL_SPI_Transmit(&hspi, command.data(), sizeof(command), 10);
+    HAL_SPI_Transmit(&hspi, command.data(), kCommandLength, HAL_MAX_DELAY);
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
 }
 
@@ -121,12 +121,12 @@ std::optional<LTC6811VoltageStatus> LTC6811::GetVoltageStatus(void) {
     StartConversion(ADCV);
 
     for (size_t group = A; group <= D; ++group)
-        if (!ReadVoltageRegisterGroup(static_cast<Group>(group)))
+        if (ReadVoltageRegisterGroup(static_cast<Group>(group)) == 1)
             return std::nullopt;
 
     for (const auto& register_group : cell_data) {
-        for (const auto& Register : register_group.register_group) {
-            for (const auto voltage : Register.data) {
+        for (const auto& IC : register_group.ICDaisyChain) {
+            for (const auto voltage : IC.data) {
                 status.sum += voltage;
 
                 if (voltage < status.min) {
@@ -140,6 +140,7 @@ std::optional<LTC6811VoltageStatus> LTC6811::GetVoltageStatus(void) {
             }
         }
     }
+    status.sum /= 10000; // Convert centiDegC to DegC (with rounding errors, but this is what the old code did...)
     return status;
 }
 
@@ -147,7 +148,7 @@ std::optional<LTC6811VoltageStatus> LTC6811::GetVoltageStatus(void) {
  * Returns an LTC6811TempStatus on success, nullopt if error
  */
 std::optional<LTC6811TempStatus> LTC6811::GetTemperatureStatus() {
-    LTC6811TempStatus status;
+    LTC6811TempStatus status{};
     size_t count{ 0 };
     auto steinharthart = [](int16_t const NTC_voltage) noexcept {
         constexpr auto Vin = 30000.0f; // 3[V], or 30000[V * 10-5]
@@ -164,12 +165,12 @@ std::optional<LTC6811TempStatus> LTC6811::GetTemperatureStatus() {
     StartConversion(ADAX);
 
     for (size_t group = A; group <= D; ++group)
-        if (!ReadAuxRegisterGroup(static_cast<Group>(group)))
+        if (ReadAuxRegisterGroup(static_cast<Group>(group)) == 1)
             return std::nullopt;
 
     for (const auto& register_group : cell_data) {
-        for (const auto& Register : register_group.register_group) {
-            for (auto temperature : Register.data) {
+        for (const auto& IC : register_group.ICDaisyChain) {
+            for (auto temperature : IC.data) {
                 temperature = steinharthart(temperature);
 
                 if (temperature < status.min) {
@@ -187,59 +188,59 @@ std::optional<LTC6811TempStatus> LTC6811::GetTemperatureStatus() {
     return status;
 }
 
+// TODO to be fully functional programming, make this return the discharge array instead of being void
 void LTC6811::BuildDischargeConfig(const LTC6811VoltageStatus& voltage_status) {
-    constexpr uint8_t kDelta = 100;
     uint16_t DCCx{ 0 };
     uint8_t current_cell{ 0 }, current_ic{ kDaisyChainLength - 1 };
 
     switch (discharge_mode) {
     case GTMinPlusDelta:
-        for (auto& cfg_register : slave_cfg_tx.register_group) {
+        for (auto& ICConfig : slave_cfg_tx.ICDaisyChain) { // 12 register groups
             DCCx = 0;
             current_cell = 0;
 
             for (const auto& register_group : cell_data) { // 4 voltage register groups
-                for (const auto voltage : register_group.register_group[current_ic--].data) { // 3 voltages per IC
+                for (const auto voltage : register_group.ICDaisyChain[current_ic--].data) { // 3 voltages per IC
                     if (voltage > voltage_status.min + kDelta)
                         DCCx |= 1 << current_cell;
                     ++current_cell;
                 } // 4 * 3 = 12 voltages associated with each LTC6811 in the daisy chain
             }
 
-            cfg_register.data[4] |= DCCx & 0xFF;
-            cfg_register.data[5] |= DCCx >> 8 & 0xF;
-            cfg_register.PEC = PEC15Calc(cfg_register.data);
-        }
+            ICConfig.data[4] = DCCx & 0xFF;
+            ICConfig.data[5] = DCCx >> 8 & 0xF;
+            ICConfig.PEC = PEC15Calc(ICConfig.data);
+        } // 12 * 12 = 144 voltages associated with the entire daisy chain
         break;
 
     case MaxOnly:
         if (voltage_status.max - voltage_status.min > kDelta) {
             current_ic = voltage_status.max_id / 3 % 12;
             DCCx |= 1 << voltage_status.max_id % 11;
-            slave_cfg_tx.register_group[current_ic].data[4] = DCCx & 0xFF;
-            slave_cfg_tx.register_group[current_ic].data[5] = DCCx >> 8 & 0xF;
-            slave_cfg_tx.register_group[current_ic].PEC = PEC15Calc(slave_cfg_tx.register_group[current_ic].data);
+            slave_cfg_tx.ICDaisyChain[current_ic].data[4] = DCCx & 0xFF;
+            slave_cfg_tx.ICDaisyChain[current_ic].data[5] = DCCx >> 8 & 0xF;
+            slave_cfg_tx.ICDaisyChain[current_ic].PEC = PEC15Calc(slave_cfg_tx.ICDaisyChain[current_ic].data);
         }
         break;
 
     case GTMeanPlusDelta: {
         size_t average_voltage{ voltage_status.sum / (12 * kDaisyChainLength) };
 
-        for (auto& cfg_register : slave_cfg_tx.register_group) {
+        for (auto& ICConfig : slave_cfg_tx.ICDaisyChain) {
             DCCx = 0;
             current_cell = 0;
 
             for (const auto& register_group : cell_data) { // 4 voltage register groups
-                for (const auto voltage : register_group.register_group[current_ic--].data) { // 3 voltages per IC
+                for (const auto voltage : register_group.ICDaisyChain[current_ic--].data) { // 3 voltages per IC
                     if (voltage > average_voltage + kDelta)
                         DCCx |= 1 << current_cell;
                     ++current_cell;
                 } // 4 * 3 = 12 voltages associated with each LTC6811 in the daisy chain
             }
 
-            cfg_register.data[4] |= DCCx & 0xFF;
-            cfg_register.data[5] |= DCCx >> 8 & 0xF;
-            cfg_register.PEC = PEC15Calc(cfg_register.data);
+            ICConfig.data[4] |= DCCx & 0xFF;
+            ICConfig.data[5] |= DCCx >> 8 & 0xF;
+            ICConfig.PEC = PEC15Calc(ICConfig.data);
         }
     }
     break;
@@ -247,7 +248,7 @@ void LTC6811::BuildDischargeConfig(const LTC6811VoltageStatus& voltage_status) {
 
     WriteConfigRegisterGroup();
     DWT_Delay(500);
-    ReadConfigRegisterGroup();
+    ReadConfigRegisterGroup(); // Could take this out and just read when we need the data to send over CAN or whatever
 }
 
 
@@ -256,7 +257,7 @@ void LTC6811::StartConversion(const LTC6811Command& command) {
     WakeFromIdle(); // It's possible all of these can be removed
 
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-    HAL_SPI_Transmit(&hspi, command.data(), sizeof(command), HAL_MAX_DELAY);        // Start cell voltage conversion.
+    HAL_SPI_Transmit(&hspi, command.data(), kCommandLength, HAL_MAX_DELAY);        // Start cell voltage conversion.
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
 
     DWT_Delay(T_REFUP_MAX + T_CYCLE_FAST_MAX); // TODO we aren't in fast conversion mode??? Also these delays aren't in the Linduino library
