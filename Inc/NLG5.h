@@ -14,6 +14,20 @@
 struct NLG5 {
     /*** Bit definitions in NLG5 Control Bitmap (NLG5_CTLB) ***/
     enum { C_CP_V = 1 << 5, C_C_EL = 1 << 6, C_C_EN = 1 << 7 };
+
+    NLG5(uint16_t const mc_limit = 160, uint16_t const oc_limit = 60, uint16_t const ov_limit = 2990) : mc_limit { mc_limit }, oc_limit { oc_limit }, ov_limit { ov_limit } {};
+
+    void SetChargeCurrent(uint16_t const max_voltage) {
+        if (max_voltage > kChargerDis)
+            ctrl = 0;
+        else if (max_voltage < kChargerEn)
+            ctrl = C_C_EN;
+    }
+
+    bool isChargerEvent() const {
+        return tick - previous_tick >= kChargerEventTimeout;
+    }
+
     uint8_t ctrl;
     uint16_t mc_limit;
     uint16_t oc_limit;
@@ -28,19 +42,9 @@ struct NLG5 {
     static constexpr uint16_t kChargerEn{ 41500 };
     static constexpr uint8_t kChargerEventTimeout{ 100 }; // time in ms
 
-    void SetChargeCurrent(uint16_t max_voltage) {
-        if (max_voltage > kChargerDis)
-            ctrl = 0;
-        else if (max_voltage < kChargerEn)
-            ctrl = C_C_EN;
-    }
 
-    bool isChargerEvent() const {
-        return tick - previous_tick >= kChargerEventTimeout;
-    }
 
-    NLG5(uint16_t mc_limit = 160, uint16_t oc_limit = 60, uint16_t ov_limit = 2990) :
-        mc_limit { mc_limit }, oc_limit { oc_limit }, ov_limit { ov_limit } {};
+
 };
 
 #endif /* NLG5_H_ */

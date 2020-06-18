@@ -11,6 +11,7 @@
 #include "NLG5.h"
 #include "LTC6811.h"
 #include <ctime>
+#include <atomic>
 
 /*** Debug functionality enable/disable ***/
 #define CAN_DEBUG					1
@@ -22,17 +23,18 @@
 #define START_DEBUG_ON_SAFE_STATE	1
 #define BYPASS_INITIAL_CHECK		0
 #define SKIP_PEC_ERROR_ACTIONS		1
-#define LIMP_COUNT_LIMIT			2
 
 struct Status {
 public:
     enum Error {
-        NoError, OverVoltage, UnderVoltage, OverTemp, UnderTemp, OverCurrent,
+        NoError, OverVoltage, UnderVoltage, Limping, OverTemp, UnderTemp, OverCurrent,
         OverPower, Extern, PECError, AccuUnderVoltage, IVTLost, OverTempCharging,
         NumberOfErrors
     };
 
-    enum OpMode { Core = 1 << 0, Balance = 1 << 1, Charging = 1 << 2, Debug = 1 << 3, Logging = 1 << 4 };
+    enum OpMode {
+        Core = 1 << 0, Balance = 1 << 1, Charging = 1 << 2, Debug = 1 << 3, Logging = 1 << 4
+    };
 
     Status(uint8_t op_mode) : op_mode { op_mode } {
         OpenPre();
@@ -41,10 +43,6 @@ public:
 
     uint8_t op_mode;
 
-
-
-    static constexpr uint8_t kErrorLimit{ 2 }; // Would suggest instead having the error limit be an array of varying limits.
-
     static constexpr int32_t kMaxPower{ 8000000 };
     static constexpr uint16_t kMaxVoltage{ 42000 };
     static constexpr uint16_t kMinVoltage{ 31000 };
@@ -52,10 +50,8 @@ public:
     static constexpr int16_t kMinTemp{ -1500 };
     static constexpr int16_t kMaxChargeTemp{ 4400 };
     static constexpr uint16_t kLimpMinVoltage{ 34000 };
-    static constexpr uint8_t kLimpCountLimit{ 2 };
     static constexpr float kMaxCurrent{ 180.0f };
     static constexpr float kAccuMinVoltage{ 490.0f };
-    static constexpr uint8_t kErrorLimitLost{ 1 };
 
 
     /* Energize Pre-charge Relay. */
@@ -86,18 +82,19 @@ public:
         AIR_flag = false;
     }
 
-    uint32_t GetPECChange() {
-        auto PEC_change = error_counters[PECError] - PEC_counter_last;
-        PEC_counter_last = error_counters[PECError];
-
-        return PEC_change;
+    uint32_t getPECError() {
+        return error_counters[PECError];
     }
 
-    bool isError(Error e, bool error) {
+    bool isError(Error const e, bool const error) {
         if (error) {
-            if (++error_counters[e] > kErrorLimit) {
-                GoToSafeState(e);
-                error_counters[e] = kErrorLimit;
+            if (++error_counters[e] > error_limits[e]) {
+                if (e == Limping)
+                    error_counters[e] += 9; // Add some amount to the counter when limping so that it takes some time to return to non-limping
+                else {
+                    GoToSafeState(e); // This function call is the most glaring, ugly side-effect in the entire BMS. Should not be hidden away like this.
+                    error_counters[e] = error_limits[e];
+                }
             }
         } else if (error_counters[e] > 0) {
             --error_counters[e];
@@ -106,33 +103,30 @@ public:
         return error;
     }
 
-    void TestLimping(uint16_t const min_voltage) {
-        if (min_voltage < kLimpMinVoltage) {
-            if (++limp_counter > kLimpCountLimit)
-                limp_counter += 9;
-        } else if (limp_counter > 0)
-            --limp_counter;
-    }
 
     bool isLimping() const {
-        return limp_counter > kLimpCountLimit;
+        return error_counters[Limping] > error_limits[Limping];
     }
 
-    uint32_t tick{ 0 }; // time in ms
-    uint32_t PEC_counter{ 0 };
+    std::atomic<uint32_t> tick{ 0 }; // time in ms
     bool precharge_flag{ false };
     bool AIR_flag { false };
     Error last_error{ NoError };
     struct tm rtc{ 0 };
-    uint32_t limp_counter{ 0 };
 
 private:
-    uint32_t error_counters[NumberOfErrors]{ 0 };
+    uint8_t error_counters[NumberOfErrors] { 0 };
+    uint8_t error_limits[NumberOfErrors] {
+        [NoError] = 0, [OverVoltage] = 2, [UnderVoltage] = 2, [Limping] = 2,
+        [OverTemp] = 2, [UnderTemp] = 2, [OverCurrent] = 2,
+        [OverPower] = 2, [Extern] = 2, [PECError] = 2,
+        [AccuUnderVoltage] = 2, [IVTLost] = 1, [OverTempCharging] = 2
+    };
     uint32_t PEC_counter_last{ 0 };
 
-    void GoToSafeState(Error e) {
+    void GoToSafeState(Error const  e) {
 #if BMS_RELAY_CTRL_BYPASS
-        // Do nothing.
+// Do nothing.
 #elif SKIP_PEC_ERROR_ACTIONS
         if (e != PECError) {
             OpenAIR();
@@ -146,7 +140,6 @@ private:
 #if STOP_CORE_ON_SAFE_STATE
         op_mode &= ~Core;
 #endif
-
 #if START_DEBUG_ON_SAFE_STATE
         op_mode |= Debug;
 #endif

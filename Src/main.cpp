@@ -40,13 +40,14 @@ struct IVT {
     std::atomic<uint32_t> tick{ 0 }; // time in ms
 
     static constexpr uint32_t kMaxDelay{ 500 }; // time in ms
-    static constexpr float kPrechargeMinStartVoltage = 470.0f;
-    static constexpr float kPrechargeMaxEndVoltage = 450.0f;
+    static constexpr float kPrechargeMinStartVoltage{ 470.0f };
+    static constexpr float kPrechargeMaxEndVoltage{ 450.0f };
+    static constexpr uint8_t kHysteresis{ 10 };
 
-    int isCharged(uint32_t const sum_of_cells) const {
+    int prechargeCompare(uint32_t const sum_of_cells) const {
         float percentage = U1 * 100 / U2;
         float match_percentage = U2 * 100 / sum_of_cells - 100;
-        bool voltage_match = match_percentage < 10 && match_percentage > -10;
+        bool voltage_match = match_percentage < kHysteresis && match_percentage > -kHysteresis;
 
         if (percentage >= 95 && voltage_match && U1 > kPrechargeMinStartVoltage && U2 > kPrechargeMinStartVoltage)
             return Charged;
@@ -193,12 +194,12 @@ int main(void)
             auto const temp_status = ltc6811->GetTemperatureStatus();
 
             if (!status->isError(Status::PECError, !voltage_status.has_value()) && !status->isError(Status::PECError, !temp_status.has_value())) {
-                status->TestLimping(voltage_status.value().min);
+                status->isError(Status::Limping, voltage_status.value().min < Status::kLimpMinVoltage);
                 nlg5->SetChargeCurrent(voltage_status.value().max);
                 pwm_fan->SetFanDutyCycle(pwm_fan->CalcDutyCycle(temp_status.value().max));
 #if CHECK_IVT
                 if (!ivt->isLost()) { // This, if anything, will be the cause of error false positives
-                    switch (ivt->isCharged(voltage_status.value().sum)) {
+                    switch (ivt->prechargeCompare(voltage_status.value().sum)) {
                     case IVT::Charged:
                         status->ClosePre();
                         break;
@@ -283,63 +284,62 @@ int main(void)
             CANTxNLGBControl();
             nlg5->previous_tick = nlg5->tick.load();
         }
-    }
 #endif
 
 #if CAN_DEBUG
-    /*  Functions for debugging and untested code. */
-    if (status->op_mode & Status::Debug) {
-        CANTxVoltage(ltc6811->GetCellData());
-        CANTxTemperature(ltc6811->GetTempData());
-        CANTxDCCfg(ltc6811->GetSlaveCfg());
-        CanTxOpMode();
-    }
+        /*  Functions for debugging and untested code. */
+        if (status->op_mode & Status::Debug) {
+            CANTxVoltage(ltc6811->GetCellData());
+            CANTxTemperature(ltc6811->GetTempData());
+            CANTxDCCfg(ltc6811->GetSlaveCfg());
+            CanTxOpMode();
+        }
 #endif
 
-    if (status->op_mode & Status::Logging) {
-        FILINFO inf;
-        if (BSP_SD_IsDetected()) {
-            HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_2); // LED 2
+        if (status->op_mode & Status::Logging) {
+            FILINFO inf;
+            if (BSP_SD_IsDetected()) {
+                HAL_GPIO_TogglePin(Led2_GPIO_Port, Led2_Pin);
 
-            if (f_stat(kDirectory, &inf) == FR_NO_FILE)
-                f_mkdir(kDirectory);
+                if (f_stat(kDirectory, &inf) == FR_NO_FILE)
+                    f_mkdir(kDirectory);
 
-            // Magic number below is probably 500MB
-            if (f_size(&SDFile) < 524288000 && f_open(&SDFile, kFile, FA_WRITE | FA_OPEN_APPEND) == FR_OK) {
-                f_printf(&SDFile, "%u,", status->tick / 100); // TODO If the uptime number seems wrong, just change or remove the 100.
-                /* ISO 8601 Notation (yyyy-mm-ddThh:mm:ss) */
-                f_printf(&SDFile, "%02u-%02u-%02uT%02u:%02u:%02u,",
-                        status->rtc.tm_year, status->rtc.tm_mon, status->rtc.tm_mday, status->rtc.tm_hour, status->rtc.tm_min, status->rtc.tm_sec);
-                // TODO Not implemented.
+                // Magic number below is probably 500MB
+                if (f_size(&SDFile) < 524288000 && f_open(&SDFile, kFile, FA_WRITE | FA_OPEN_APPEND) == FR_OK) {
+                    f_printf(&SDFile, "%u,", status->tick / 100); // TODO If the uptime number seems wrong, just change or remove the 100.
+                    /* ISO 8601 Notation (yyyy-mm-ddThh:mm:ss) */
+                    f_printf(&SDFile, "%02u-%02u-%02uT%02u:%02u:%02u,",
+                            status->rtc.tm_year, status->rtc.tm_mon, status->rtc.tm_mday, status->rtc.tm_hour, status->rtc.tm_min, status->rtc.tm_sec);
+                    // TODO Not implemented.
 
-                UINT number_written = 0;
-                uint8_t write_error{ 0 };
+                    UINT number_written = 0;
+                    uint8_t write_error{ 0 };
 
-                // TODO need to chop out the PEC data and write to file
+                    // TODO need to chop out the PEC data and write to file
 #if 0
-                for (auto& reg : cell_data) {
-                    auto serialized_reg = reinterpret_cast<uint8_t*>(reg.data.data()->data());
+                    for (auto& reg : cell_data) {
+                        auto serialized_reg = reinterpret_cast<uint8_t*>(reg.data.data()->data());
 
-                    f_write(&SDFile, serialized_reg, kBytesPerRegister * kDaisyChainLength, &number_written);
+                        f_write(&SDFile, serialized_reg, kBytesPerRegister * kDaisyChainLength, &number_written);
 
-                    if (number_written != kBytesPerRegister * kDaisyChainLength)
-                        write_error = 1;
-                }
+                        if (number_written != kBytesPerRegister * kDaisyChainLength)
+                            write_error = 1;
+                    }
 
-                for (auto& reg : temp_data) {
-                    auto serialized_reg = reinterpret_cast<uint8_t*>(reg.data.data()->data());
+                    for (auto& reg : temp_data) {
+                        auto serialized_reg = reinterpret_cast<uint8_t*>(reg.data.data()->data());
 
-                    f_write(&SDFile, serialized_reg, kBytesPerRegister * kDaisyChainLength, &number_written);
+                        f_write(&SDFile, serialized_reg, kBytesPerRegister * kDaisyChainLength, &number_written);
 
-                    if (number_written != kBytesPerRegister * kDaisyChainLength)
-                        write_error = 1;
-                }
+                        if (number_written != kBytesPerRegister * kDaisyChainLength)
+                            write_error = 1;
+                    }
 #endif
-                f_sync(&SDFile);
-                f_close(&SDFile);
+                    f_sync(&SDFile);
+                    f_close(&SDFile);
+                }
             }
         }
-
     }
 }
 /* USER CODE END 3 */
@@ -835,18 +835,22 @@ uint32_t CanTxError(void) {
     TxHeader.IDE = CAN_ID_STD;
     TxHeader.DLC = 8;
 
-    auto PEC_change = status->GetPECChange();
+    static uint32_t last_error;
 
+    uint32_t total_error{ status->getPECError() };
+    uint32_t error_change = total_error - last_error;
     uint8_t data[] = {
-            static_cast<uint8_t>(status->PEC_counter >> 24),
-            static_cast<uint8_t>(status->PEC_counter >> 16),
-            static_cast<uint8_t>(status->PEC_counter >>  8),
-            static_cast<uint8_t>(status->PEC_counter >>  0),
-            static_cast<uint8_t>(PEC_change >> 24),
-            static_cast<uint8_t>(PEC_change >> 16),
-            static_cast<uint8_t>(PEC_change >>  8),
-            static_cast<uint8_t>(PEC_change >>  0),
+            static_cast<uint8_t>(total_error >> 24),
+            static_cast<uint8_t>(total_error >> 16),
+            static_cast<uint8_t>(total_error >>  8),
+            static_cast<uint8_t>(total_error >>  0),
+            static_cast<uint8_t>(error_change >> 24),
+            static_cast<uint8_t>(error_change >> 16),
+            static_cast<uint8_t>(error_change >>  8),
+            static_cast<uint8_t>(error_change >>  0),
     };
+
+    last_error = total_error;
 
     if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
         return Fail;

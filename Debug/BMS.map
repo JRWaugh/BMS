@@ -2782,18 +2782,7 @@ Discarded input sections
  .text          0x0000000000000000        0x0 Middlewares/Third_Party/FatFs/src/ff.o
  .data          0x0000000000000000        0x0 Middlewares/Third_Party/FatFs/src/ff.o
  .bss           0x0000000000000000        0x0 Middlewares/Third_Party/FatFs/src/ff.o
- .text.dec_lock
-                0x0000000000000000       0x78 Middlewares/Third_Party/FatFs/src/ff.o
- .text.clmt_clust
-                0x0000000000000000       0x68 Middlewares/Third_Party/FatFs/src/ff.o
- .text.get_fileinfo
-                0x0000000000000000       0xbe Middlewares/Third_Party/FatFs/src/ff.o
- .text.validate
-                0x0000000000000000       0x6a Middlewares/Third_Party/FatFs/src/ff.o
  .text.f_read   0x0000000000000000      0x27e Middlewares/Third_Party/FatFs/src/ff.o
- .text.f_write  0x0000000000000000      0x2ea Middlewares/Third_Party/FatFs/src/ff.o
- .text.f_sync   0x0000000000000000       0xfc Middlewares/Third_Party/FatFs/src/ff.o
- .text.f_close  0x0000000000000000       0x54 Middlewares/Third_Party/FatFs/src/ff.o
  .text.f_lseek  0x0000000000000000      0x412 Middlewares/Third_Party/FatFs/src/ff.o
  .text.f_opendir
                 0x0000000000000000       0xe6 Middlewares/Third_Party/FatFs/src/ff.o
@@ -2801,26 +2790,16 @@ Discarded input sections
                 0x0000000000000000       0x4c Middlewares/Third_Party/FatFs/src/ff.o
  .text.f_readdir
                 0x0000000000000000       0x7a Middlewares/Third_Party/FatFs/src/ff.o
- .text.f_stat   0x0000000000000000       0x72 Middlewares/Third_Party/FatFs/src/ff.o
  .text.f_getfree
                 0x0000000000000000      0x16a Middlewares/Third_Party/FatFs/src/ff.o
  .text.f_truncate
                 0x0000000000000000      0x128 Middlewares/Third_Party/FatFs/src/ff.o
- .text.f_mkdir  0x0000000000000000      0x20e Middlewares/Third_Party/FatFs/src/ff.o
  .text.f_rename
                 0x0000000000000000      0x1f2 Middlewares/Third_Party/FatFs/src/ff.o
  .text.f_mkfs   0x0000000000000000      0x858 Middlewares/Third_Party/FatFs/src/ff.o
  .text.f_gets   0x0000000000000000       0x7a Middlewares/Third_Party/FatFs/src/ff.o
- .text.putc_bfd
-                0x0000000000000000       0x7a Middlewares/Third_Party/FatFs/src/ff.o
- .text.putc_flush
-                0x0000000000000000       0x4c Middlewares/Third_Party/FatFs/src/ff.o
- .text.putc_init
-                0x0000000000000000       0x2a Middlewares/Third_Party/FatFs/src/ff.o
  .text.f_putc   0x0000000000000000       0x3a Middlewares/Third_Party/FatFs/src/ff.o
  .text.f_puts   0x0000000000000000       0x48 Middlewares/Third_Party/FatFs/src/ff.o
- .text.f_printf
-                0x0000000000000000      0x440 Middlewares/Third_Party/FatFs/src/ff.o
  .rodata.cst32.9941
                 0x0000000000000000        0xe Middlewares/Third_Party/FatFs/src/ff.o
  .rodata.cst.9940
@@ -3576,7 +3555,7 @@ Discarded input sections
                 0x0000000000000000        0x4 Src/Status.o
  .rodata._ZL6kDelta
                 0x0000000000000000        0x1 Src/Status.o
- .debug_info    0x0000000000000000    0x15e4d Src/Status.o
+ .debug_info    0x0000000000000000    0x15de5 Src/Status.o
  .debug_abbrev  0x0000000000000000      0x7fb Src/Status.o
  .debug_aranges
                 0x0000000000000000       0x20 Src/Status.o
@@ -3710,9 +3689,9 @@ Discarded input sections
  .debug_macro   0x0000000000000000       0x10 Src/Status.o
  .debug_macro   0x0000000000000000       0x41 Src/Status.o
  .debug_macro   0x0000000000000000       0x40 Src/Status.o
- .debug_macro   0x0000000000000000       0x40 Src/Status.o
+ .debug_macro   0x0000000000000000       0x3a Src/Status.o
  .debug_line    0x0000000000000000     0x172c Src/Status.o
- .debug_str     0x0000000000000000    0xf1f74 Src/Status.o
+ .debug_str     0x0000000000000000    0xf1eb6 Src/Status.o
  .comment       0x0000000000000000       0x7c Src/Status.o
  .debug_frame   0x0000000000000000       0x38 Src/Status.o
  .ARM.attributes
@@ -4050,19 +4029,21 @@ Discarded input sections
  .debug_macro   0x0000000000000000       0x1c Src/fatfs_platform.o
  .group         0x0000000000000000        0x8 Src/main.o
  .group         0x0000000000000000        0xc Src/main.o
- .group         0x0000000000000000        0x8 Src/main.o
- .group         0x0000000000000000        0xc Src/main.o
- .group         0x0000000000000000        0xc Src/main.o
  .group         0x0000000000000000        0xc Src/main.o
  .group         0x0000000000000000        0x8 Src/main.o
  .group         0x0000000000000000        0xc Src/main.o
  .group         0x0000000000000000        0xc Src/main.o
+ .group         0x0000000000000000        0x8 Src/main.o
+ .group         0x0000000000000000        0x8 Src/main.o
+ .group         0x0000000000000000        0x8 Src/main.o
+ .group         0x0000000000000000        0x8 Src/main.o
+ .group         0x0000000000000000        0xc Src/main.o
+ .group         0x0000000000000000        0xc Src/main.o
  .group         0x0000000000000000        0xc Src/main.o
  .group         0x0000000000000000        0xc Src/main.o
  .group         0x0000000000000000        0xc Src/main.o
  .group         0x0000000000000000        0x8 Src/main.o
  .group         0x0000000000000000        0xc Src/main.o
- .group         0x0000000000000000        0x8 Src/main.o
  .group         0x0000000000000000        0xc Src/main.o
  .group         0x0000000000000000        0xc Src/main.o
  .group         0x0000000000000000        0x8 Src/main.o
@@ -4270,62 +4251,22 @@ Discarded input sections
                 0x0000000000000000        0x4 Src/main.o
  .text.CAN0_Test
                 0x0000000000000000       0x5c Src/main.o
- .text._Z12CANTxVoltageRKSt5arrayI20LTC6811RegisterGroupItELj4EE
-                0x0000000000000000      0x11c Src/main.o
- .text._Z16CANTxTemperatureRKSt5arrayI20LTC6811RegisterGroupIsELj2EE
-                0x0000000000000000      0x11c Src/main.o
- .text._Z10CANTxDCCfgRK20LTC6811RegisterGroupIhE
-                0x0000000000000000       0xe8 Src/main.o
- .text._ZNKSt5arrayI20LTC6811RegisterGroupItELj4EE5beginEv
-                0x0000000000000000       0x18 Src/main.o
- .text._ZNKSt5arrayI20LTC6811RegisterGroupItELj4EE3endEv
-                0x0000000000000000       0x1c Src/main.o
  .text._ZNKSt5arrayI15LTC6811RegisterItELj12EEixEj
                 0x0000000000000000       0x1e Src/main.o
  .text._ZNKSt5arrayItLj3EE5beginEv
                 0x0000000000000000       0x18 Src/main.o
  .text._ZNKSt5arrayItLj3EE3endEv
                 0x0000000000000000       0x1a Src/main.o
- .text._ZNKSt5arrayI20LTC6811RegisterGroupIsELj2EE5beginEv
-                0x0000000000000000       0x18 Src/main.o
- .text._ZNKSt5arrayI20LTC6811RegisterGroupIsELj2EE3endEv
-                0x0000000000000000       0x1a Src/main.o
- .text._ZNKSt5arrayI15LTC6811RegisterIsELj12EEixEj
-                0x0000000000000000       0x1e Src/main.o
- .text._ZNKSt5arrayIsLj3EE5beginEv
-                0x0000000000000000       0x18 Src/main.o
- .text._ZNKSt5arrayIsLj3EE3endEv
-                0x0000000000000000       0x1a Src/main.o
- .text._ZNKSt5arrayI15LTC6811RegisterIhELj12EE5beginEv
-                0x0000000000000000       0x18 Src/main.o
- .text._ZNKSt5arrayI15LTC6811RegisterIhELj12EE3endEv
-                0x0000000000000000       0x1a Src/main.o
- .text._ZNKSt5arrayIhLj6EEixEj
-                0x0000000000000000       0x1e Src/main.o
  .text._ZNSt14__array_traitsI20LTC6811RegisterGroupItELj4EE6_S_ptrERA4_KS1_
                 0x0000000000000000       0x16 Src/main.o
- .text._ZNKSt5arrayI20LTC6811RegisterGroupItELj4EE4dataEv
-                0x0000000000000000       0x1a Src/main.o
  .text._ZNSt14__array_traitsI15LTC6811RegisterItELj12EE6_S_refERA12_KS1_j
                 0x0000000000000000       0x1e Src/main.o
  .text._ZNSt14__array_traitsItLj3EE6_S_ptrERA3_Kt
                 0x0000000000000000       0x16 Src/main.o
  .text._ZNKSt5arrayItLj3EE4dataEv
                 0x0000000000000000       0x1a Src/main.o
- .text._ZNSt14__array_traitsI20LTC6811RegisterGroupIsELj2EE6_S_ptrERA2_KS1_
-                0x0000000000000000       0x16 Src/main.o
- .text._ZNKSt5arrayI20LTC6811RegisterGroupIsELj2EE4dataEv
-                0x0000000000000000       0x1a Src/main.o
- .text._ZNSt14__array_traitsI15LTC6811RegisterIsELj12EE6_S_refERA12_KS1_j
-                0x0000000000000000       0x1e Src/main.o
- .text._ZNSt14__array_traitsIsLj3EE6_S_ptrERA3_Ks
-                0x0000000000000000       0x16 Src/main.o
- .text._ZNKSt5arrayIsLj3EE4dataEv
-                0x0000000000000000       0x1a Src/main.o
  .text._ZNSt14__array_traitsI15LTC6811RegisterIhELj12EE6_S_ptrERA12_KS1_
                 0x0000000000000000       0x16 Src/main.o
- .text._ZNKSt5arrayI15LTC6811RegisterIhELj12EE4dataEv
-                0x0000000000000000       0x1a Src/main.o
  .text._ZNSt14__array_traitsIhLj6EE6_S_refERA6_Khj
                 0x0000000000000000       0x1c Src/main.o
  .debug_macro   0x0000000000000000      0xb92 Src/main.o
@@ -4464,7 +4405,7 @@ Discarded input sections
  .debug_macro   0x0000000000000000       0x10 Src/main.o
  .debug_macro   0x0000000000000000       0x41 Src/main.o
  .debug_macro   0x0000000000000000       0x40 Src/main.o
- .debug_macro   0x0000000000000000       0x40 Src/main.o
+ .debug_macro   0x0000000000000000       0x3a Src/main.o
  .group         0x0000000000000000        0xc Src/sd_diskio.o
  .group         0x0000000000000000        0xc Src/sd_diskio.o
  .group         0x0000000000000000        0xc Src/sd_diskio.o
@@ -5230,7 +5171,7 @@ LOAD c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
                 0x0000000008000000                g_pfnVectors
                 0x00000000080001c4                . = ALIGN (0x4)
 
-.text           0x00000000080001c8     0xbdac
+.text           0x00000000080001c8     0xd204
                 0x00000000080001c8                . = ALIGN (0x4)
  *(.text)
  .text          0x00000000080001c8       0x40 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
@@ -5596,823 +5537,916 @@ LOAD c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
                 0x00000000080062ec       0x44 Middlewares/Third_Party/FatFs/src/ff.o
  .text.inc_lock
                 0x0000000008006330      0x11c Middlewares/Third_Party/FatFs/src/ff.o
+ .text.dec_lock
+                0x000000000800644c       0x78 Middlewares/Third_Party/FatFs/src/ff.o
  .text.clear_lock
-                0x000000000800644c       0x48 Middlewares/Third_Party/FatFs/src/ff.o
+                0x00000000080064c4       0x48 Middlewares/Third_Party/FatFs/src/ff.o
  .text.sync_window
-                0x0000000008006494       0x88 Middlewares/Third_Party/FatFs/src/ff.o
+                0x000000000800650c       0x88 Middlewares/Third_Party/FatFs/src/ff.o
  .text.move_window
-                0x000000000800651c       0x5a Middlewares/Third_Party/FatFs/src/ff.o
- *fill*         0x0000000008006576        0x2 
- .text.sync_fs  0x0000000008006578       0xdc Middlewares/Third_Party/FatFs/src/ff.o
+                0x0000000008006594       0x5a Middlewares/Third_Party/FatFs/src/ff.o
+ *fill*         0x00000000080065ee        0x2 
+ .text.sync_fs  0x00000000080065f0       0xdc Middlewares/Third_Party/FatFs/src/ff.o
  .text.clust2sect
-                0x0000000008006654       0x3e Middlewares/Third_Party/FatFs/src/ff.o
- .text.get_fat  0x0000000008006692      0x14a Middlewares/Third_Party/FatFs/src/ff.o
- .text.put_fat  0x00000000080067dc      0x1ce Middlewares/Third_Party/FatFs/src/ff.o
+                0x00000000080066cc       0x3e Middlewares/Third_Party/FatFs/src/ff.o
+ .text.get_fat  0x000000000800670a      0x14a Middlewares/Third_Party/FatFs/src/ff.o
+ .text.put_fat  0x0000000008006854      0x1ce Middlewares/Third_Party/FatFs/src/ff.o
  .text.remove_chain
-                0x00000000080069aa       0xca Middlewares/Third_Party/FatFs/src/ff.o
+                0x0000000008006a22       0xca Middlewares/Third_Party/FatFs/src/ff.o
  .text.create_chain
-                0x0000000008006a74      0x130 Middlewares/Third_Party/FatFs/src/ff.o
- .text.dir_sdi  0x0000000008006ba4       0xf6 Middlewares/Third_Party/FatFs/src/ff.o
+                0x0000000008006aec      0x130 Middlewares/Third_Party/FatFs/src/ff.o
+ .text.clmt_clust
+                0x0000000008006c1c       0x68 Middlewares/Third_Party/FatFs/src/ff.o
+ .text.dir_sdi  0x0000000008006c84       0xf6 Middlewares/Third_Party/FatFs/src/ff.o
  .text.dir_next
-                0x0000000008006c9a      0x18a Middlewares/Third_Party/FatFs/src/ff.o
+                0x0000000008006d7a      0x18a Middlewares/Third_Party/FatFs/src/ff.o
  .text.dir_alloc
-                0x0000000008006e24       0x8e Middlewares/Third_Party/FatFs/src/ff.o
+                0x0000000008006f04       0x8e Middlewares/Third_Party/FatFs/src/ff.o
  .text.ld_clust
-                0x0000000008006eb2       0x3e Middlewares/Third_Party/FatFs/src/ff.o
+                0x0000000008006f92       0x3e Middlewares/Third_Party/FatFs/src/ff.o
  .text.st_clust
-                0x0000000008006ef0       0x40 Middlewares/Third_Party/FatFs/src/ff.o
+                0x0000000008006fd0       0x40 Middlewares/Third_Party/FatFs/src/ff.o
  .text.dir_read
-                0x0000000008006f30       0xba Middlewares/Third_Party/FatFs/src/ff.o
+                0x0000000008007010       0xba Middlewares/Third_Party/FatFs/src/ff.o
  .text.dir_find
-                0x0000000008006fea       0xaa Middlewares/Third_Party/FatFs/src/ff.o
+                0x00000000080070ca       0xaa Middlewares/Third_Party/FatFs/src/ff.o
  .text.dir_register
-                0x0000000008007094       0x64 Middlewares/Third_Party/FatFs/src/ff.o
+                0x0000000008007174       0x64 Middlewares/Third_Party/FatFs/src/ff.o
  .text.dir_remove
-                0x00000000080070f8       0x3c Middlewares/Third_Party/FatFs/src/ff.o
+                0x00000000080071d8       0x3c Middlewares/Third_Party/FatFs/src/ff.o
+ .text.get_fileinfo
+                0x0000000008007214       0xbe Middlewares/Third_Party/FatFs/src/ff.o
+ *fill*         0x00000000080072d2        0x2 
  .text.create_name
-                0x0000000008007134      0x128 Middlewares/Third_Party/FatFs/src/ff.o
+                0x00000000080072d4      0x128 Middlewares/Third_Party/FatFs/src/ff.o
  .text.follow_path
-                0x000000000800725c       0xe2 Middlewares/Third_Party/FatFs/src/ff.o
+                0x00000000080073fc       0xe2 Middlewares/Third_Party/FatFs/src/ff.o
  .text.get_ldnumber
-                0x000000000800733e       0x88 Middlewares/Third_Party/FatFs/src/ff.o
- *fill*         0x00000000080073c6        0x2 
+                0x00000000080074de       0x88 Middlewares/Third_Party/FatFs/src/ff.o
+ *fill*         0x0000000008007566        0x2 
  .text.check_fs
-                0x00000000080073c8       0xac Middlewares/Third_Party/FatFs/src/ff.o
+                0x0000000008007568       0xac Middlewares/Third_Party/FatFs/src/ff.o
  .text.find_volume
-                0x0000000008007474      0x498 Middlewares/Third_Party/FatFs/src/ff.o
- .text.f_mount  0x000000000800790c       0x8c Middlewares/Third_Party/FatFs/src/ff.o
-                0x000000000800790c                f_mount
- .text.f_open   0x0000000008007998      0x37c Middlewares/Third_Party/FatFs/src/ff.o
-                0x0000000008007998                f_open
+                0x0000000008007614      0x498 Middlewares/Third_Party/FatFs/src/ff.o
+ .text.validate
+                0x0000000008007aac       0x6a Middlewares/Third_Party/FatFs/src/ff.o
+ *fill*         0x0000000008007b16        0x2 
+ .text.f_mount  0x0000000008007b18       0x8c Middlewares/Third_Party/FatFs/src/ff.o
+                0x0000000008007b18                f_mount
+ .text.f_open   0x0000000008007ba4      0x37c Middlewares/Third_Party/FatFs/src/ff.o
+                0x0000000008007ba4                f_open
+ .text.f_write  0x0000000008007f20      0x2ea Middlewares/Third_Party/FatFs/src/ff.o
+                0x0000000008007f20                f_write
+ .text.f_sync   0x000000000800820a       0xfc Middlewares/Third_Party/FatFs/src/ff.o
+                0x000000000800820a                f_sync
+ .text.f_close  0x0000000008008306       0x54 Middlewares/Third_Party/FatFs/src/ff.o
+                0x0000000008008306                f_close
+ .text.f_stat   0x000000000800835a       0x72 Middlewares/Third_Party/FatFs/src/ff.o
+                0x000000000800835a                f_stat
  .text.f_unlink
-                0x0000000008007d14      0x156 Middlewares/Third_Party/FatFs/src/ff.o
-                0x0000000008007d14                f_unlink
- *fill*         0x0000000008007e6a        0x2 
+                0x00000000080083cc      0x156 Middlewares/Third_Party/FatFs/src/ff.o
+                0x00000000080083cc                f_unlink
+ .text.f_mkdir  0x0000000008008522      0x20e Middlewares/Third_Party/FatFs/src/ff.o
+                0x0000000008008522                f_mkdir
+ .text.putc_bfd
+                0x0000000008008730       0x7a Middlewares/Third_Party/FatFs/src/ff.o
+ .text.putc_flush
+                0x00000000080087aa       0x4c Middlewares/Third_Party/FatFs/src/ff.o
+ .text.putc_init
+                0x00000000080087f6       0x2a Middlewares/Third_Party/FatFs/src/ff.o
+ .text.f_printf
+                0x0000000008008820      0x440 Middlewares/Third_Party/FatFs/src/ff.o
+                0x0000000008008820                f_printf
  .text.FATFS_LinkDriverEx
-                0x0000000008007e6c       0x98 Middlewares/Third_Party/FatFs/src/ff_gen_drv.o
-                0x0000000008007e6c                FATFS_LinkDriverEx
+                0x0000000008008c60       0x98 Middlewares/Third_Party/FatFs/src/ff_gen_drv.o
+                0x0000000008008c60                FATFS_LinkDriverEx
  .text.FATFS_LinkDriver
-                0x0000000008007f04       0x1e Middlewares/Third_Party/FatFs/src/ff_gen_drv.o
-                0x0000000008007f04                FATFS_LinkDriver
- *fill*         0x0000000008007f22        0x2 
+                0x0000000008008cf8       0x1e Middlewares/Third_Party/FatFs/src/ff_gen_drv.o
+                0x0000000008008cf8                FATFS_LinkDriver
+ *fill*         0x0000000008008d16        0x2 
  .text._Z8DWT_Initv
-                0x0000000008007f24       0x34 Src/LTC6811.o
-                0x0000000008007f24                DWT_Init()
+                0x0000000008008d18       0x34 Src/LTC6811.o
+                0x0000000008008d18                DWT_Init()
  .text._Z9DWT_Delaym
-                0x0000000008007f58       0x54 Src/LTC6811.o
-                0x0000000008007f58                DWT_Delay(unsigned long)
+                0x0000000008008d4c       0x54 Src/LTC6811.o
+                0x0000000008008d4c                DWT_Delay(unsigned long)
  .text._ZN7LTC6811C2ER19__SPI_HandleTypeDefNS_4ModeENS_3DCPENS_6CellChENS_5AuxChENS_5STSChE
-                0x0000000008007fac      0x33c Src/LTC6811.o
-                0x0000000008007fac                LTC6811::LTC6811(__SPI_HandleTypeDef&, LTC6811::Mode, LTC6811::DCP, LTC6811::CellCh, LTC6811::AuxCh, LTC6811::STSCh)
-                0x0000000008007fac                LTC6811::LTC6811(__SPI_HandleTypeDef&, LTC6811::Mode, LTC6811::DCP, LTC6811::CellCh, LTC6811::AuxCh, LTC6811::STSCh)
+                0x0000000008008da0      0x33c Src/LTC6811.o
+                0x0000000008008da0                LTC6811::LTC6811(__SPI_HandleTypeDef&, LTC6811::Mode, LTC6811::DCP, LTC6811::CellCh, LTC6811::AuxCh, LTC6811::STSCh)
+                0x0000000008008da0                LTC6811::LTC6811(__SPI_HandleTypeDef&, LTC6811::Mode, LTC6811::DCP, LTC6811::CellCh, LTC6811::AuxCh, LTC6811::STSCh)
  .text._ZN7LTC681113WakeFromSleepEv
-                0x00000000080082e8       0x48 Src/LTC6811.o
-                0x00000000080082e8                LTC6811::WakeFromSleep()
+                0x00000000080090dc       0x48 Src/LTC6811.o
+                0x00000000080090dc                LTC6811::WakeFromSleep()
  .text._ZN7LTC681112WakeFromIdleEv
-                0x0000000008008330       0x50 Src/LTC6811.o
-                0x0000000008008330                LTC6811::WakeFromIdle()
+                0x0000000008009124       0x50 Src/LTC6811.o
+                0x0000000008009124                LTC6811::WakeFromIdle()
  .text._ZN7LTC681124ReadVoltageRegisterGroupENS_5GroupE
-                0x0000000008008380       0x2e Src/LTC6811.o
-                0x0000000008008380                LTC6811::ReadVoltageRegisterGroup(LTC6811::Group)
+                0x0000000008009174       0x2e Src/LTC6811.o
+                0x0000000008009174                LTC6811::ReadVoltageRegisterGroup(LTC6811::Group)
  .text._ZN7LTC681120ReadAuxRegisterGroupENS_5GroupE
-                0x00000000080083ae       0x2e Src/LTC6811.o
-                0x00000000080083ae                LTC6811::ReadAuxRegisterGroup(LTC6811::Group)
+                0x00000000080091a2       0x2e Src/LTC6811.o
+                0x00000000080091a2                LTC6811::ReadAuxRegisterGroup(LTC6811::Group)
  .text._ZN7LTC681123ReadConfigRegisterGroupEv
-                0x00000000080083dc       0x1e Src/LTC6811.o
-                0x00000000080083dc                LTC6811::ReadConfigRegisterGroup()
+                0x00000000080091d0       0x1e Src/LTC6811.o
+                0x00000000080091d0                LTC6811::ReadConfigRegisterGroup()
  .text._ZN7LTC681124WriteConfigRegisterGroupEv
-                0x00000000080083fa       0x1e Src/LTC6811.o
-                0x00000000080083fa                LTC6811::WriteConfigRegisterGroup()
+                0x00000000080091ee       0x1e Src/LTC6811.o
+                0x00000000080091ee                LTC6811::WriteConfigRegisterGroup()
  .text._ZNSt14__array_traitsIhLj4EE6_S_ptrERA4_Kh
-                0x0000000008008418       0x16 Src/LTC6811.o
-                0x0000000008008418                std::__array_traits<unsigned char, 4u>::_S_ptr(unsigned char const (&) [4])
+                0x000000000800920c       0x16 Src/LTC6811.o
+                0x000000000800920c                std::__array_traits<unsigned char, 4u>::_S_ptr(unsigned char const (&) [4])
  .text._ZNKSt5arrayIhLj4EE4dataEv
-                0x000000000800842e       0x1a Src/LTC6811.o
-                0x000000000800842e                std::array<unsigned char, 4u>::data() const
+                0x0000000008009222       0x1a Src/LTC6811.o
+                0x0000000008009222                std::array<unsigned char, 4u>::data() const
  .text._ZN7LTC681116GetVoltageStatusEv
-                0x0000000008008448      0x134 Src/LTC6811.o
-                0x0000000008008448                LTC6811::GetVoltageStatus()
+                0x000000000800923c      0x134 Src/LTC6811.o
+                0x000000000800923c                LTC6811::GetVoltageStatus()
  .text._ZZN7LTC681120GetTemperatureStatusEvENKUlsE_clEs
-                0x000000000800857c       0xdc Src/LTC6811.o
+                0x0000000008009370       0xdc Src/LTC6811.o
  .text._ZN7LTC681120GetTemperatureStatusEv
-                0x0000000008008658      0x130 Src/LTC6811.o
-                0x0000000008008658                LTC6811::GetTemperatureStatus()
+                0x000000000800944c      0x130 Src/LTC6811.o
+                0x000000000800944c                LTC6811::GetTemperatureStatus()
  .text._ZN7LTC681120BuildDischargeConfigERK20LTC6811VoltageStatus
-                0x0000000008008788      0x398 Src/LTC6811.o
-                0x0000000008008788                LTC6811::BuildDischargeConfig(LTC6811VoltageStatus const&)
+                0x000000000800957c      0x398 Src/LTC6811.o
+                0x000000000800957c                LTC6811::BuildDischargeConfig(LTC6811VoltageStatus const&)
  .text._ZN7LTC681115StartConversionERKSt5arrayIhLj4EE
-                0x0000000008008b20       0x50 Src/LTC6811.o
-                0x0000000008008b20                LTC6811::StartConversion(std::array<unsigned char, 4u> const&)
+                0x0000000008009914       0x50 Src/LTC6811.o
+                0x0000000008009914                LTC6811::StartConversion(std::array<unsigned char, 4u> const&)
  .text._ZSt4moveIRSt5arrayIhLj4EEEONSt16remove_referenceIT_E4typeEOS4_
-                0x0000000008008b70       0x16 Src/LTC6811.o
-                0x0000000008008b70                std::remove_reference<std::array<unsigned char, 4u>&>::type&& std::move<std::array<unsigned char, 4u>&>(std::array<unsigned char, 4u>&)
+                0x0000000008009964       0x16 Src/LTC6811.o
+                0x0000000008009964                std::remove_reference<std::array<unsigned char, 4u>&>::type&& std::move<std::array<unsigned char, 4u>&>(std::array<unsigned char, 4u>&)
  .text._ZN20LTC6811RegisterGroupIhEC2EOSt5arrayIhLj4EE
-                0x0000000008008b86       0x26 Src/LTC6811.o
-                0x0000000008008b86                LTC6811RegisterGroup<unsigned char>::LTC6811RegisterGroup(std::array<unsigned char, 4u>&&)
-                0x0000000008008b86                LTC6811RegisterGroup<unsigned char>::LTC6811RegisterGroup(std::array<unsigned char, 4u>&&)
+                0x000000000800997a       0x26 Src/LTC6811.o
+                0x000000000800997a                LTC6811RegisterGroup<unsigned char>::LTC6811RegisterGroup(std::array<unsigned char, 4u>&&)
+                0x000000000800997a                LTC6811RegisterGroup<unsigned char>::LTC6811RegisterGroup(std::array<unsigned char, 4u>&&)
  .text._ZN20LTC6811RegisterGroupItEC2EOSt5arrayIhLj4EE
-                0x0000000008008bac       0x26 Src/LTC6811.o
-                0x0000000008008bac                LTC6811RegisterGroup<unsigned short>::LTC6811RegisterGroup(std::array<unsigned char, 4u>&&)
-                0x0000000008008bac                LTC6811RegisterGroup<unsigned short>::LTC6811RegisterGroup(std::array<unsigned char, 4u>&&)
+                0x00000000080099a0       0x26 Src/LTC6811.o
+                0x00000000080099a0                LTC6811RegisterGroup<unsigned short>::LTC6811RegisterGroup(std::array<unsigned char, 4u>&&)
+                0x00000000080099a0                LTC6811RegisterGroup<unsigned short>::LTC6811RegisterGroup(std::array<unsigned char, 4u>&&)
  .text._ZN20LTC6811RegisterGroupIsEC2EOSt5arrayIhLj4EE
-                0x0000000008008bd2       0x26 Src/LTC6811.o
-                0x0000000008008bd2                LTC6811RegisterGroup<short>::LTC6811RegisterGroup(std::array<unsigned char, 4u>&&)
-                0x0000000008008bd2                LTC6811RegisterGroup<short>::LTC6811RegisterGroup(std::array<unsigned char, 4u>&&)
+                0x00000000080099c6       0x26 Src/LTC6811.o
+                0x00000000080099c6                LTC6811RegisterGroup<short>::LTC6811RegisterGroup(std::array<unsigned char, 4u>&&)
+                0x00000000080099c6                LTC6811RegisterGroup<short>::LTC6811RegisterGroup(std::array<unsigned char, 4u>&&)
  .text._ZNSt5arrayIhLj4EEixEj
-                0x0000000008008bf8       0x1e Src/LTC6811.o
-                0x0000000008008bf8                std::array<unsigned char, 4u>::operator[](unsigned int)
- *fill*         0x0000000008008c16        0x2 
+                0x00000000080099ec       0x1e Src/LTC6811.o
+                0x00000000080099ec                std::array<unsigned char, 4u>::operator[](unsigned int)
+ *fill*         0x0000000008009a0a        0x2 
  .text._ZN7LTC68119PEC15CalcIhLj4EEEtRKSt5arrayIT_XT0_EEj
-                0x0000000008008c18       0x70 Src/LTC6811.o
-                0x0000000008008c18                unsigned short LTC6811::PEC15Calc<unsigned char, 4u>(std::array<unsigned char, 4u> const&, unsigned int)
+                0x0000000008009a0c       0x70 Src/LTC6811.o
+                0x0000000008009a0c                unsigned short LTC6811::PEC15Calc<unsigned char, 4u>(std::array<unsigned char, 4u> const&, unsigned int)
  .text._ZNSt5arrayI15LTC6811RegisterIhELj12EE5beginEv
-                0x0000000008008c88       0x18 Src/LTC6811.o
-                0x0000000008008c88                std::array<LTC6811Register<unsigned char>, 12u>::begin()
+                0x0000000008009a7c       0x18 Src/LTC6811.o
+                0x0000000008009a7c                std::array<LTC6811Register<unsigned char>, 12u>::begin()
  .text._ZNKSt5arrayI15LTC6811RegisterIhELj12EE4sizeEv
-                0x0000000008008ca0       0x16 Src/LTC6811.o
-                0x0000000008008ca0                std::array<LTC6811Register<unsigned char>, 12u>::size() const
+                0x0000000008009a94       0x16 Src/LTC6811.o
+                0x0000000008009a94                std::array<LTC6811Register<unsigned char>, 12u>::size() const
  .text._ZNSt5arrayI15LTC6811RegisterIhELj12EE4fillERKS1_
-                0x0000000008008cb6       0x2c Src/LTC6811.o
-                0x0000000008008cb6                std::array<LTC6811Register<unsigned char>, 12u>::fill(LTC6811Register<unsigned char> const&)
+                0x0000000008009aaa       0x2c Src/LTC6811.o
+                0x0000000008009aaa                std::array<LTC6811Register<unsigned char>, 12u>::fill(LTC6811Register<unsigned char> const&)
  .text._ZNSt5arrayI20LTC6811RegisterGroupItELj4EEixEj
-                0x0000000008008ce2       0x1e Src/LTC6811.o
-                0x0000000008008ce2                std::array<LTC6811RegisterGroup<unsigned short>, 4u>::operator[](unsigned int)
+                0x0000000008009ad6       0x1e Src/LTC6811.o
+                0x0000000008009ad6                std::array<LTC6811RegisterGroup<unsigned short>, 4u>::operator[](unsigned int)
  .text._ZNSt5arrayI15LTC6811RegisterItELj12EE5beginEv
-                0x0000000008008d00       0x18 Src/LTC6811.o
-                0x0000000008008d00                std::array<LTC6811Register<unsigned short>, 12u>::begin()
+                0x0000000008009af4       0x18 Src/LTC6811.o
+                0x0000000008009af4                std::array<LTC6811Register<unsigned short>, 12u>::begin()
  .text._ZNSt5arrayI15LTC6811RegisterItELj12EE4dataEv
-                0x0000000008008d18       0x1a Src/LTC6811.o
-                0x0000000008008d18                std::array<LTC6811Register<unsigned short>, 12u>::data()
+                0x0000000008009b0c       0x1a Src/LTC6811.o
+                0x0000000008009b0c                std::array<LTC6811Register<unsigned short>, 12u>::data()
  .text._ZNSt14__array_traitsI15LTC6811RegisterItELj12EE6_S_ptrERA12_KS1_
-                0x0000000008008d32       0x16 Src/LTC6811.o
-                0x0000000008008d32                std::__array_traits<LTC6811Register<unsigned short>, 12u>::_S_ptr(LTC6811Register<unsigned short> const (&) [12])
+                0x0000000008009b26       0x16 Src/LTC6811.o
+                0x0000000008009b26                std::__array_traits<LTC6811Register<unsigned short>, 12u>::_S_ptr(LTC6811Register<unsigned short> const (&) [12])
  .text._ZN7LTC681117ReadRegisterGroupItEEbR20LTC6811RegisterGroupIT_E
-                0x0000000008008d48       0xd4 Src/LTC6811.o
-                0x0000000008008d48                bool LTC6811::ReadRegisterGroup<unsigned short>(LTC6811RegisterGroup<unsigned short>&)
+                0x0000000008009b3c       0xd4 Src/LTC6811.o
+                0x0000000008009b3c                bool LTC6811::ReadRegisterGroup<unsigned short>(LTC6811RegisterGroup<unsigned short>&)
  .text._ZNSt5arrayI15LTC6811RegisterIhELj12EE4dataEv
-                0x0000000008008e1c       0x1a Src/LTC6811.o
-                0x0000000008008e1c                std::array<LTC6811Register<unsigned char>, 12u>::data()
+                0x0000000008009c10       0x1a Src/LTC6811.o
+                0x0000000008009c10                std::array<LTC6811Register<unsigned char>, 12u>::data()
  .text._ZNSt14__array_traitsI15LTC6811RegisterIhELj12EE6_S_ptrERA12_KS1_
-                0x0000000008008e36       0x16 Src/LTC6811.o
-                0x0000000008008e36                std::__array_traits<LTC6811Register<unsigned char>, 12u>::_S_ptr(LTC6811Register<unsigned char> const (&) [12])
+                0x0000000008009c2a       0x16 Src/LTC6811.o
+                0x0000000008009c2a                std::__array_traits<LTC6811Register<unsigned char>, 12u>::_S_ptr(LTC6811Register<unsigned char> const (&) [12])
  .text._ZN7LTC681117ReadRegisterGroupIhEEbR20LTC6811RegisterGroupIT_E
-                0x0000000008008e4c       0xd4 Src/LTC6811.o
-                0x0000000008008e4c                bool LTC6811::ReadRegisterGroup<unsigned char>(LTC6811RegisterGroup<unsigned char>&)
+                0x0000000008009c40       0xd4 Src/LTC6811.o
+                0x0000000008009c40                bool LTC6811::ReadRegisterGroup<unsigned char>(LTC6811RegisterGroup<unsigned char>&)
  .text._ZN7LTC681118WriteRegisterGroupIhEEbR20LTC6811RegisterGroupIT_E
-                0x0000000008008f20       0x54 Src/LTC6811.o
-                0x0000000008008f20                bool LTC6811::WriteRegisterGroup<unsigned char>(LTC6811RegisterGroup<unsigned char>&)
+                0x0000000008009d14       0x54 Src/LTC6811.o
+                0x0000000008009d14                bool LTC6811::WriteRegisterGroup<unsigned char>(LTC6811RegisterGroup<unsigned char>&)
  .text._ZNSt8optionalI20LTC6811VoltageStatusEC2ESt9nullopt_t
-                0x0000000008008f74       0x1e Src/LTC6811.o
-                0x0000000008008f74                std::optional<LTC6811VoltageStatus>::optional(std::nullopt_t)
-                0x0000000008008f74                std::optional<LTC6811VoltageStatus>::optional(std::nullopt_t)
+                0x0000000008009d68       0x1e Src/LTC6811.o
+                0x0000000008009d68                std::optional<LTC6811VoltageStatus>::optional(std::nullopt_t)
+                0x0000000008009d68                std::optional<LTC6811VoltageStatus>::optional(std::nullopt_t)
  .text._ZNSt5arrayI20LTC6811RegisterGroupItELj4EE5beginEv
-                0x0000000008008f92       0x18 Src/LTC6811.o
-                0x0000000008008f92                std::array<LTC6811RegisterGroup<unsigned short>, 4u>::begin()
+                0x0000000008009d86       0x18 Src/LTC6811.o
+                0x0000000008009d86                std::array<LTC6811RegisterGroup<unsigned short>, 4u>::begin()
  .text._ZNSt5arrayI20LTC6811RegisterGroupItELj4EE3endEv
-                0x0000000008008faa       0x1c Src/LTC6811.o
-                0x0000000008008faa                std::array<LTC6811RegisterGroup<unsigned short>, 4u>::end()
+                0x0000000008009d9e       0x1c Src/LTC6811.o
+                0x0000000008009d9e                std::array<LTC6811RegisterGroup<unsigned short>, 4u>::end()
  .text._ZNKSt5arrayI15LTC6811RegisterItELj12EE5beginEv
-                0x0000000008008fc6       0x18 Src/LTC6811.o
-                0x0000000008008fc6                std::array<LTC6811Register<unsigned short>, 12u>::begin() const
+                0x0000000008009dba       0x18 Src/LTC6811.o
+                0x0000000008009dba                std::array<LTC6811Register<unsigned short>, 12u>::begin() const
  .text._ZNKSt5arrayI15LTC6811RegisterItELj12EE3endEv
-                0x0000000008008fde       0x1a Src/LTC6811.o
-                0x0000000008008fde                std::array<LTC6811Register<unsigned short>, 12u>::end() const
+                0x0000000008009dd2       0x1a Src/LTC6811.o
+                0x0000000008009dd2                std::array<LTC6811Register<unsigned short>, 12u>::end() const
  .text._ZNKSt5arrayItLj3EE5beginEv
-                0x0000000008008ff8       0x18 Src/LTC6811.o
-                0x0000000008008ff8                std::array<unsigned short, 3u>::begin() const
+                0x0000000008009dec       0x18 Src/LTC6811.o
+                0x0000000008009dec                std::array<unsigned short, 3u>::begin() const
  .text._ZNKSt5arrayItLj3EE3endEv
-                0x0000000008009010       0x1a Src/LTC6811.o
-                0x0000000008009010                std::array<unsigned short, 3u>::end() const
+                0x0000000008009e04       0x1a Src/LTC6811.o
+                0x0000000008009e04                std::array<unsigned short, 3u>::end() const
  .text._ZSt7forwardIR20LTC6811VoltageStatusEOT_RNSt16remove_referenceIS2_E4typeE
-                0x000000000800902a       0x16 Src/LTC6811.o
-                0x000000000800902a                LTC6811VoltageStatus& std::forward<LTC6811VoltageStatus&>(std::remove_reference<LTC6811VoltageStatus&>::type&)
+                0x0000000008009e1e       0x16 Src/LTC6811.o
+                0x0000000008009e1e                LTC6811VoltageStatus& std::forward<LTC6811VoltageStatus&>(std::remove_reference<LTC6811VoltageStatus&>::type&)
  .text._ZNSt8optionalI20LTC6811VoltageStatusEC2IRS0_Lb1EEEOT_
-                0x0000000008009040       0x28 Src/LTC6811.o
-                0x0000000008009040                std::optional<LTC6811VoltageStatus>::optional<LTC6811VoltageStatus&, true>(LTC6811VoltageStatus&)
-                0x0000000008009040                std::optional<LTC6811VoltageStatus>::optional<LTC6811VoltageStatus&, true>(LTC6811VoltageStatus&)
+                0x0000000008009e34       0x28 Src/LTC6811.o
+                0x0000000008009e34                std::optional<LTC6811VoltageStatus>::optional<LTC6811VoltageStatus&, true>(LTC6811VoltageStatus&)
+                0x0000000008009e34                std::optional<LTC6811VoltageStatus>::optional<LTC6811VoltageStatus&, true>(LTC6811VoltageStatus&)
  .text._ZNSt8optionalI17LTC6811TempStatusEC2ESt9nullopt_t
-                0x0000000008009068       0x1e Src/LTC6811.o
-                0x0000000008009068                std::optional<LTC6811TempStatus>::optional(std::nullopt_t)
-                0x0000000008009068                std::optional<LTC6811TempStatus>::optional(std::nullopt_t)
+                0x0000000008009e5c       0x1e Src/LTC6811.o
+                0x0000000008009e5c                std::optional<LTC6811TempStatus>::optional(std::nullopt_t)
+                0x0000000008009e5c                std::optional<LTC6811TempStatus>::optional(std::nullopt_t)
  .text._ZSt7forwardIR17LTC6811TempStatusEOT_RNSt16remove_referenceIS2_E4typeE
-                0x0000000008009086       0x16 Src/LTC6811.o
-                0x0000000008009086                LTC6811TempStatus& std::forward<LTC6811TempStatus&>(std::remove_reference<LTC6811TempStatus&>::type&)
+                0x0000000008009e7a       0x16 Src/LTC6811.o
+                0x0000000008009e7a                LTC6811TempStatus& std::forward<LTC6811TempStatus&>(std::remove_reference<LTC6811TempStatus&>::type&)
  .text._ZNSt8optionalI17LTC6811TempStatusEC2IRS0_Lb1EEEOT_
-                0x000000000800909c       0x28 Src/LTC6811.o
-                0x000000000800909c                std::optional<LTC6811TempStatus>::optional<LTC6811TempStatus&, true>(LTC6811TempStatus&)
-                0x000000000800909c                std::optional<LTC6811TempStatus>::optional<LTC6811TempStatus&, true>(LTC6811TempStatus&)
+                0x0000000008009e90       0x28 Src/LTC6811.o
+                0x0000000008009e90                std::optional<LTC6811TempStatus>::optional<LTC6811TempStatus&, true>(LTC6811TempStatus&)
+                0x0000000008009e90                std::optional<LTC6811TempStatus>::optional<LTC6811TempStatus&, true>(LTC6811TempStatus&)
  .text._ZNSt5arrayI15LTC6811RegisterIhELj12EE3endEv
-                0x00000000080090c4       0x1a Src/LTC6811.o
-                0x00000000080090c4                std::array<LTC6811Register<unsigned char>, 12u>::end()
+                0x0000000008009eb8       0x1a Src/LTC6811.o
+                0x0000000008009eb8                std::array<LTC6811Register<unsigned char>, 12u>::end()
  .text._ZNKSt5arrayI15LTC6811RegisterItELj12EEixEj
-                0x00000000080090de       0x1e Src/LTC6811.o
-                0x00000000080090de                std::array<LTC6811Register<unsigned short>, 12u>::operator[](unsigned int) const
+                0x0000000008009ed2       0x1e Src/LTC6811.o
+                0x0000000008009ed2                std::array<LTC6811Register<unsigned short>, 12u>::operator[](unsigned int) const
  .text._ZNSt5arrayIhLj6EEixEj
-                0x00000000080090fc       0x1e Src/LTC6811.o
-                0x00000000080090fc                std::array<unsigned char, 6u>::operator[](unsigned int)
+                0x0000000008009ef0       0x1e Src/LTC6811.o
+                0x0000000008009ef0                std::array<unsigned char, 6u>::operator[](unsigned int)
  .text._ZNSt14__array_traitsIhLj6EE6_S_ptrERA6_Kh
-                0x000000000800911a       0x16 Src/LTC6811.o
-                0x000000000800911a                std::__array_traits<unsigned char, 6u>::_S_ptr(unsigned char const (&) [6])
+                0x0000000008009f0e       0x16 Src/LTC6811.o
+                0x0000000008009f0e                std::__array_traits<unsigned char, 6u>::_S_ptr(unsigned char const (&) [6])
  .text._ZNKSt5arrayIhLj6EE4dataEv
-                0x0000000008009130       0x1a Src/LTC6811.o
-                0x0000000008009130                std::array<unsigned char, 6u>::data() const
- *fill*         0x000000000800914a        0x2 
+                0x0000000008009f24       0x1a Src/LTC6811.o
+                0x0000000008009f24                std::array<unsigned char, 6u>::data() const
+ *fill*         0x0000000008009f3e        0x2 
  .text._ZN7LTC68119PEC15CalcIhLj6EEEtRKSt5arrayIT_XT0_EEj
-                0x000000000800914c       0x70 Src/LTC6811.o
-                0x000000000800914c                unsigned short LTC6811::PEC15Calc<unsigned char, 6u>(std::array<unsigned char, 6u> const&, unsigned int)
+                0x0000000008009f40       0x70 Src/LTC6811.o
+                0x0000000008009f40                unsigned short LTC6811::PEC15Calc<unsigned char, 6u>(std::array<unsigned char, 6u> const&, unsigned int)
  .text._ZNSt5arrayI15LTC6811RegisterIhELj12EEixEj
-                0x00000000080091bc       0x1e Src/LTC6811.o
-                0x00000000080091bc                std::array<LTC6811Register<unsigned char>, 12u>::operator[](unsigned int)
+                0x0000000008009fb0       0x1e Src/LTC6811.o
+                0x0000000008009fb0                std::array<LTC6811Register<unsigned char>, 12u>::operator[](unsigned int)
  .text._ZNSt14__array_traitsIhLj4EE6_S_refERA4_Khj
-                0x00000000080091da       0x1c Src/LTC6811.o
-                0x00000000080091da                std::__array_traits<unsigned char, 4u>::_S_ref(unsigned char const (&) [4], unsigned int)
+                0x0000000008009fce       0x1c Src/LTC6811.o
+                0x0000000008009fce                std::__array_traits<unsigned char, 4u>::_S_ref(unsigned char const (&) [4], unsigned int)
  .text._ZSt6fill_nIP15LTC6811RegisterIhEjS1_ET_S3_T0_RKT1_
-                0x00000000080091f6       0x28 Src/LTC6811.o
-                0x00000000080091f6                LTC6811Register<unsigned char>* std::fill_n<LTC6811Register<unsigned char>*, unsigned int, LTC6811Register<unsigned char> >(LTC6811Register<unsigned char>*, unsigned int, LTC6811Register<unsigned char> const&)
+                0x0000000008009fea       0x28 Src/LTC6811.o
+                0x0000000008009fea                LTC6811Register<unsigned char>* std::fill_n<LTC6811Register<unsigned char>*, unsigned int, LTC6811Register<unsigned char> >(LTC6811Register<unsigned char>*, unsigned int, LTC6811Register<unsigned char> const&)
  .text._ZNSt14__array_traitsI20LTC6811RegisterGroupItELj4EE6_S_refERA4_KS1_j
-                0x000000000800921e       0x22 Src/LTC6811.o
-                0x000000000800921e                std::__array_traits<LTC6811RegisterGroup<unsigned short>, 4u>::_S_ref(LTC6811RegisterGroup<unsigned short> const (&) [4], unsigned int)
+                0x000000000800a012       0x22 Src/LTC6811.o
+                0x000000000800a012                std::__array_traits<LTC6811RegisterGroup<unsigned short>, 4u>::_S_ref(LTC6811RegisterGroup<unsigned short> const (&) [4], unsigned int)
  .text._ZNSt5arrayI15LTC6811RegisterItELj12EE3endEv
-                0x0000000008009240       0x1a Src/LTC6811.o
-                0x0000000008009240                std::array<LTC6811Register<unsigned short>, 12u>::end()
+                0x000000000800a034       0x1a Src/LTC6811.o
+                0x000000000800a034                std::array<LTC6811Register<unsigned short>, 12u>::end()
  .text._ZNSt14__array_traitsItLj3EE6_S_ptrERA3_Kt
-                0x000000000800925a       0x16 Src/LTC6811.o
-                0x000000000800925a                std::__array_traits<unsigned short, 3u>::_S_ptr(unsigned short const (&) [3])
+                0x000000000800a04e       0x16 Src/LTC6811.o
+                0x000000000800a04e                std::__array_traits<unsigned short, 3u>::_S_ptr(unsigned short const (&) [3])
  .text._ZNKSt5arrayItLj3EE4dataEv
-                0x0000000008009270       0x1a Src/LTC6811.o
-                0x0000000008009270                std::array<unsigned short, 3u>::data() const
- *fill*         0x000000000800928a        0x2 
+                0x000000000800a064       0x1a Src/LTC6811.o
+                0x000000000800a064                std::array<unsigned short, 3u>::data() const
+ *fill*         0x000000000800a07e        0x2 
  .text._ZN7LTC68119PEC15CalcItLj3EEEtRKSt5arrayIT_XT0_EEj
-                0x000000000800928c       0x70 Src/LTC6811.o
-                0x000000000800928c                unsigned short LTC6811::PEC15Calc<unsigned short, 3u>(std::array<unsigned short, 3u> const&, unsigned int)
+                0x000000000800a080       0x70 Src/LTC6811.o
+                0x000000000800a080                unsigned short LTC6811::PEC15Calc<unsigned short, 3u>(std::array<unsigned short, 3u> const&, unsigned int)
  .text._ZNSt17_Optional_payloadI20LTC6811VoltageStatusLb1ELb1EEC2Ev
-                0x00000000080092fc       0x1c Src/LTC6811.o
-                0x00000000080092fc                std::_Optional_payload<LTC6811VoltageStatus, true, true>::_Optional_payload()
-                0x00000000080092fc                std::_Optional_payload<LTC6811VoltageStatus, true, true>::_Optional_payload()
+                0x000000000800a0f0       0x1c Src/LTC6811.o
+                0x000000000800a0f0                std::_Optional_payload<LTC6811VoltageStatus, true, true>::_Optional_payload()
+                0x000000000800a0f0                std::_Optional_payload<LTC6811VoltageStatus, true, true>::_Optional_payload()
  .text._ZNSt14_Optional_baseI20LTC6811VoltageStatusEC2ESt9nullopt_t
-                0x0000000008009318       0x1c Src/LTC6811.o
-                0x0000000008009318                std::_Optional_base<LTC6811VoltageStatus>::_Optional_base(std::nullopt_t)
-                0x0000000008009318                std::_Optional_base<LTC6811VoltageStatus>::_Optional_base(std::nullopt_t)
+                0x000000000800a10c       0x1c Src/LTC6811.o
+                0x000000000800a10c                std::_Optional_base<LTC6811VoltageStatus>::_Optional_base(std::nullopt_t)
+                0x000000000800a10c                std::_Optional_base<LTC6811VoltageStatus>::_Optional_base(std::nullopt_t)
  .text._ZNSt5arrayI20LTC6811RegisterGroupItELj4EE4dataEv
-                0x0000000008009334       0x1a Src/LTC6811.o
-                0x0000000008009334                std::array<LTC6811RegisterGroup<unsigned short>, 4u>::data()
+                0x000000000800a128       0x1a Src/LTC6811.o
+                0x000000000800a128                std::array<LTC6811RegisterGroup<unsigned short>, 4u>::data()
  .text._ZNKSt5arrayI15LTC6811RegisterItELj12EE4dataEv
-                0x000000000800934e       0x1a Src/LTC6811.o
-                0x000000000800934e                std::array<LTC6811Register<unsigned short>, 12u>::data() const
+                0x000000000800a142       0x1a Src/LTC6811.o
+                0x000000000800a142                std::array<LTC6811Register<unsigned short>, 12u>::data() const
  .text._ZNSt17_Optional_payloadI20LTC6811VoltageStatusLb1ELb1EEC2IJRS0_EEESt10in_place_tDpOT_
-                0x0000000008009368       0x32 Src/LTC6811.o
-                0x0000000008009368                std::_Optional_payload<LTC6811VoltageStatus, true, true>::_Optional_payload<LTC6811VoltageStatus&>(std::in_place_t, LTC6811VoltageStatus&)
-                0x0000000008009368                std::_Optional_payload<LTC6811VoltageStatus, true, true>::_Optional_payload<LTC6811VoltageStatus&>(std::in_place_t, LTC6811VoltageStatus&)
+                0x000000000800a15c       0x32 Src/LTC6811.o
+                0x000000000800a15c                std::_Optional_payload<LTC6811VoltageStatus, true, true>::_Optional_payload<LTC6811VoltageStatus&>(std::in_place_t, LTC6811VoltageStatus&)
+                0x000000000800a15c                std::_Optional_payload<LTC6811VoltageStatus, true, true>::_Optional_payload<LTC6811VoltageStatus&>(std::in_place_t, LTC6811VoltageStatus&)
  .text._ZNSt14_Optional_baseI20LTC6811VoltageStatusEC2IJRS0_ELb0EEESt10in_place_tDpOT_
-                0x000000000800939a       0x2a Src/LTC6811.o
-                0x000000000800939a                std::_Optional_base<LTC6811VoltageStatus>::_Optional_base<LTC6811VoltageStatus&, false>(std::in_place_t, LTC6811VoltageStatus&)
-                0x000000000800939a                std::_Optional_base<LTC6811VoltageStatus>::_Optional_base<LTC6811VoltageStatus&, false>(std::in_place_t, LTC6811VoltageStatus&)
+                0x000000000800a18e       0x2a Src/LTC6811.o
+                0x000000000800a18e                std::_Optional_base<LTC6811VoltageStatus>::_Optional_base<LTC6811VoltageStatus&, false>(std::in_place_t, LTC6811VoltageStatus&)
+                0x000000000800a18e                std::_Optional_base<LTC6811VoltageStatus>::_Optional_base<LTC6811VoltageStatus&, false>(std::in_place_t, LTC6811VoltageStatus&)
  .text._ZNSt17_Optional_payloadI17LTC6811TempStatusLb1ELb1EEC2Ev
-                0x00000000080093c4       0x1c Src/LTC6811.o
-                0x00000000080093c4                std::_Optional_payload<LTC6811TempStatus, true, true>::_Optional_payload()
-                0x00000000080093c4                std::_Optional_payload<LTC6811TempStatus, true, true>::_Optional_payload()
+                0x000000000800a1b8       0x1c Src/LTC6811.o
+                0x000000000800a1b8                std::_Optional_payload<LTC6811TempStatus, true, true>::_Optional_payload()
+                0x000000000800a1b8                std::_Optional_payload<LTC6811TempStatus, true, true>::_Optional_payload()
  .text._ZNSt14_Optional_baseI17LTC6811TempStatusEC2ESt9nullopt_t
-                0x00000000080093e0       0x1c Src/LTC6811.o
-                0x00000000080093e0                std::_Optional_base<LTC6811TempStatus>::_Optional_base(std::nullopt_t)
-                0x00000000080093e0                std::_Optional_base<LTC6811TempStatus>::_Optional_base(std::nullopt_t)
+                0x000000000800a1d4       0x1c Src/LTC6811.o
+                0x000000000800a1d4                std::_Optional_base<LTC6811TempStatus>::_Optional_base(std::nullopt_t)
+                0x000000000800a1d4                std::_Optional_base<LTC6811TempStatus>::_Optional_base(std::nullopt_t)
  .text._ZNSt17_Optional_payloadI17LTC6811TempStatusLb1ELb1EEC2IJRS0_EEESt10in_place_tDpOT_
-                0x00000000080093fc       0x30 Src/LTC6811.o
-                0x00000000080093fc                std::_Optional_payload<LTC6811TempStatus, true, true>::_Optional_payload<LTC6811TempStatus&>(std::in_place_t, LTC6811TempStatus&)
-                0x00000000080093fc                std::_Optional_payload<LTC6811TempStatus, true, true>::_Optional_payload<LTC6811TempStatus&>(std::in_place_t, LTC6811TempStatus&)
+                0x000000000800a1f0       0x30 Src/LTC6811.o
+                0x000000000800a1f0                std::_Optional_payload<LTC6811TempStatus, true, true>::_Optional_payload<LTC6811TempStatus&>(std::in_place_t, LTC6811TempStatus&)
+                0x000000000800a1f0                std::_Optional_payload<LTC6811TempStatus, true, true>::_Optional_payload<LTC6811TempStatus&>(std::in_place_t, LTC6811TempStatus&)
  .text._ZNSt14_Optional_baseI17LTC6811TempStatusEC2IJRS0_ELb0EEESt10in_place_tDpOT_
-                0x000000000800942c       0x2a Src/LTC6811.o
-                0x000000000800942c                std::_Optional_base<LTC6811TempStatus>::_Optional_base<LTC6811TempStatus&, false>(std::in_place_t, LTC6811TempStatus&)
-                0x000000000800942c                std::_Optional_base<LTC6811TempStatus>::_Optional_base<LTC6811TempStatus&, false>(std::in_place_t, LTC6811TempStatus&)
+                0x000000000800a220       0x2a Src/LTC6811.o
+                0x000000000800a220                std::_Optional_base<LTC6811TempStatus>::_Optional_base<LTC6811TempStatus&, false>(std::in_place_t, LTC6811TempStatus&)
+                0x000000000800a220                std::_Optional_base<LTC6811TempStatus>::_Optional_base<LTC6811TempStatus&, false>(std::in_place_t, LTC6811TempStatus&)
  .text._ZNSt14__array_traitsI15LTC6811RegisterItELj12EE6_S_refERA12_KS1_j
-                0x0000000008009456       0x1e Src/LTC6811.o
-                0x0000000008009456                std::__array_traits<LTC6811Register<unsigned short>, 12u>::_S_ref(LTC6811Register<unsigned short> const (&) [12], unsigned int)
+                0x000000000800a24a       0x1e Src/LTC6811.o
+                0x000000000800a24a                std::__array_traits<LTC6811Register<unsigned short>, 12u>::_S_ref(LTC6811Register<unsigned short> const (&) [12], unsigned int)
  .text._ZNSt14__array_traitsIhLj6EE6_S_refERA6_Khj
-                0x0000000008009474       0x1c Src/LTC6811.o
-                0x0000000008009474                std::__array_traits<unsigned char, 6u>::_S_ref(unsigned char const (&) [6], unsigned int)
+                0x000000000800a268       0x1c Src/LTC6811.o
+                0x000000000800a268                std::__array_traits<unsigned char, 6u>::_S_ref(unsigned char const (&) [6], unsigned int)
  .text._ZNSt14__array_traitsI15LTC6811RegisterIhELj12EE6_S_refERA12_KS1_j
-                0x0000000008009490       0x1e Src/LTC6811.o
-                0x0000000008009490                std::__array_traits<LTC6811Register<unsigned char>, 12u>::_S_ref(LTC6811Register<unsigned char> const (&) [12], unsigned int)
+                0x000000000800a284       0x1e Src/LTC6811.o
+                0x000000000800a284                std::__array_traits<LTC6811Register<unsigned char>, 12u>::_S_ref(LTC6811Register<unsigned char> const (&) [12], unsigned int)
  .text._ZSt12__niter_baseIP15LTC6811RegisterIhEET_S3_
-                0x00000000080094ae       0x16 Src/LTC6811.o
-                0x00000000080094ae                LTC6811Register<unsigned char>* std::__niter_base<LTC6811Register<unsigned char>*>(LTC6811Register<unsigned char>*)
+                0x000000000800a2a2       0x16 Src/LTC6811.o
+                0x000000000800a2a2                LTC6811Register<unsigned char>* std::__niter_base<LTC6811Register<unsigned char>*>(LTC6811Register<unsigned char>*)
  .text._ZSt10__fill_n_aIP15LTC6811RegisterIhEjS1_EN9__gnu_cxx11__enable_ifIXntsrSt11__is_scalarIT1_E7__valueET_E6__typeES8_T0_RKS6_
-                0x00000000080094c4       0x3e Src/LTC6811.o
-                0x00000000080094c4                __gnu_cxx::__enable_if<!std::__is_scalar<LTC6811Register<unsigned char> >::__value, LTC6811Register<unsigned char>*>::__type std::__fill_n_a<LTC6811Register<unsigned char>*, unsigned int, LTC6811Register<unsigned char> >(LTC6811Register<unsigned char>*, unsigned int, LTC6811Register<unsigned char> const&)
+                0x000000000800a2b8       0x3e Src/LTC6811.o
+                0x000000000800a2b8                __gnu_cxx::__enable_if<!std::__is_scalar<LTC6811Register<unsigned char> >::__value, LTC6811Register<unsigned char>*>::__type std::__fill_n_a<LTC6811Register<unsigned char>*, unsigned int, LTC6811Register<unsigned char> >(LTC6811Register<unsigned char>*, unsigned int, LTC6811Register<unsigned char> const&)
  .text._ZNSt14__array_traitsI20LTC6811RegisterGroupItELj4EE6_S_ptrERA4_KS1_
-                0x0000000008009502       0x16 Src/LTC6811.o
-                0x0000000008009502                std::__array_traits<LTC6811RegisterGroup<unsigned short>, 4u>::_S_ptr(LTC6811RegisterGroup<unsigned short> const (&) [4])
+                0x000000000800a2f6       0x16 Src/LTC6811.o
+                0x000000000800a2f6                std::__array_traits<LTC6811RegisterGroup<unsigned short>, 4u>::_S_ptr(LTC6811RegisterGroup<unsigned short> const (&) [4])
  .text.BSP_SD_Init
-                0x0000000008009518       0x4c Src/bsp_driver_sd.o
-                0x0000000008009518                BSP_SD_Init
+                0x000000000800a30c       0x4c Src/bsp_driver_sd.o
+                0x000000000800a30c                BSP_SD_Init
  .text.BSP_SD_ReadBlocks
-                0x0000000008009564       0x3c Src/bsp_driver_sd.o
-                0x0000000008009564                BSP_SD_ReadBlocks
+                0x000000000800a358       0x3c Src/bsp_driver_sd.o
+                0x000000000800a358                BSP_SD_ReadBlocks
  .text.BSP_SD_WriteBlocks
-                0x00000000080095a0       0x3c Src/bsp_driver_sd.o
-                0x00000000080095a0                BSP_SD_WriteBlocks
+                0x000000000800a394       0x3c Src/bsp_driver_sd.o
+                0x000000000800a394                BSP_SD_WriteBlocks
  .text.BSP_SD_GetCardState
-                0x00000000080095dc       0x20 Src/bsp_driver_sd.o
-                0x00000000080095dc                BSP_SD_GetCardState
+                0x000000000800a3d0       0x20 Src/bsp_driver_sd.o
+                0x000000000800a3d0                BSP_SD_GetCardState
  .text.BSP_SD_GetCardInfo
-                0x00000000080095fc       0x1c Src/bsp_driver_sd.o
-                0x00000000080095fc                BSP_SD_GetCardInfo
+                0x000000000800a3f0       0x1c Src/bsp_driver_sd.o
+                0x000000000800a3f0                BSP_SD_GetCardInfo
  .text.BSP_SD_IsDetected
-                0x0000000008009618       0x24 Src/bsp_driver_sd.o
-                0x0000000008009618                BSP_SD_IsDetected
+                0x000000000800a40c       0x24 Src/bsp_driver_sd.o
+                0x000000000800a40c                BSP_SD_IsDetected
  .text.MX_FATFS_Init
-                0x000000000800963c       0x24 Src/fatfs.o
-                0x000000000800963c                MX_FATFS_Init
+                0x000000000800a430       0x24 Src/fatfs.o
+                0x000000000800a430                MX_FATFS_Init
  .text.get_fattime
-                0x0000000008009660       0x10 Src/fatfs.o
-                0x0000000008009660                get_fattime
+                0x000000000800a454       0x10 Src/fatfs.o
+                0x000000000800a454                get_fattime
  .text.BSP_PlatformIsDetected
-                0x0000000008009670       0x2c Src/fatfs_platform.o
-                0x0000000008009670                BSP_PlatformIsDetected
+                0x000000000800a464       0x2c Src/fatfs_platform.o
+                0x000000000800a464                BSP_PlatformIsDetected
  .text._ZStanSt12memory_orderSt23__memory_order_modifier
-                0x000000000800969c       0x26 Src/main.o
-                0x000000000800969c                std::operator&(std::memory_order, std::__memory_order_modifier)
+                0x000000000800a490       0x26 Src/main.o
+                0x000000000800a490                std::operator&(std::memory_order, std::__memory_order_modifier)
  .text._ZNSt6atomicImEC2Em
-                0x00000000080096c2       0x1e Src/main.o
-                0x00000000080096c2                std::atomic<unsigned long>::atomic(unsigned long)
-                0x00000000080096c2                std::atomic<unsigned long>::atomic(unsigned long)
- .text._ZN4NLG516SetChargeCurrentEt
-                0x00000000080096e0       0x3a Src/main.o
-                0x00000000080096e0                NLG5::SetChargeCurrent(unsigned short)
- .text._ZNK4NLG514isChargerEventEv
-                0x000000000800971a       0x34 Src/main.o
-                0x000000000800971a                NLG5::isChargerEvent() const
+                0x000000000800a4b6       0x1e Src/main.o
+                0x000000000800a4b6                std::atomic<unsigned long>::atomic(unsigned long)
+                0x000000000800a4b6                std::atomic<unsigned long>::atomic(unsigned long)
  .text._ZN4NLG5C2Ettt
-                0x000000000800974e       0x54 Src/main.o
-                0x000000000800974e                NLG5::NLG5(unsigned short, unsigned short, unsigned short)
-                0x000000000800974e                NLG5::NLG5(unsigned short, unsigned short, unsigned short)
+                0x000000000800a4d4       0x54 Src/main.o
+                0x000000000800a4d4                NLG5::NLG5(unsigned short, unsigned short, unsigned short)
+                0x000000000800a4d4                NLG5::NLG5(unsigned short, unsigned short, unsigned short)
+ .text._ZN4NLG516SetChargeCurrentEt
+                0x000000000800a528       0x3a Src/main.o
+                0x000000000800a528                NLG5::SetChargeCurrent(unsigned short)
+ .text._ZNK4NLG514isChargerEventEv
+                0x000000000800a562       0x34 Src/main.o
+                0x000000000800a562                NLG5::isChargerEvent() const
  .text._ZSt27__throw_bad_optional_accessv
-                0x00000000080097a2        0x8 Src/main.o
-                0x00000000080097a2                std::__throw_bad_optional_access()
+                0x000000000800a596        0x8 Src/main.o
+                0x000000000800a596                std::__throw_bad_optional_access()
  .text._ZN7LTC681116SetDischargeModeENS_13DischargeModeE
-                0x00000000080097aa       0x1e Src/main.o
-                0x00000000080097aa                LTC6811::SetDischargeMode(LTC6811::DischargeMode)
+                0x000000000800a59e       0x1e Src/main.o
+                0x000000000800a59e                LTC6811::SetDischargeMode(LTC6811::DischargeMode)
+ .text._ZNK7LTC681111GetCellDataEv
+                0x000000000800a5bc       0x18 Src/main.o
+                0x000000000800a5bc                LTC6811::GetCellData() const
+ .text._ZNK7LTC681111GetTempDataEv
+                0x000000000800a5d4       0x1a Src/main.o
+                0x000000000800a5d4                LTC6811::GetTempData() const
+ .text._ZNK7LTC681111GetSlaveCfgEv
+                0x000000000800a5ee       0x18 Src/main.o
+                0x000000000800a5ee                LTC6811::GetSlaveCfg() const
+ *fill*         0x000000000800a606        0x2 
  .text._ZN6StatusC2Eh
-                0x00000000080097c8       0x6e Src/main.o
-                0x00000000080097c8                Status::Status(unsigned char)
-                0x00000000080097c8                Status::Status(unsigned char)
- *fill*         0x0000000008009836        0x2 
+                0x000000000800a608       0x84 Src/main.o
+                0x000000000800a608                Status::Status(unsigned char)
+                0x000000000800a608                Status::Status(unsigned char)
  .text._ZN6Status8ClosePreEv
-                0x0000000008009838       0x34 Src/main.o
-                0x0000000008009838                Status::ClosePre()
+                0x000000000800a68c       0x34 Src/main.o
+                0x000000000800a68c                Status::ClosePre()
  .text._ZN6Status7OpenPreEv
-                0x000000000800986c       0x34 Src/main.o
-                0x000000000800986c                Status::OpenPre()
+                0x000000000800a6c0       0x34 Src/main.o
+                0x000000000800a6c0                Status::OpenPre()
  .text._ZN6Status8CloseAIREv
-                0x00000000080098a0       0x34 Src/main.o
-                0x00000000080098a0                Status::CloseAIR()
+                0x000000000800a6f4       0x34 Src/main.o
+                0x000000000800a6f4                Status::CloseAIR()
  .text._ZN6Status7OpenAIREv
-                0x00000000080098d4       0x34 Src/main.o
-                0x00000000080098d4                Status::OpenAIR()
- .text._ZN6Status12GetPECChangeEv
-                0x0000000008009908       0x2a Src/main.o
-                0x0000000008009908                Status::GetPECChange()
+                0x000000000800a728       0x34 Src/main.o
+                0x000000000800a728                Status::OpenAIR()
+ .text._ZN6Status11getPECErrorEv
+                0x000000000800a75c       0x1a Src/main.o
+                0x000000000800a75c                Status::getPECError()
  .text._ZN6Status7isErrorENS_5ErrorEb
-                0x0000000008009932       0x8a Src/main.o
-                0x0000000008009932                Status::isError(Status::Error, bool)
- .text._ZN6Status11TestLimpingEt
-                0x00000000080099bc       0x5e Src/main.o
-                0x00000000080099bc                Status::TestLimping(unsigned short)
+                0x000000000800a776       0xc0 Src/main.o
+                0x000000000800a776                Status::isError(Status::Error, bool)
  .text._ZN6Status13GoToSafeStateENS_5ErrorE
-                0x0000000008009a1a       0x48 Src/main.o
-                0x0000000008009a1a                Status::GoToSafeState(Status::Error)
+                0x000000000800a836       0x48 Src/main.o
+                0x000000000800a836                Status::GoToSafeState(Status::Error)
  .text._ZN7PWM_FanC2Eh
-                0x0000000008009a62       0x26 Src/main.o
-                0x0000000008009a62                PWM_Fan::PWM_Fan(unsigned char)
-                0x0000000008009a62                PWM_Fan::PWM_Fan(unsigned char)
+                0x000000000800a87e       0x26 Src/main.o
+                0x000000000800a87e                PWM_Fan::PWM_Fan(unsigned char)
+                0x000000000800a87e                PWM_Fan::PWM_Fan(unsigned char)
  .text._ZNK7PWM_Fan15SetFanDutyCycleEh
-                0x0000000008009a88       0x3e Src/main.o
-                0x0000000008009a88                PWM_Fan::SetFanDutyCycle(unsigned char) const
- *fill*         0x0000000008009ac6        0x2 
+                0x000000000800a8a4       0x3e Src/main.o
+                0x000000000800a8a4                PWM_Fan::SetFanDutyCycle(unsigned char) const
+ *fill*         0x000000000800a8e2        0x2 
  .text._ZNK7PWM_Fan13CalcDutyCycleEs
-                0x0000000008009ac8       0x68 Src/main.o
-                0x0000000008009ac8                PWM_Fan::CalcDutyCycle(short) const
- .text._ZNK3IVT9isChargedEm
-                0x0000000008009b30      0x154 Src/main.o
-                0x0000000008009b30                IVT::isCharged(unsigned long) const
+                0x000000000800a8e4       0x68 Src/main.o
+                0x000000000800a8e4                PWM_Fan::CalcDutyCycle(short) const
+ .text._ZNK3IVT16prechargeCompareEm
+                0x000000000800a94c      0x154 Src/main.o
+                0x000000000800a94c                IVT::prechargeCompare(unsigned long) const
  .text._ZNK3IVT6isLostEv
-                0x0000000008009c84       0x28 Src/main.o
-                0x0000000008009c84                IVT::isLost() const
+                0x000000000800aaa0       0x28 Src/main.o
+                0x000000000800aaa0                IVT::isLost() const
  .text.HAL_IncTick
-                0x0000000008009cac       0x68 Src/main.o
-                0x0000000008009cac                HAL_IncTick
+                0x000000000800aac8       0x68 Src/main.o
+                0x000000000800aac8                HAL_IncTick
  .text._ZNSt13__atomic_baseImEC2Em
-                0x0000000008009d14       0x1e Src/main.o
-                0x0000000008009d14                std::__atomic_base<unsigned long>::__atomic_base(unsigned long)
+                0x000000000800ab30       0x1e Src/main.o
+                0x000000000800ab30                std::__atomic_base<unsigned long>::__atomic_base(unsigned long)
  .text._ZN3IVTC2Ev
-                0x0000000008009d32       0x1e Src/main.o
-                0x0000000008009d32                IVT::IVT()
-                0x0000000008009d32                IVT::IVT()
+                0x000000000800ab4e       0x1e Src/main.o
+                0x000000000800ab4e                IVT::IVT()
+                0x000000000800ab4e                IVT::IVT()
  .text._ZNKSt8optionalI20LTC6811VoltageStatusE9has_valueEv
-                0x0000000008009d50       0x1a Src/main.o
-                0x0000000008009d50                std::optional<LTC6811VoltageStatus>::has_value() const
+                0x000000000800ab6c       0x1a Src/main.o
+                0x000000000800ab6c                std::optional<LTC6811VoltageStatus>::has_value() const
  .text._ZNKSt14_Optional_baseI20LTC6811VoltageStatusE13_M_is_engagedEv
-                0x0000000008009d6a       0x18 Src/main.o
-                0x0000000008009d6a                std::_Optional_base<LTC6811VoltageStatus>::_M_is_engaged() const
+                0x000000000800ab86       0x18 Src/main.o
+                0x000000000800ab86                std::_Optional_base<LTC6811VoltageStatus>::_M_is_engaged() const
  .text._ZNKSt8optionalI17LTC6811TempStatusE9has_valueEv
-                0x0000000008009d82       0x1a Src/main.o
-                0x0000000008009d82                std::optional<LTC6811TempStatus>::has_value() const
+                0x000000000800ab9e       0x1a Src/main.o
+                0x000000000800ab9e                std::optional<LTC6811TempStatus>::has_value() const
  .text._ZNKSt14_Optional_baseI17LTC6811TempStatusE13_M_is_engagedEv
-                0x0000000008009d9c       0x18 Src/main.o
-                0x0000000008009d9c                std::_Optional_base<LTC6811TempStatus>::_M_is_engaged() const
+                0x000000000800abb8       0x18 Src/main.o
+                0x000000000800abb8                std::_Optional_base<LTC6811TempStatus>::_M_is_engaged() const
  .text._ZNKRSt8optionalI20LTC6811VoltageStatusE5valueEv
-                0x0000000008009db4       0x2e Src/main.o
-                0x0000000008009db4                std::optional<LTC6811VoltageStatus>::value() const &
+                0x000000000800abd0       0x2e Src/main.o
+                0x000000000800abd0                std::optional<LTC6811VoltageStatus>::value() const &
  .text._ZNKRSt8optionalI17LTC6811TempStatusE5valueEv
-                0x0000000008009de2       0x2e Src/main.o
-                0x0000000008009de2                std::optional<LTC6811TempStatus>::value() const &
- .text.main     0x0000000008009e10      0x5f0 Src/main.o
-                0x0000000008009e10                main
+                0x000000000800abfe       0x2e Src/main.o
+                0x000000000800abfe                std::optional<LTC6811TempStatus>::value() const &
+ .text.main     0x000000000800ac2c      0x74c Src/main.o
+                0x000000000800ac2c                main
  .text._Z18SystemClock_Configv
-                0x000000000800a400      0x138 Src/main.o
-                0x000000000800a400                SystemClock_Config()
+                0x000000000800b378      0x138 Src/main.o
+                0x000000000800b378                SystemClock_Config()
  .text._ZL12MX_CAN1_Initv
-                0x000000000800a538       0xc0 Src/main.o
+                0x000000000800b4b0       0xc0 Src/main.o
  .text._ZL12MX_CAN2_Initv
-                0x000000000800a5f8       0xc4 Src/main.o
+                0x000000000800b570       0xc4 Src/main.o
  .text._ZL15MX_SDIO_SD_Initv
-                0x000000000800a6bc       0x40 Src/main.o
+                0x000000000800b634       0x40 Src/main.o
  .text._ZL12MX_SPI1_Initv
-                0x000000000800a6fc       0x78 Src/main.o
+                0x000000000800b674       0x78 Src/main.o
  .text._ZL12MX_TIM2_Initv
-                0x000000000800a774      0x120 Src/main.o
+                0x000000000800b6ec      0x120 Src/main.o
  .text._ZL12MX_GPIO_Initv
-                0x000000000800a894      0x180 Src/main.o
+                0x000000000800b80c      0x180 Src/main.o
  .text.HAL_CAN_RxFifo0MsgPendingCallback
-                0x000000000800aa14      0x12c Src/main.o
-                0x000000000800aa14                HAL_CAN_RxFifo0MsgPendingCallback
+                0x000000000800b98c      0x12c Src/main.o
+                0x000000000800b98c                HAL_CAN_RxFifo0MsgPendingCallback
  .text.HAL_CAN_RxFifo1MsgPendingCallback
-                0x000000000800ab40      0x194 Src/main.o
-                0x000000000800ab40                HAL_CAN_RxFifo1MsgPendingCallback
+                0x000000000800bab8      0x194 Src/main.o
+                0x000000000800bab8                HAL_CAN_RxFifo1MsgPendingCallback
  .text.CanTxOpMode
-                0x000000000800acd4       0xa0 Src/main.o
-                0x000000000800acd4                CanTxOpMode
+                0x000000000800bc4c       0xa8 Src/main.o
+                0x000000000800bc4c                CanTxOpMode
  .text.CanTxError
-                0x000000000800ad74       0xa8 Src/main.o
-                0x000000000800ad74                CanTxError
+                0x000000000800bcf4       0xac Src/main.o
+                0x000000000800bcf4                CanTxError
  .text._Z9CANTxDatatts
-                0x000000000800ae1c       0xb0 Src/main.o
-                0x000000000800ae1c                CANTxData(unsigned short, unsigned short, short)
+                0x000000000800bda0       0xb0 Src/main.o
+                0x000000000800bda0                CANTxData(unsigned short, unsigned short, short)
+ .text._Z12CANTxVoltageRKSt5arrayI20LTC6811RegisterGroupItELj4EE
+                0x000000000800be50      0x11c Src/main.o
+                0x000000000800be50                CANTxVoltage(std::array<LTC6811RegisterGroup<unsigned short>, 4u> const&)
+ .text._Z16CANTxTemperatureRKSt5arrayI20LTC6811RegisterGroupIsELj2EE
+                0x000000000800bf6c      0x11c Src/main.o
+                0x000000000800bf6c                CANTxTemperature(std::array<LTC6811RegisterGroup<short>, 2u> const&)
  .text._Z21CANTxVoltageLimpTotalmb
-                0x000000000800aecc       0x80 Src/main.o
-                0x000000000800aecc                CANTxVoltageLimpTotal(unsigned long, bool)
+                0x000000000800c088       0x80 Src/main.o
+                0x000000000800c088                CANTxVoltageLimpTotal(unsigned long, bool)
+ .text._Z10CANTxDCCfgRK20LTC6811RegisterGroupIhE
+                0x000000000800c108       0xe8 Src/main.o
+                0x000000000800c108                CANTxDCCfg(LTC6811RegisterGroup<unsigned char> const&)
  .text.CANTxNLGAControl
-                0x000000000800af4c       0x9c Src/main.o
-                0x000000000800af4c                CANTxNLGAControl
+                0x000000000800c1f0       0x9c Src/main.o
+                0x000000000800c1f0                CANTxNLGAControl
  .text.CANTxNLGBControl
-                0x000000000800afe8       0x9c Src/main.o
-                0x000000000800afe8                CANTxNLGBControl
+                0x000000000800c28c       0x9c Src/main.o
+                0x000000000800c28c                CANTxNLGBControl
  .text.CANTxVolumeSize
-                0x000000000800b084       0x70 Src/main.o
-                0x000000000800b084                CANTxVolumeSize
+                0x000000000800c328       0x70 Src/main.o
+                0x000000000800c328                CANTxVolumeSize
  .text.Error_Handler
-                0x000000000800b0f4        0xe Src/main.o
-                0x000000000800b0f4                Error_Handler
+                0x000000000800c398        0xe Src/main.o
+                0x000000000800c398                Error_Handler
  .text._ZNKSt13__atomic_baseImEcvmEv
-                0x000000000800b102       0x36 Src/main.o
-                0x000000000800b102                std::__atomic_base<unsigned long>::operator unsigned long() const
+                0x000000000800c3a6       0x36 Src/main.o
+                0x000000000800c3a6                std::__atomic_base<unsigned long>::operator unsigned long() const
  .text._ZNKSt6atomicIfEcvfEv
-                0x000000000800b138       0x1e Src/main.o
-                0x000000000800b138                std::atomic<float>::operator float() const
+                0x000000000800c3dc       0x1e Src/main.o
+                0x000000000800c3dc                std::atomic<float>::operator float() const
  .text._ZNSt13__atomic_baseImEppEv
-                0x000000000800b156       0x30 Src/main.o
-                0x000000000800b156                std::__atomic_base<unsigned long>::operator++()
+                0x000000000800c3fa       0x30 Src/main.o
+                0x000000000800c3fa                std::__atomic_base<unsigned long>::operator++()
  .text._ZNKSt14_Optional_baseI20LTC6811VoltageStatusE6_M_getEv
-                0x000000000800b186       0x16 Src/main.o
-                0x000000000800b186                std::_Optional_base<LTC6811VoltageStatus>::_M_get() const
+                0x000000000800c42a       0x16 Src/main.o
+                0x000000000800c42a                std::_Optional_base<LTC6811VoltageStatus>::_M_get() const
  .text._ZNKSt14_Optional_baseI17LTC6811TempStatusE6_M_getEv
-                0x000000000800b19c       0x16 Src/main.o
-                0x000000000800b19c                std::_Optional_base<LTC6811TempStatus>::_M_get() const
+                0x000000000800c440       0x16 Src/main.o
+                0x000000000800c440                std::_Optional_base<LTC6811TempStatus>::_M_get() const
  .text._ZNSt13__atomic_baseImEaSEm
-                0x000000000800b1b2       0x3e Src/main.o
-                0x000000000800b1b2                std::__atomic_base<unsigned long>::operator=(unsigned long)
+                0x000000000800c456       0x3e Src/main.o
+                0x000000000800c456                std::__atomic_base<unsigned long>::operator=(unsigned long)
  .text._ZNSt6atomicIfEaSEf
-                0x000000000800b1f0       0x28 Src/main.o
-                0x000000000800b1f0                std::atomic<float>::operator=(float)
+                0x000000000800c494       0x28 Src/main.o
+                0x000000000800c494                std::atomic<float>::operator=(float)
+ .text._ZNKSt5arrayI20LTC6811RegisterGroupItELj4EE5beginEv
+                0x000000000800c4bc       0x18 Src/main.o
+                0x000000000800c4bc                std::array<LTC6811RegisterGroup<unsigned short>, 4u>::begin() const
+ .text._ZNKSt5arrayI20LTC6811RegisterGroupItELj4EE3endEv
+                0x000000000800c4d4       0x1c Src/main.o
+                0x000000000800c4d4                std::array<LTC6811RegisterGroup<unsigned short>, 4u>::end() const
+ .text._ZNKSt5arrayI20LTC6811RegisterGroupIsELj2EE5beginEv
+                0x000000000800c4f0       0x18 Src/main.o
+                0x000000000800c4f0                std::array<LTC6811RegisterGroup<short>, 2u>::begin() const
+ .text._ZNKSt5arrayI20LTC6811RegisterGroupIsELj2EE3endEv
+                0x000000000800c508       0x1a Src/main.o
+                0x000000000800c508                std::array<LTC6811RegisterGroup<short>, 2u>::end() const
+ .text._ZNKSt5arrayI15LTC6811RegisterIsELj12EEixEj
+                0x000000000800c522       0x1e Src/main.o
+                0x000000000800c522                std::array<LTC6811Register<short>, 12u>::operator[](unsigned int) const
+ .text._ZNKSt5arrayIsLj3EE5beginEv
+                0x000000000800c540       0x18 Src/main.o
+                0x000000000800c540                std::array<short, 3u>::begin() const
+ .text._ZNKSt5arrayIsLj3EE3endEv
+                0x000000000800c558       0x1a Src/main.o
+                0x000000000800c558                std::array<short, 3u>::end() const
+ .text._ZNKSt5arrayI15LTC6811RegisterIhELj12EE5beginEv
+                0x000000000800c572       0x18 Src/main.o
+                0x000000000800c572                std::array<LTC6811Register<unsigned char>, 12u>::begin() const
+ .text._ZNKSt5arrayI15LTC6811RegisterIhELj12EE3endEv
+                0x000000000800c58a       0x1a Src/main.o
+                0x000000000800c58a                std::array<LTC6811Register<unsigned char>, 12u>::end() const
+ .text._ZNKSt5arrayIhLj6EEixEj
+                0x000000000800c5a4       0x1e Src/main.o
+                0x000000000800c5a4                std::array<unsigned char, 6u>::operator[](unsigned int) const
  .text._ZNKSt6atomicIfE4loadESt12memory_order
-                0x000000000800b218       0x3e Src/main.o
-                0x000000000800b218                std::atomic<float>::load(std::memory_order) const
+                0x000000000800c5c2       0x3e Src/main.o
+                0x000000000800c5c2                std::atomic<float>::load(std::memory_order) const
  .text._ZSt11__addressofIfEPT_RS0_
-                0x000000000800b256       0x16 Src/main.o
-                0x000000000800b256                float* std::__addressof<float>(float&)
+                0x000000000800c600       0x16 Src/main.o
+                0x000000000800c600                float* std::__addressof<float>(float&)
  .text._ZNSt6atomicIfE5storeEfSt12memory_order
-                0x000000000800b26c       0x3a Src/main.o
-                0x000000000800b26c                std::atomic<float>::store(float, std::memory_order)
+                0x000000000800c616       0x3a Src/main.o
+                0x000000000800c616                std::atomic<float>::store(float, std::memory_order)
+ .text._ZNKSt5arrayI20LTC6811RegisterGroupItELj4EE4dataEv
+                0x000000000800c650       0x1a Src/main.o
+                0x000000000800c650                std::array<LTC6811RegisterGroup<unsigned short>, 4u>::data() const
+ .text._ZNSt14__array_traitsI20LTC6811RegisterGroupIsELj2EE6_S_ptrERA2_KS1_
+                0x000000000800c66a       0x16 Src/main.o
+                0x000000000800c66a                std::__array_traits<LTC6811RegisterGroup<short>, 2u>::_S_ptr(LTC6811RegisterGroup<short> const (&) [2])
+ .text._ZNKSt5arrayI20LTC6811RegisterGroupIsELj2EE4dataEv
+                0x000000000800c680       0x1a Src/main.o
+                0x000000000800c680                std::array<LTC6811RegisterGroup<short>, 2u>::data() const
+ .text._ZNSt14__array_traitsI15LTC6811RegisterIsELj12EE6_S_refERA12_KS1_j
+                0x000000000800c69a       0x1e Src/main.o
+                0x000000000800c69a                std::__array_traits<LTC6811Register<short>, 12u>::_S_ref(LTC6811Register<short> const (&) [12], unsigned int)
+ .text._ZNSt14__array_traitsIsLj3EE6_S_ptrERA3_Ks
+                0x000000000800c6b8       0x16 Src/main.o
+                0x000000000800c6b8                std::__array_traits<short, 3u>::_S_ptr(short const (&) [3])
+ .text._ZNKSt5arrayIsLj3EE4dataEv
+                0x000000000800c6ce       0x1a Src/main.o
+                0x000000000800c6ce                std::array<short, 3u>::data() const
+ .text._ZNKSt5arrayI15LTC6811RegisterIhELj12EE4dataEv
+                0x000000000800c6e8       0x1a Src/main.o
+                0x000000000800c6e8                std::array<LTC6811Register<unsigned char>, 12u>::data() const
  .text._ZSt11__addressofIKfEPT_RS1_
-                0x000000000800b2a6       0x16 Src/main.o
-                0x000000000800b2a6                float const* std::__addressof<float const>(float const&)
+                0x000000000800c702       0x16 Src/main.o
+                0x000000000800c702                float const* std::__addressof<float const>(float const&)
  .text.SD_CheckStatus
-                0x000000000800b2bc       0x3c Src/sd_diskio.o
+                0x000000000800c718       0x3c Src/sd_diskio.o
  .text.SD_initialize
-                0x000000000800b2f8       0x3c Src/sd_diskio.o
-                0x000000000800b2f8                SD_initialize
+                0x000000000800c754       0x3c Src/sd_diskio.o
+                0x000000000800c754                SD_initialize
  .text.SD_status
-                0x000000000800b334       0x1c Src/sd_diskio.o
-                0x000000000800b334                SD_status
- .text.SD_read  0x000000000800b350       0x42 Src/sd_diskio.o
-                0x000000000800b350                SD_read
+                0x000000000800c790       0x1c Src/sd_diskio.o
+                0x000000000800c790                SD_status
+ .text.SD_read  0x000000000800c7ac       0x42 Src/sd_diskio.o
+                0x000000000800c7ac                SD_read
  .text.SD_write
-                0x000000000800b392       0x42 Src/sd_diskio.o
-                0x000000000800b392                SD_write
+                0x000000000800c7ee       0x42 Src/sd_diskio.o
+                0x000000000800c7ee                SD_write
  .text.SD_ioctl
-                0x000000000800b3d4       0xb0 Src/sd_diskio.o
-                0x000000000800b3d4                SD_ioctl
+                0x000000000800c830       0xb0 Src/sd_diskio.o
+                0x000000000800c830                SD_ioctl
  .text.HAL_MspInit
-                0x000000000800b484       0x50 Src/stm32f4xx_hal_msp.o
-                0x000000000800b484                HAL_MspInit
+                0x000000000800c8e0       0x50 Src/stm32f4xx_hal_msp.o
+                0x000000000800c8e0                HAL_MspInit
  .text.HAL_CAN_MspInit
-                0x000000000800b4d4      0x164 Src/stm32f4xx_hal_msp.o
-                0x000000000800b4d4                HAL_CAN_MspInit
+                0x000000000800c930      0x164 Src/stm32f4xx_hal_msp.o
+                0x000000000800c930                HAL_CAN_MspInit
  .text.HAL_SD_MspInit
-                0x000000000800b638       0xd0 Src/stm32f4xx_hal_msp.o
-                0x000000000800b638                HAL_SD_MspInit
+                0x000000000800ca94       0xd0 Src/stm32f4xx_hal_msp.o
+                0x000000000800ca94                HAL_SD_MspInit
  .text.HAL_SPI_MspInit
-                0x000000000800b708       0xd0 Src/stm32f4xx_hal_msp.o
-                0x000000000800b708                HAL_SPI_MspInit
+                0x000000000800cb64       0xd0 Src/stm32f4xx_hal_msp.o
+                0x000000000800cb64                HAL_SPI_MspInit
  .text.HAL_TIM_Base_MspInit
-                0x000000000800b7d8       0x40 Src/stm32f4xx_hal_msp.o
-                0x000000000800b7d8                HAL_TIM_Base_MspInit
+                0x000000000800cc34       0x40 Src/stm32f4xx_hal_msp.o
+                0x000000000800cc34                HAL_TIM_Base_MspInit
  .text.HAL_TIM_MspPostInit
-                0x000000000800b818       0x70 Src/stm32f4xx_hal_msp.o
-                0x000000000800b818                HAL_TIM_MspPostInit
+                0x000000000800cc74       0x70 Src/stm32f4xx_hal_msp.o
+                0x000000000800cc74                HAL_TIM_MspPostInit
  .text.NMI_Handler
-                0x000000000800b888        0xe Src/stm32f4xx_it.o
-                0x000000000800b888                NMI_Handler
+                0x000000000800cce4        0xe Src/stm32f4xx_it.o
+                0x000000000800cce4                NMI_Handler
  .text.HardFault_Handler
-                0x000000000800b896        0x6 Src/stm32f4xx_it.o
-                0x000000000800b896                HardFault_Handler
+                0x000000000800ccf2        0x6 Src/stm32f4xx_it.o
+                0x000000000800ccf2                HardFault_Handler
  .text.MemManage_Handler
-                0x000000000800b89c        0x6 Src/stm32f4xx_it.o
-                0x000000000800b89c                MemManage_Handler
+                0x000000000800ccf8        0x6 Src/stm32f4xx_it.o
+                0x000000000800ccf8                MemManage_Handler
  .text.BusFault_Handler
-                0x000000000800b8a2        0x6 Src/stm32f4xx_it.o
-                0x000000000800b8a2                BusFault_Handler
+                0x000000000800ccfe        0x6 Src/stm32f4xx_it.o
+                0x000000000800ccfe                BusFault_Handler
  .text.UsageFault_Handler
-                0x000000000800b8a8        0x6 Src/stm32f4xx_it.o
-                0x000000000800b8a8                UsageFault_Handler
+                0x000000000800cd04        0x6 Src/stm32f4xx_it.o
+                0x000000000800cd04                UsageFault_Handler
  .text.SVC_Handler
-                0x000000000800b8ae        0xe Src/stm32f4xx_it.o
-                0x000000000800b8ae                SVC_Handler
+                0x000000000800cd0a        0xe Src/stm32f4xx_it.o
+                0x000000000800cd0a                SVC_Handler
  .text.DebugMon_Handler
-                0x000000000800b8bc        0xe Src/stm32f4xx_it.o
-                0x000000000800b8bc                DebugMon_Handler
+                0x000000000800cd18        0xe Src/stm32f4xx_it.o
+                0x000000000800cd18                DebugMon_Handler
  .text.PendSV_Handler
-                0x000000000800b8ca        0xe Src/stm32f4xx_it.o
-                0x000000000800b8ca                PendSV_Handler
+                0x000000000800cd26        0xe Src/stm32f4xx_it.o
+                0x000000000800cd26                PendSV_Handler
  .text.SysTick_Handler
-                0x000000000800b8d8        0xc Src/stm32f4xx_it.o
-                0x000000000800b8d8                SysTick_Handler
+                0x000000000800cd34        0xc Src/stm32f4xx_it.o
+                0x000000000800cd34                SysTick_Handler
  .text.CAN1_RX0_IRQHandler
-                0x000000000800b8e4       0x14 Src/stm32f4xx_it.o
-                0x000000000800b8e4                CAN1_RX0_IRQHandler
+                0x000000000800cd40       0x14 Src/stm32f4xx_it.o
+                0x000000000800cd40                CAN1_RX0_IRQHandler
  .text.CAN2_RX1_IRQHandler
-                0x000000000800b8f8       0x14 Src/stm32f4xx_it.o
-                0x000000000800b8f8                CAN2_RX1_IRQHandler
- .text._getpid  0x000000000800b90c       0x10 Src/syscalls.o
-                0x000000000800b90c                _getpid
- .text._kill    0x000000000800b91c       0x20 Src/syscalls.o
-                0x000000000800b91c                _kill
- .text._exit    0x000000000800b93c       0x14 Src/syscalls.o
-                0x000000000800b93c                _exit
- .text._sbrk    0x000000000800b950       0x58 Src/sysmem.o
-                0x000000000800b950                _sbrk
+                0x000000000800cd54       0x14 Src/stm32f4xx_it.o
+                0x000000000800cd54                CAN2_RX1_IRQHandler
+ .text._getpid  0x000000000800cd68       0x10 Src/syscalls.o
+                0x000000000800cd68                _getpid
+ .text._kill    0x000000000800cd78       0x20 Src/syscalls.o
+                0x000000000800cd78                _kill
+ .text._exit    0x000000000800cd98       0x14 Src/syscalls.o
+                0x000000000800cd98                _exit
+ .text._sbrk    0x000000000800cdac       0x58 Src/sysmem.o
+                0x000000000800cdac                _sbrk
  .text.SystemInit
-                0x000000000800b9a8       0x6c Src/system_stm32f4xx.o
-                0x000000000800b9a8                SystemInit
+                0x000000000800ce04       0x6c Src/system_stm32f4xx.o
+                0x000000000800ce04                SystemInit
  .text.Reset_Handler
-                0x000000000800ba14       0x50 Startup/startup_stm32f446retx.o
-                0x000000000800ba14                Reset_Handler
+                0x000000000800ce70       0x50 Startup/startup_stm32f446retx.o
+                0x000000000800ce70                Reset_Handler
  .text.Default_Handler
-                0x000000000800ba64        0x2 Startup/startup_stm32f446retx.o
-                0x000000000800ba64                RTC_Alarm_IRQHandler
-                0x000000000800ba64                EXTI2_IRQHandler
-                0x000000000800ba64                TIM8_CC_IRQHandler
-                0x000000000800ba64                FMPI2C1_EV_IRQHandler
-                0x000000000800ba64                SPI4_IRQHandler
-                0x000000000800ba64                TIM1_CC_IRQHandler
-                0x000000000800ba64                DMA2_Stream5_IRQHandler
-                0x000000000800ba64                DMA1_Stream5_IRQHandler
-                0x000000000800ba64                PVD_IRQHandler
-                0x000000000800ba64                SDIO_IRQHandler
-                0x000000000800ba64                TAMP_STAMP_IRQHandler
-                0x000000000800ba64                EXTI3_IRQHandler
-                0x000000000800ba64                TIM8_TRG_COM_TIM14_IRQHandler
-                0x000000000800ba64                TIM1_UP_TIM10_IRQHandler
-                0x000000000800ba64                TIM8_UP_TIM13_IRQHandler
-                0x000000000800ba64                I2C3_ER_IRQHandler
-                0x000000000800ba64                EXTI0_IRQHandler
-                0x000000000800ba64                I2C2_EV_IRQHandler
-                0x000000000800ba64                DMA1_Stream2_IRQHandler
-                0x000000000800ba64                FPU_IRQHandler
-                0x000000000800ba64                OTG_HS_WKUP_IRQHandler
-                0x000000000800ba64                CAN2_SCE_IRQHandler
-                0x000000000800ba64                DMA2_Stream2_IRQHandler
-                0x000000000800ba64                SPI1_IRQHandler
-                0x000000000800ba64                TIM6_DAC_IRQHandler
-                0x000000000800ba64                TIM1_BRK_TIM9_IRQHandler
-                0x000000000800ba64                DCMI_IRQHandler
-                0x000000000800ba64                CAN2_RX0_IRQHandler
-                0x000000000800ba64                DMA2_Stream3_IRQHandler
-                0x000000000800ba64                SAI2_IRQHandler
-                0x000000000800ba64                USART6_IRQHandler
-                0x000000000800ba64                USART3_IRQHandler
-                0x000000000800ba64                CAN1_RX1_IRQHandler
-                0x000000000800ba64                UART5_IRQHandler
-                0x000000000800ba64                DMA2_Stream0_IRQHandler
-                0x000000000800ba64                TIM4_IRQHandler
-                0x000000000800ba64                QUADSPI_IRQHandler
-                0x000000000800ba64                I2C1_EV_IRQHandler
-                0x000000000800ba64                DMA1_Stream6_IRQHandler
-                0x000000000800ba64                DMA1_Stream1_IRQHandler
-                0x000000000800ba64                UART4_IRQHandler
-                0x000000000800ba64                TIM3_IRQHandler
-                0x000000000800ba64                RCC_IRQHandler
-                0x000000000800ba64                TIM8_BRK_TIM12_IRQHandler
-                0x000000000800ba64                Default_Handler
-                0x000000000800ba64                CEC_IRQHandler
-                0x000000000800ba64                EXTI15_10_IRQHandler
-                0x000000000800ba64                ADC_IRQHandler
-                0x000000000800ba64                DMA1_Stream7_IRQHandler
-                0x000000000800ba64                TIM7_IRQHandler
-                0x000000000800ba64                CAN2_TX_IRQHandler
-                0x000000000800ba64                TIM5_IRQHandler
-                0x000000000800ba64                DMA2_Stream7_IRQHandler
-                0x000000000800ba64                I2C3_EV_IRQHandler
-                0x000000000800ba64                EXTI9_5_IRQHandler
-                0x000000000800ba64                RTC_WKUP_IRQHandler
-                0x000000000800ba64                SPDIF_RX_IRQHandler
-                0x000000000800ba64                SPI2_IRQHandler
-                0x000000000800ba64                OTG_HS_EP1_IN_IRQHandler
-                0x000000000800ba64                DMA1_Stream0_IRQHandler
-                0x000000000800ba64                CAN1_TX_IRQHandler
-                0x000000000800ba64                FMPI2C1_ER_IRQHandler
-                0x000000000800ba64                EXTI4_IRQHandler
-                0x000000000800ba64                OTG_HS_EP1_OUT_IRQHandler
-                0x000000000800ba64                WWDG_IRQHandler
-                0x000000000800ba64                TIM2_IRQHandler
-                0x000000000800ba64                OTG_FS_WKUP_IRQHandler
-                0x000000000800ba64                TIM1_TRG_COM_TIM11_IRQHandler
-                0x000000000800ba64                OTG_HS_IRQHandler
-                0x000000000800ba64                EXTI1_IRQHandler
-                0x000000000800ba64                USART2_IRQHandler
-                0x000000000800ba64                I2C2_ER_IRQHandler
-                0x000000000800ba64                DMA2_Stream1_IRQHandler
-                0x000000000800ba64                CAN1_SCE_IRQHandler
-                0x000000000800ba64                FLASH_IRQHandler
-                0x000000000800ba64                DMA2_Stream4_IRQHandler
-                0x000000000800ba64                USART1_IRQHandler
-                0x000000000800ba64                OTG_FS_IRQHandler
-                0x000000000800ba64                SPI3_IRQHandler
-                0x000000000800ba64                DMA1_Stream4_IRQHandler
-                0x000000000800ba64                I2C1_ER_IRQHandler
-                0x000000000800ba64                FMC_IRQHandler
-                0x000000000800ba64                DMA2_Stream6_IRQHandler
-                0x000000000800ba64                SAI1_IRQHandler
-                0x000000000800ba64                DMA1_Stream3_IRQHandler
- .text._Znwj    0x000000000800ba66       0x22 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libstdc++_nano.a(new_op.o)
-                0x000000000800ba66                operator new(unsigned int)
+                0x000000000800cec0        0x2 Startup/startup_stm32f446retx.o
+                0x000000000800cec0                RTC_Alarm_IRQHandler
+                0x000000000800cec0                EXTI2_IRQHandler
+                0x000000000800cec0                TIM8_CC_IRQHandler
+                0x000000000800cec0                FMPI2C1_EV_IRQHandler
+                0x000000000800cec0                SPI4_IRQHandler
+                0x000000000800cec0                TIM1_CC_IRQHandler
+                0x000000000800cec0                DMA2_Stream5_IRQHandler
+                0x000000000800cec0                DMA1_Stream5_IRQHandler
+                0x000000000800cec0                PVD_IRQHandler
+                0x000000000800cec0                SDIO_IRQHandler
+                0x000000000800cec0                TAMP_STAMP_IRQHandler
+                0x000000000800cec0                EXTI3_IRQHandler
+                0x000000000800cec0                TIM8_TRG_COM_TIM14_IRQHandler
+                0x000000000800cec0                TIM1_UP_TIM10_IRQHandler
+                0x000000000800cec0                TIM8_UP_TIM13_IRQHandler
+                0x000000000800cec0                I2C3_ER_IRQHandler
+                0x000000000800cec0                EXTI0_IRQHandler
+                0x000000000800cec0                I2C2_EV_IRQHandler
+                0x000000000800cec0                DMA1_Stream2_IRQHandler
+                0x000000000800cec0                FPU_IRQHandler
+                0x000000000800cec0                OTG_HS_WKUP_IRQHandler
+                0x000000000800cec0                CAN2_SCE_IRQHandler
+                0x000000000800cec0                DMA2_Stream2_IRQHandler
+                0x000000000800cec0                SPI1_IRQHandler
+                0x000000000800cec0                TIM6_DAC_IRQHandler
+                0x000000000800cec0                TIM1_BRK_TIM9_IRQHandler
+                0x000000000800cec0                DCMI_IRQHandler
+                0x000000000800cec0                CAN2_RX0_IRQHandler
+                0x000000000800cec0                DMA2_Stream3_IRQHandler
+                0x000000000800cec0                SAI2_IRQHandler
+                0x000000000800cec0                USART6_IRQHandler
+                0x000000000800cec0                USART3_IRQHandler
+                0x000000000800cec0                CAN1_RX1_IRQHandler
+                0x000000000800cec0                UART5_IRQHandler
+                0x000000000800cec0                DMA2_Stream0_IRQHandler
+                0x000000000800cec0                TIM4_IRQHandler
+                0x000000000800cec0                QUADSPI_IRQHandler
+                0x000000000800cec0                I2C1_EV_IRQHandler
+                0x000000000800cec0                DMA1_Stream6_IRQHandler
+                0x000000000800cec0                DMA1_Stream1_IRQHandler
+                0x000000000800cec0                UART4_IRQHandler
+                0x000000000800cec0                TIM3_IRQHandler
+                0x000000000800cec0                RCC_IRQHandler
+                0x000000000800cec0                TIM8_BRK_TIM12_IRQHandler
+                0x000000000800cec0                Default_Handler
+                0x000000000800cec0                CEC_IRQHandler
+                0x000000000800cec0                EXTI15_10_IRQHandler
+                0x000000000800cec0                ADC_IRQHandler
+                0x000000000800cec0                DMA1_Stream7_IRQHandler
+                0x000000000800cec0                TIM7_IRQHandler
+                0x000000000800cec0                CAN2_TX_IRQHandler
+                0x000000000800cec0                TIM5_IRQHandler
+                0x000000000800cec0                DMA2_Stream7_IRQHandler
+                0x000000000800cec0                I2C3_EV_IRQHandler
+                0x000000000800cec0                EXTI9_5_IRQHandler
+                0x000000000800cec0                RTC_WKUP_IRQHandler
+                0x000000000800cec0                SPDIF_RX_IRQHandler
+                0x000000000800cec0                SPI2_IRQHandler
+                0x000000000800cec0                OTG_HS_EP1_IN_IRQHandler
+                0x000000000800cec0                DMA1_Stream0_IRQHandler
+                0x000000000800cec0                CAN1_TX_IRQHandler
+                0x000000000800cec0                FMPI2C1_ER_IRQHandler
+                0x000000000800cec0                EXTI4_IRQHandler
+                0x000000000800cec0                OTG_HS_EP1_OUT_IRQHandler
+                0x000000000800cec0                WWDG_IRQHandler
+                0x000000000800cec0                TIM2_IRQHandler
+                0x000000000800cec0                OTG_FS_WKUP_IRQHandler
+                0x000000000800cec0                TIM1_TRG_COM_TIM11_IRQHandler
+                0x000000000800cec0                OTG_HS_IRQHandler
+                0x000000000800cec0                EXTI1_IRQHandler
+                0x000000000800cec0                USART2_IRQHandler
+                0x000000000800cec0                I2C2_ER_IRQHandler
+                0x000000000800cec0                DMA2_Stream1_IRQHandler
+                0x000000000800cec0                CAN1_SCE_IRQHandler
+                0x000000000800cec0                FLASH_IRQHandler
+                0x000000000800cec0                DMA2_Stream4_IRQHandler
+                0x000000000800cec0                USART1_IRQHandler
+                0x000000000800cec0                OTG_FS_IRQHandler
+                0x000000000800cec0                SPI3_IRQHandler
+                0x000000000800cec0                DMA1_Stream4_IRQHandler
+                0x000000000800cec0                I2C1_ER_IRQHandler
+                0x000000000800cec0                FMC_IRQHandler
+                0x000000000800cec0                DMA2_Stream6_IRQHandler
+                0x000000000800cec0                SAI1_IRQHandler
+                0x000000000800cec0                DMA1_Stream3_IRQHandler
+ .text._Znwj    0x000000000800cec2       0x22 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libstdc++_nano.a(new_op.o)
+                0x000000000800cec2                operator new(unsigned int)
  .text._ZSt15get_new_handlerv
-                0x000000000800ba88       0x10 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libstdc++_nano.a(new_handler.o)
-                0x000000000800ba88                std::get_new_handler()
- .text.logf     0x000000000800ba98       0xec c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a(lib_a-wf_log.o)
-                0x000000000800ba98                logf
+                0x000000000800cee4       0x10 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libstdc++_nano.a(new_handler.o)
+                0x000000000800cee4                std::get_new_handler()
+ .text.logf     0x000000000800cef4       0xec c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a(lib_a-wf_log.o)
+                0x000000000800cef4                logf
  .text.__ieee754_logf
-                0x000000000800bb84      0x1dc c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a(lib_a-ef_log.o)
-                0x000000000800bb84                __ieee754_logf
- .text.matherr  0x000000000800bd60        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a(lib_a-s_matherr.o)
-                0x000000000800bd60                matherr
- *fill*         0x000000000800bd64        0x4 
- .text.nan      0x000000000800bd68       0x10 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a(lib_a-s_nan.o)
-                0x000000000800bd68                nan
- .text.abort    0x000000000800bd78        0xe c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-abort.o)
-                0x000000000800bd78                abort
- *fill*         0x000000000800bd86        0x2 
- .text.__errno  0x000000000800bd88        0xc c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-errno.o)
-                0x000000000800bd88                __errno
+                0x000000000800cfe0      0x1dc c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a(lib_a-ef_log.o)
+                0x000000000800cfe0                __ieee754_logf
+ .text.matherr  0x000000000800d1bc        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a(lib_a-s_matherr.o)
+                0x000000000800d1bc                matherr
+ .text.nan      0x000000000800d1c0       0x10 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a(lib_a-s_nan.o)
+                0x000000000800d1c0                nan
+ .text.abort    0x000000000800d1d0        0xe c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-abort.o)
+                0x000000000800d1d0                abort
+ *fill*         0x000000000800d1de        0x2 
+ .text.__errno  0x000000000800d1e0        0xc c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-errno.o)
+                0x000000000800d1e0                __errno
  .text.__libc_init_array
-                0x000000000800bd94       0x48 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-init.o)
-                0x000000000800bd94                __libc_init_array
- .text.malloc   0x000000000800bddc       0x10 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-malloc.o)
-                0x000000000800bddc                malloc
- .text.memset   0x000000000800bdec       0x10 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-memset.o)
-                0x000000000800bdec                memset
+                0x000000000800d1ec       0x48 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-init.o)
+                0x000000000800d1ec                __libc_init_array
+ .text.malloc   0x000000000800d234       0x10 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-malloc.o)
+                0x000000000800d234                malloc
+ .text.memset   0x000000000800d244       0x10 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-memset.o)
+                0x000000000800d244                memset
  .text._malloc_r
-                0x000000000800bdfc       0xb4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-nano-mallocr.o)
-                0x000000000800bdfc                _malloc_r
- .text._sbrk_r  0x000000000800beb0       0x20 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-sbrkr.o)
-                0x000000000800beb0                _sbrk_r
+                0x000000000800d254       0xb4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-nano-mallocr.o)
+                0x000000000800d254                _malloc_r
+ .text._sbrk_r  0x000000000800d308       0x20 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-sbrkr.o)
+                0x000000000800d308                _sbrk_r
  .text._raise_r
-                0x000000000800bed0       0x50 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-signal.o)
-                0x000000000800bed0                _raise_r
- .text.raise    0x000000000800bf20       0x10 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-signal.o)
-                0x000000000800bf20                raise
- .text._kill_r  0x000000000800bf30       0x24 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-signalr.o)
-                0x000000000800bf30                _kill_r
+                0x000000000800d328       0x50 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-signal.o)
+                0x000000000800d328                _raise_r
+ .text.raise    0x000000000800d378       0x10 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-signal.o)
+                0x000000000800d378                raise
+ .text._kill_r  0x000000000800d388       0x24 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-signalr.o)
+                0x000000000800d388                _kill_r
  .text._getpid_r
-                0x000000000800bf54        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-signalr.o)
-                0x000000000800bf54                _getpid_r
+                0x000000000800d3ac        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-signalr.o)
+                0x000000000800d3ac                _getpid_r
  .text.__malloc_lock
-                0x000000000800bf58        0x2 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-mlock.o)
-                0x000000000800bf58                __malloc_lock
+                0x000000000800d3b0        0x2 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-mlock.o)
+                0x000000000800d3b0                __malloc_lock
  .text.__malloc_unlock
-                0x000000000800bf5a        0x2 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-mlock.o)
-                0x000000000800bf5a                __malloc_unlock
+                0x000000000800d3b2        0x2 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-mlock.o)
+                0x000000000800d3b2                __malloc_unlock
  *(.glue_7)
- .glue_7        0x000000000800bf5c        0x0 linker stubs
+ .glue_7        0x000000000800d3b4        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x000000000800bf5c        0x0 linker stubs
+ .glue_7t       0x000000000800d3b4        0x0 linker stubs
  *(.eh_frame)
- .eh_frame      0x000000000800bf5c        0x0 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+ .eh_frame      0x000000000800d3b4        0x0 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
  *(.init)
- .init          0x000000000800bf5c        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crti.o
-                0x000000000800bf5c                _init
- .init          0x000000000800bf60        0x8 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
+ .init          0x000000000800d3b4        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crti.o
+                0x000000000800d3b4                _init
+ .init          0x000000000800d3b8        0x8 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
  *(.fini)
- .fini          0x000000000800bf68        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crti.o
-                0x000000000800bf68                _fini
- .fini          0x000000000800bf6c        0x8 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
-                0x000000000800bf74                . = ALIGN (0x4)
-                0x000000000800bf74                _etext = .
+ .fini          0x000000000800d3c0        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crti.o
+                0x000000000800d3c0                _fini
+ .fini          0x000000000800d3c4        0x8 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
+                0x000000000800d3cc                . = ALIGN (0x4)
+                0x000000000800d3cc                _etext = .
 
-.vfp11_veneer   0x000000000800bf74        0x0
- .vfp11_veneer  0x000000000800bf74        0x0 linker stubs
+.vfp11_veneer   0x000000000800d3cc        0x0
+ .vfp11_veneer  0x000000000800d3cc        0x0 linker stubs
 
-.v4_bx          0x000000000800bf74        0x0
- .v4_bx         0x000000000800bf74        0x0 linker stubs
+.v4_bx          0x000000000800d3cc        0x0
+ .v4_bx         0x000000000800d3cc        0x0 linker stubs
 
-.iplt           0x000000000800bf74        0x0
- .iplt          0x000000000800bf74        0x0 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+.iplt           0x000000000800d3cc        0x0
+ .iplt          0x000000000800d3cc        0x0 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
 
-.rodata         0x000000000800bf74      0x34c
-                0x000000000800bf74                . = ALIGN (0x4)
+.rodata         0x000000000800d3cc      0x380
+                0x000000000800d3cc                . = ALIGN (0x4)
  *(.rodata)
- .rodata        0x000000000800bf74       0x44 Middlewares/Third_Party/FatFs/src/ff.o
- .rodata        0x000000000800bfb8       0x38 Src/LTC6811.o
- .rodata        0x000000000800bff0       0x24 Src/main.o
+ .rodata        0x000000000800d3cc       0x44 Middlewares/Third_Party/FatFs/src/ff.o
+ .rodata        0x000000000800d410       0x38 Src/LTC6811.o
+ .rodata        0x000000000800d448       0x58 Src/main.o
  *(.rodata*)
- .rodata.ExCvt  0x000000000800c014       0x80 Middlewares/Third_Party/FatFs/src/ff.o
+ .rodata.ExCvt  0x000000000800d4a0       0x80 Middlewares/Third_Party/FatFs/src/ff.o
  .rodata._ZN7LTC681110crc15TableE
-                0x000000000800c094      0x200 Src/LTC6811.o
-                0x000000000800c094                LTC6811::crc15Table
+                0x000000000800d520      0x200 Src/LTC6811.o
+                0x000000000800d520                LTC6811::crc15Table
  .rodata.SD_Driver
-                0x000000000800c294       0x14 Src/sd_diskio.o
-                0x000000000800c294                SD_Driver
+                0x000000000800d720       0x14 Src/sd_diskio.o
+                0x000000000800d720                SD_Driver
  .rodata.AHBPrescTable
-                0x000000000800c2a8       0x10 Src/system_stm32f4xx.o
-                0x000000000800c2a8                AHBPrescTable
+                0x000000000800d734       0x10 Src/system_stm32f4xx.o
+                0x000000000800d734                AHBPrescTable
  .rodata.logf.str1.1
-                0x000000000800c2b8        0x5 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a(lib_a-wf_log.o)
+                0x000000000800d744        0x5 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a(lib_a-wf_log.o)
                                           0x6 (size before relaxing)
-                0x000000000800c2c0                . = ALIGN (0x4)
- *fill*         0x000000000800c2bd        0x3 
+                0x000000000800d74c                . = ALIGN (0x4)
+ *fill*         0x000000000800d749        0x3 
 
-.ARM.extab      0x000000000800c2c0        0x0
-                0x000000000800c2c0                . = ALIGN (0x4)
+.ARM.extab      0x000000000800d74c        0x0
+                0x000000000800d74c                . = ALIGN (0x4)
  *(.ARM.extab* .gnu.linkonce.armextab.*)
-                0x000000000800c2c0                . = ALIGN (0x4)
+                0x000000000800d74c                . = ALIGN (0x4)
 
-.ARM            0x000000000800c2c0        0x8
-                0x000000000800c2c0                . = ALIGN (0x4)
-                0x000000000800c2c0                __exidx_start = .
+.ARM            0x000000000800d74c        0x8
+                0x000000000800d74c                . = ALIGN (0x4)
+                0x000000000800d74c                __exidx_start = .
  *(.ARM.exidx*)
- .ARM.exidx     0x000000000800c2c0        0x8 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_udivmoddi4.o)
-                0x000000000800c2c8                __exidx_end = .
-                0x000000000800c2c8                . = ALIGN (0x4)
+ .ARM.exidx     0x000000000800d74c        0x8 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_udivmoddi4.o)
+                0x000000000800d754                __exidx_end = .
+                0x000000000800d754                . = ALIGN (0x4)
 
-.rel.dyn        0x000000000800c2c8        0x0
- .rel.iplt      0x000000000800c2c8        0x0 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+.rel.dyn        0x000000000800d754        0x0
+ .rel.iplt      0x000000000800d754        0x0 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
 
-.preinit_array  0x000000000800c2c8        0x0
-                0x000000000800c2c8                . = ALIGN (0x4)
-                0x000000000800c2c8                PROVIDE (__preinit_array_start = .)
+.preinit_array  0x000000000800d754        0x0
+                0x000000000800d754                . = ALIGN (0x4)
+                0x000000000800d754                PROVIDE (__preinit_array_start = .)
  *(.preinit_array*)
-                0x000000000800c2c8                PROVIDE (__preinit_array_end = .)
-                0x000000000800c2c8                . = ALIGN (0x4)
+                0x000000000800d754                PROVIDE (__preinit_array_end = .)
+                0x000000000800d754                . = ALIGN (0x4)
 
-.init_array     0x000000000800c2c8        0x4
-                0x000000000800c2c8                . = ALIGN (0x4)
-                0x000000000800c2c8                PROVIDE (__init_array_start = .)
+.init_array     0x000000000800d754        0x4
+                0x000000000800d754                . = ALIGN (0x4)
+                0x000000000800d754                PROVIDE (__init_array_start = .)
  *(SORT_BY_NAME(.init_array.*))
  *(.init_array*)
- .init_array    0x000000000800c2c8        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
-                0x000000000800c2cc                PROVIDE (__init_array_end = .)
-                0x000000000800c2cc                . = ALIGN (0x4)
+ .init_array    0x000000000800d754        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+                0x000000000800d758                PROVIDE (__init_array_end = .)
+                0x000000000800d758                . = ALIGN (0x4)
 
-.fini_array     0x000000000800c2cc        0x4
-                0x000000000800c2cc                . = ALIGN (0x4)
+.fini_array     0x000000000800d758        0x4
+                0x000000000800d758                . = ALIGN (0x4)
                 [!provide]                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_NAME(.fini_array.*))
  *(.fini_array*)
- .fini_array    0x000000000800c2cc        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+ .fini_array    0x000000000800d758        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
                 [!provide]                        PROVIDE (__fini_array_end = .)
-                0x000000000800c2d0                . = ALIGN (0x4)
-                0x000000000800c2d0                _sidata = LOADADDR (.data)
+                0x000000000800d75c                . = ALIGN (0x4)
+                0x000000000800d75c                _sidata = LOADADDR (.data)
 
-.data           0x0000000020000000       0x74 load address 0x000000000800c2d0
+.data           0x0000000020000000       0x74 load address 0x000000000800d75c
                 0x0000000020000000                . = ALIGN (0x4)
                 0x0000000020000000                _sdata = .
  *(.data)
@@ -6440,11 +6474,11 @@ LOAD c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
                 0x0000000020000074                . = ALIGN (0x4)
                 0x0000000020000074                _edata = .
 
-.igot.plt       0x0000000020000074        0x0 load address 0x000000000800c344
+.igot.plt       0x0000000020000074        0x0 load address 0x000000000800d7d0
  .igot.plt      0x0000000020000074        0x0 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
                 0x0000000020000074                . = ALIGN (0x4)
 
-.bss            0x0000000020000074      0x66c load address 0x000000000800c344
+.bss            0x0000000020000074      0x670 load address 0x000000000800d7d0
                 0x0000000020000074                _sbss = .
                 0x0000000020000074                __bss_start__ = _sbss
  *(.bss)
@@ -6478,42 +6512,45 @@ LOAD c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
                 0x0000000020000254                ivt
  .bss.pwm_fan   0x0000000020000258        0x4 Src/main.o
                 0x0000000020000258                pwm_fan
+ .bss._ZZ10CanTxErrorE10last_error
+                0x000000002000025c        0x4 Src/main.o
  .bss.HAL_RCC_CAN1_CLK_ENABLED
-                0x000000002000025c        0x4 Src/stm32f4xx_hal_msp.o
+                0x0000000020000260        0x4 Src/stm32f4xx_hal_msp.o
  .bss.heap_end.6424
-                0x0000000020000260        0x4 Src/sysmem.o
+                0x0000000020000264        0x4 Src/sysmem.o
  .bss._ZN12_GLOBAL__N_113__new_handlerE
-                0x0000000020000264        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libstdc++_nano.a(new_handler.o)
+                0x0000000020000268        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libstdc++_nano.a(new_handler.o)
  .bss.__malloc_free_list
-                0x0000000020000268        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-nano-mallocr.o)
-                0x0000000020000268                __malloc_free_list
- .bss.__malloc_sbrk_start
                 0x000000002000026c        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-nano-mallocr.o)
-                0x000000002000026c                __malloc_sbrk_start
+                0x000000002000026c                __malloc_free_list
+ .bss.__malloc_sbrk_start
+                0x0000000020000270        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-nano-mallocr.o)
+                0x0000000020000270                __malloc_sbrk_start
  *(COMMON)
- COMMON         0x0000000020000270        0x4 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
-                0x0000000020000270                uwTick
- COMMON         0x0000000020000274      0x468 Src/fatfs.o
-                0x0000000020000274                retSD
-                0x0000000020000278                SDPath
-                0x000000002000027c                SDFile
-                0x00000000200004ac                SDFatFS
- COMMON         0x00000000200006dc        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-reent.o)
-                0x00000000200006dc                errno
-                0x00000000200006e0                . = ALIGN (0x4)
-                0x00000000200006e0                _ebss = .
-                0x00000000200006e0                __bss_end__ = _ebss
+ COMMON         0x0000000020000274        0x4 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
+                0x0000000020000274                uwTick
+ COMMON         0x0000000020000278      0x468 Src/fatfs.o
+                0x0000000020000278                retSD
+                0x000000002000027c                SDPath
+                0x0000000020000280                SDFile
+                0x00000000200004b0                SDFatFS
+ COMMON         0x00000000200006e0        0x4 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-reent.o)
+                0x00000000200006e0                errno
+                0x00000000200006e4                . = ALIGN (0x4)
+                0x00000000200006e4                _ebss = .
+                0x00000000200006e4                __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x00000000200006e0      0x600 load address 0x000000000800c344
-                0x00000000200006e0                . = ALIGN (0x8)
-                0x00000000200006e0                PROVIDE (end = .)
+                0x00000000200006e4      0x604 load address 0x000000000800d7d0
+                0x00000000200006e8                . = ALIGN (0x8)
+ *fill*         0x00000000200006e4        0x4 
+                0x00000000200006e8                PROVIDE (end = .)
                 [!provide]                        PROVIDE (_end = .)
-                0x00000000200008e0                . = (. + _Min_Heap_Size)
- *fill*         0x00000000200006e0      0x200 
-                0x0000000020000ce0                . = (. + _Min_Stack_Size)
- *fill*         0x00000000200008e0      0x400 
-                0x0000000020000ce0                . = ALIGN (0x8)
+                0x00000000200008e8                . = (. + _Min_Heap_Size)
+ *fill*         0x00000000200006e8      0x200 
+                0x0000000020000ce8                . = (. + _Min_Stack_Size)
+ *fill*         0x00000000200008e8      0x400 
+                0x0000000020000ce8                . = ALIGN (0x8)
 
 /DISCARD/
  libc.a(*)
@@ -6631,7 +6668,7 @@ LOAD c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
                 0x0000000000000aa0       0x22 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
 OUTPUT(BMS.elf elf32-littlearm)
 
-.debug_info     0x0000000000000000    0x48b82
+.debug_info     0x0000000000000000    0x48b4e
  .debug_info    0x0000000000000000      0x997 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
  .debug_info    0x0000000000000997      0xfad Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.o
  .debug_info    0x0000000000001944      0xe46 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
@@ -6646,20 +6683,20 @@ OUTPUT(BMS.elf elf32-littlearm)
  .debug_info    0x000000000000b892      0xcdc Middlewares/Third_Party/FatFs/src/diskio.o
  .debug_info    0x000000000000c56e     0x2a57 Middlewares/Third_Party/FatFs/src/ff.o
  .debug_info    0x000000000000efc5      0xc74 Middlewares/Third_Party/FatFs/src/ff_gen_drv.o
- .debug_info    0x000000000000fc39    0x18b7e Src/LTC6811.o
- .debug_info    0x00000000000287b7      0xa46 Src/bsp_driver_sd.o
- .debug_info    0x00000000000291fd      0xd86 Src/fatfs.o
- .debug_info    0x0000000000029f83      0x265 Src/fatfs_platform.o
- .debug_info    0x000000000002a1e8    0x1a13e Src/main.o
- .debug_info    0x0000000000044326      0xd14 Src/sd_diskio.o
- .debug_info    0x000000000004503a     0x17e2 Src/stm32f4xx_hal_msp.o
- .debug_info    0x000000000004681c      0x5e3 Src/stm32f4xx_it.o
- .debug_info    0x0000000000046dff      0xebd Src/syscalls.o
- .debug_info    0x0000000000047cbc      0x91c Src/sysmem.o
- .debug_info    0x00000000000485d8      0x588 Src/system_stm32f4xx.o
- .debug_info    0x0000000000048b60       0x22 Startup/startup_stm32f446retx.o
+ .debug_info    0x000000000000fc39    0x18b16 Src/LTC6811.o
+ .debug_info    0x000000000002874f      0xa46 Src/bsp_driver_sd.o
+ .debug_info    0x0000000000029195      0xd86 Src/fatfs.o
+ .debug_info    0x0000000000029f1b      0x265 Src/fatfs_platform.o
+ .debug_info    0x000000000002a180    0x1a172 Src/main.o
+ .debug_info    0x00000000000442f2      0xd14 Src/sd_diskio.o
+ .debug_info    0x0000000000045006     0x17e2 Src/stm32f4xx_hal_msp.o
+ .debug_info    0x00000000000467e8      0x5e3 Src/stm32f4xx_it.o
+ .debug_info    0x0000000000046dcb      0xebd Src/syscalls.o
+ .debug_info    0x0000000000047c88      0x91c Src/sysmem.o
+ .debug_info    0x00000000000485a4      0x588 Src/system_stm32f4xx.o
+ .debug_info    0x0000000000048b2c       0x22 Startup/startup_stm32f446retx.o
 
-.debug_abbrev   0x0000000000000000     0x467f
+.debug_abbrev   0x0000000000000000     0x4663
  .debug_abbrev  0x0000000000000000      0x1c7 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
  .debug_abbrev  0x00000000000001c7      0x21d Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.o
  .debug_abbrev  0x00000000000003e4      0x2fa Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
@@ -6678,16 +6715,16 @@ OUTPUT(BMS.elf elf32-littlearm)
  .debug_abbrev  0x00000000000029d5      0x26e Src/bsp_driver_sd.o
  .debug_abbrev  0x0000000000002c43      0x1df Src/fatfs.o
  .debug_abbrev  0x0000000000002e22       0xf7 Src/fatfs_platform.o
- .debug_abbrev  0x0000000000002f19      0xc73 Src/main.o
- .debug_abbrev  0x0000000000003b8c      0x1fa Src/sd_diskio.o
- .debug_abbrev  0x0000000000003d86      0x241 Src/stm32f4xx_hal_msp.o
- .debug_abbrev  0x0000000000003fc7      0x15f Src/stm32f4xx_it.o
- .debug_abbrev  0x0000000000004126      0x261 Src/syscalls.o
- .debug_abbrev  0x0000000000004387      0x1bb Src/sysmem.o
- .debug_abbrev  0x0000000000004542      0x12b Src/system_stm32f4xx.o
- .debug_abbrev  0x000000000000466d       0x12 Startup/startup_stm32f446retx.o
+ .debug_abbrev  0x0000000000002f19      0xc57 Src/main.o
+ .debug_abbrev  0x0000000000003b70      0x1fa Src/sd_diskio.o
+ .debug_abbrev  0x0000000000003d6a      0x241 Src/stm32f4xx_hal_msp.o
+ .debug_abbrev  0x0000000000003fab      0x15f Src/stm32f4xx_it.o
+ .debug_abbrev  0x000000000000410a      0x261 Src/syscalls.o
+ .debug_abbrev  0x000000000000436b      0x1bb Src/sysmem.o
+ .debug_abbrev  0x0000000000004526      0x12b Src/system_stm32f4xx.o
+ .debug_abbrev  0x0000000000004651       0x12 Startup/startup_stm32f446retx.o
 
-.debug_aranges  0x0000000000000000     0x1988
+.debug_aranges  0x0000000000000000     0x1998
  .debug_aranges
                 0x0000000000000000       0xf0 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
  .debug_aranges
@@ -6725,23 +6762,23 @@ OUTPUT(BMS.elf elf32-littlearm)
  .debug_aranges
                 0x0000000000001448       0x20 Src/fatfs_platform.o
  .debug_aranges
-                0x0000000000001468      0x2e8 Src/main.o
+                0x0000000000001468      0x2f8 Src/main.o
  .debug_aranges
-                0x0000000000001750       0x48 Src/sd_diskio.o
+                0x0000000000001760       0x48 Src/sd_diskio.o
  .debug_aranges
-                0x0000000000001798       0x68 Src/stm32f4xx_hal_msp.o
+                0x00000000000017a8       0x68 Src/stm32f4xx_hal_msp.o
  .debug_aranges
-                0x0000000000001800       0x70 Src/stm32f4xx_it.o
+                0x0000000000001810       0x70 Src/stm32f4xx_it.o
  .debug_aranges
-                0x0000000000001870       0xa8 Src/syscalls.o
+                0x0000000000001880       0xa8 Src/syscalls.o
  .debug_aranges
-                0x0000000000001918       0x20 Src/sysmem.o
+                0x0000000000001928       0x20 Src/sysmem.o
  .debug_aranges
-                0x0000000000001938       0x28 Src/system_stm32f4xx.o
+                0x0000000000001948       0x28 Src/system_stm32f4xx.o
  .debug_aranges
-                0x0000000000001960       0x28 Startup/startup_stm32f446retx.o
+                0x0000000000001970       0x28 Startup/startup_stm32f446retx.o
 
-.debug_ranges   0x0000000000000000     0x17f0
+.debug_ranges   0x0000000000000000     0x1800
  .debug_ranges  0x0000000000000000       0xe0 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
  .debug_ranges  0x00000000000000e0      0x128 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.o
  .debug_ranges  0x0000000000000208      0x108 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
@@ -6760,16 +6797,16 @@ OUTPUT(BMS.elf elf32-littlearm)
  .debug_ranges  0x0000000000001290       0x90 Src/bsp_driver_sd.o
  .debug_ranges  0x0000000000001320       0x18 Src/fatfs.o
  .debug_ranges  0x0000000000001338       0x10 Src/fatfs_platform.o
- .debug_ranges  0x0000000000001348      0x2d8 Src/main.o
- .debug_ranges  0x0000000000001620       0x38 Src/sd_diskio.o
- .debug_ranges  0x0000000000001658       0x58 Src/stm32f4xx_hal_msp.o
- .debug_ranges  0x00000000000016b0       0x60 Src/stm32f4xx_it.o
- .debug_ranges  0x0000000000001710       0x98 Src/syscalls.o
- .debug_ranges  0x00000000000017a8       0x10 Src/sysmem.o
- .debug_ranges  0x00000000000017b8       0x18 Src/system_stm32f4xx.o
- .debug_ranges  0x00000000000017d0       0x20 Startup/startup_stm32f446retx.o
+ .debug_ranges  0x0000000000001348      0x2e8 Src/main.o
+ .debug_ranges  0x0000000000001630       0x38 Src/sd_diskio.o
+ .debug_ranges  0x0000000000001668       0x58 Src/stm32f4xx_hal_msp.o
+ .debug_ranges  0x00000000000016c0       0x60 Src/stm32f4xx_it.o
+ .debug_ranges  0x0000000000001720       0x98 Src/syscalls.o
+ .debug_ranges  0x00000000000017b8       0x10 Src/sysmem.o
+ .debug_ranges  0x00000000000017c8       0x18 Src/system_stm32f4xx.o
+ .debug_ranges  0x00000000000017e0       0x20 Startup/startup_stm32f446retx.o
 
-.debug_macro    0x0000000000000000    0x2a280
+.debug_macro    0x0000000000000000    0x2a27a
  .debug_macro   0x0000000000000000      0x251 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
  .debug_macro   0x0000000000000251      0xa5a Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
  .debug_macro   0x0000000000000cab      0x196 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
@@ -6881,81 +6918,81 @@ OUTPUT(BMS.elf elf32-littlearm)
  .debug_macro   0x0000000000026536       0x3d Src/LTC6811.o
  .debug_macro   0x0000000000026573       0x35 Src/LTC6811.o
  .debug_macro   0x00000000000265a8       0x40 Src/LTC6811.o
- .debug_macro   0x00000000000265e8       0x40 Src/LTC6811.o
- .debug_macro   0x0000000000026628       0x27 Src/LTC6811.o
- .debug_macro   0x000000000002664f       0x1c Src/LTC6811.o
- .debug_macro   0x000000000002666b       0x10 Src/LTC6811.o
- .debug_macro   0x000000000002667b       0x19 Src/LTC6811.o
- .debug_macro   0x0000000000026694       0x18 Src/LTC6811.o
- .debug_macro   0x00000000000266ac       0x6e Src/LTC6811.o
- .debug_macro   0x000000000002671a       0x2e Src/LTC6811.o
- .debug_macro   0x0000000000026748       0x1f Src/LTC6811.o
- .debug_macro   0x0000000000026767       0x76 Src/LTC6811.o
- .debug_macro   0x00000000000267dd       0x19 Src/LTC6811.o
- .debug_macro   0x00000000000267f6       0x22 Src/LTC6811.o
- .debug_macro   0x0000000000026818       0x3c Src/LTC6811.o
- .debug_macro   0x0000000000026854       0x10 Src/LTC6811.o
- .debug_macro   0x0000000000026864       0x3f Src/LTC6811.o
- .debug_macro   0x00000000000268a3      0x173 Src/LTC6811.o
- .debug_macro   0x0000000000026a16       0x17 Src/LTC6811.o
- .debug_macro   0x0000000000026a2d       0x10 Src/LTC6811.o
- .debug_macro   0x0000000000026a3d       0x5e Src/LTC6811.o
- .debug_macro   0x0000000000026a9b       0x16 Src/LTC6811.o
- .debug_macro   0x0000000000026ab1       0x4c Src/LTC6811.o
- .debug_macro   0x0000000000026afd       0x5e Src/LTC6811.o
- .debug_macro   0x0000000000026b5b       0x11 Src/LTC6811.o
- .debug_macro   0x0000000000026b6c       0x11 Src/LTC6811.o
- .debug_macro   0x0000000000026b7d       0x11 Src/LTC6811.o
- .debug_macro   0x0000000000026b8e       0x2f Src/LTC6811.o
- .debug_macro   0x0000000000026bbd       0x16 Src/LTC6811.o
- .debug_macro   0x0000000000026bd3       0x10 Src/LTC6811.o
- .debug_macro   0x0000000000026be3      0x120 Src/LTC6811.o
- .debug_macro   0x0000000000026d03       0x17 Src/LTC6811.o
- .debug_macro   0x0000000000026d1a       0x10 Src/LTC6811.o
- .debug_macro   0x0000000000026d2a       0x1c Src/LTC6811.o
- .debug_macro   0x0000000000026d46       0xde Src/LTC6811.o
- .debug_macro   0x0000000000026e24       0x1c Src/LTC6811.o
- .debug_macro   0x0000000000026e40       0x16 Src/LTC6811.o
- .debug_macro   0x0000000000026e56      0x130 Src/LTC6811.o
- .debug_macro   0x0000000000026f86      0x11d Src/LTC6811.o
- .debug_macro   0x00000000000270a3       0x10 Src/LTC6811.o
- .debug_macro   0x00000000000270b3      0x241 Src/LTC6811.o
- .debug_macro   0x00000000000272f4       0x12 Src/LTC6811.o
- .debug_macro   0x0000000000027306      0x1da Src/LTC6811.o
- .debug_macro   0x00000000000274e0      0x3d4 Src/LTC6811.o
- .debug_macro   0x00000000000278b4       0x16 Src/LTC6811.o
- .debug_macro   0x00000000000278ca       0x11 Src/LTC6811.o
- .debug_macro   0x00000000000278db       0x11 Src/LTC6811.o
- .debug_macro   0x00000000000278ec       0x17 Src/LTC6811.o
- .debug_macro   0x0000000000027903       0x17 Src/LTC6811.o
- .debug_macro   0x000000000002791a       0x17 Src/LTC6811.o
- .debug_macro   0x0000000000027931       0x17 Src/LTC6811.o
- .debug_macro   0x0000000000027948       0x17 Src/LTC6811.o
- .debug_macro   0x000000000002795f       0x22 Src/LTC6811.o
- .debug_macro   0x0000000000027981      0x209 Src/bsp_driver_sd.o
- .debug_macro   0x0000000000027b8a      0x330 Src/fatfs.o
- .debug_macro   0x0000000000027eba      0x1fa Src/fatfs_platform.o
- .debug_macro   0x00000000000280b4      0x95d Src/main.o
- .debug_macro   0x0000000000028a11      0x333 Src/sd_diskio.o
- .debug_macro   0x0000000000028d44      0x200 Src/stm32f4xx_hal_msp.o
- .debug_macro   0x0000000000028f44      0x20a Src/stm32f4xx_it.o
- .debug_macro   0x000000000002914e      0x243 Src/syscalls.o
- .debug_macro   0x0000000000029391       0x40 Src/syscalls.o
- .debug_macro   0x00000000000293d1       0x94 Src/syscalls.o
- .debug_macro   0x0000000000029465       0x57 Src/syscalls.o
- .debug_macro   0x00000000000294bc      0x330 Src/syscalls.o
- .debug_macro   0x00000000000297ec      0x122 Src/syscalls.o
- .debug_macro   0x000000000002990e       0x10 Src/syscalls.o
- .debug_macro   0x000000000002991e      0x145 Src/syscalls.o
- .debug_macro   0x0000000000029a63      0x189 Src/syscalls.o
- .debug_macro   0x0000000000029bec       0x16 Src/syscalls.o
- .debug_macro   0x0000000000029c02       0x88 Src/syscalls.o
- .debug_macro   0x0000000000029c8a      0x1ae Src/sysmem.o
- .debug_macro   0x0000000000029e38      0x23b Src/sysmem.o
- .debug_macro   0x000000000002a073       0x16 Src/sysmem.o
- .debug_macro   0x000000000002a089      0x1f7 Src/system_stm32f4xx.o
+ .debug_macro   0x00000000000265e8       0x3a Src/LTC6811.o
+ .debug_macro   0x0000000000026622       0x27 Src/LTC6811.o
+ .debug_macro   0x0000000000026649       0x1c Src/LTC6811.o
+ .debug_macro   0x0000000000026665       0x10 Src/LTC6811.o
+ .debug_macro   0x0000000000026675       0x19 Src/LTC6811.o
+ .debug_macro   0x000000000002668e       0x18 Src/LTC6811.o
+ .debug_macro   0x00000000000266a6       0x6e Src/LTC6811.o
+ .debug_macro   0x0000000000026714       0x2e Src/LTC6811.o
+ .debug_macro   0x0000000000026742       0x1f Src/LTC6811.o
+ .debug_macro   0x0000000000026761       0x76 Src/LTC6811.o
+ .debug_macro   0x00000000000267d7       0x19 Src/LTC6811.o
+ .debug_macro   0x00000000000267f0       0x22 Src/LTC6811.o
+ .debug_macro   0x0000000000026812       0x3c Src/LTC6811.o
+ .debug_macro   0x000000000002684e       0x10 Src/LTC6811.o
+ .debug_macro   0x000000000002685e       0x3f Src/LTC6811.o
+ .debug_macro   0x000000000002689d      0x173 Src/LTC6811.o
+ .debug_macro   0x0000000000026a10       0x17 Src/LTC6811.o
+ .debug_macro   0x0000000000026a27       0x10 Src/LTC6811.o
+ .debug_macro   0x0000000000026a37       0x5e Src/LTC6811.o
+ .debug_macro   0x0000000000026a95       0x16 Src/LTC6811.o
+ .debug_macro   0x0000000000026aab       0x4c Src/LTC6811.o
+ .debug_macro   0x0000000000026af7       0x5e Src/LTC6811.o
+ .debug_macro   0x0000000000026b55       0x11 Src/LTC6811.o
+ .debug_macro   0x0000000000026b66       0x11 Src/LTC6811.o
+ .debug_macro   0x0000000000026b77       0x11 Src/LTC6811.o
+ .debug_macro   0x0000000000026b88       0x2f Src/LTC6811.o
+ .debug_macro   0x0000000000026bb7       0x16 Src/LTC6811.o
+ .debug_macro   0x0000000000026bcd       0x10 Src/LTC6811.o
+ .debug_macro   0x0000000000026bdd      0x120 Src/LTC6811.o
+ .debug_macro   0x0000000000026cfd       0x17 Src/LTC6811.o
+ .debug_macro   0x0000000000026d14       0x10 Src/LTC6811.o
+ .debug_macro   0x0000000000026d24       0x1c Src/LTC6811.o
+ .debug_macro   0x0000000000026d40       0xde Src/LTC6811.o
+ .debug_macro   0x0000000000026e1e       0x1c Src/LTC6811.o
+ .debug_macro   0x0000000000026e3a       0x16 Src/LTC6811.o
+ .debug_macro   0x0000000000026e50      0x130 Src/LTC6811.o
+ .debug_macro   0x0000000000026f80      0x11d Src/LTC6811.o
+ .debug_macro   0x000000000002709d       0x10 Src/LTC6811.o
+ .debug_macro   0x00000000000270ad      0x241 Src/LTC6811.o
+ .debug_macro   0x00000000000272ee       0x12 Src/LTC6811.o
+ .debug_macro   0x0000000000027300      0x1da Src/LTC6811.o
+ .debug_macro   0x00000000000274da      0x3d4 Src/LTC6811.o
+ .debug_macro   0x00000000000278ae       0x16 Src/LTC6811.o
+ .debug_macro   0x00000000000278c4       0x11 Src/LTC6811.o
+ .debug_macro   0x00000000000278d5       0x11 Src/LTC6811.o
+ .debug_macro   0x00000000000278e6       0x17 Src/LTC6811.o
+ .debug_macro   0x00000000000278fd       0x17 Src/LTC6811.o
+ .debug_macro   0x0000000000027914       0x17 Src/LTC6811.o
+ .debug_macro   0x000000000002792b       0x17 Src/LTC6811.o
+ .debug_macro   0x0000000000027942       0x17 Src/LTC6811.o
+ .debug_macro   0x0000000000027959       0x22 Src/LTC6811.o
+ .debug_macro   0x000000000002797b      0x209 Src/bsp_driver_sd.o
+ .debug_macro   0x0000000000027b84      0x330 Src/fatfs.o
+ .debug_macro   0x0000000000027eb4      0x1fa Src/fatfs_platform.o
+ .debug_macro   0x00000000000280ae      0x95d Src/main.o
+ .debug_macro   0x0000000000028a0b      0x333 Src/sd_diskio.o
+ .debug_macro   0x0000000000028d3e      0x200 Src/stm32f4xx_hal_msp.o
+ .debug_macro   0x0000000000028f3e      0x20a Src/stm32f4xx_it.o
+ .debug_macro   0x0000000000029148      0x243 Src/syscalls.o
+ .debug_macro   0x000000000002938b       0x40 Src/syscalls.o
+ .debug_macro   0x00000000000293cb       0x94 Src/syscalls.o
+ .debug_macro   0x000000000002945f       0x57 Src/syscalls.o
+ .debug_macro   0x00000000000294b6      0x330 Src/syscalls.o
+ .debug_macro   0x00000000000297e6      0x122 Src/syscalls.o
+ .debug_macro   0x0000000000029908       0x10 Src/syscalls.o
+ .debug_macro   0x0000000000029918      0x145 Src/syscalls.o
+ .debug_macro   0x0000000000029a5d      0x189 Src/syscalls.o
+ .debug_macro   0x0000000000029be6       0x16 Src/syscalls.o
+ .debug_macro   0x0000000000029bfc       0x88 Src/syscalls.o
+ .debug_macro   0x0000000000029c84      0x1ae Src/sysmem.o
+ .debug_macro   0x0000000000029e32      0x23b Src/sysmem.o
+ .debug_macro   0x000000000002a06d       0x16 Src/sysmem.o
+ .debug_macro   0x000000000002a083      0x1f7 Src/system_stm32f4xx.o
 
-.debug_line     0x0000000000000000    0x14630
+.debug_line     0x0000000000000000    0x1467b
  .debug_line    0x0000000000000000      0x905 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
  .debug_line    0x0000000000000905      0xbae Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.o
  .debug_line    0x00000000000014b3      0xa29 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
@@ -6974,16 +7011,16 @@ OUTPUT(BMS.elf elf32-littlearm)
  .debug_line    0x000000000000de01      0x847 Src/bsp_driver_sd.o
  .debug_line    0x000000000000e648      0x8e7 Src/fatfs.o
  .debug_line    0x000000000000ef2f      0x703 Src/fatfs_platform.o
- .debug_line    0x000000000000f632     0x22a5 Src/main.o
- .debug_line    0x00000000000118d7      0x963 Src/sd_diskio.o
- .debug_line    0x000000000001223a      0x800 Src/stm32f4xx_hal_msp.o
- .debug_line    0x0000000000012a3a      0x7c3 Src/stm32f4xx_it.o
- .debug_line    0x00000000000131fd      0x73d Src/syscalls.o
- .debug_line    0x000000000001393a      0x559 Src/sysmem.o
- .debug_line    0x0000000000013e93      0x71c Src/system_stm32f4xx.o
- .debug_line    0x00000000000145af       0x81 Startup/startup_stm32f446retx.o
+ .debug_line    0x000000000000f632     0x22f0 Src/main.o
+ .debug_line    0x0000000000011922      0x963 Src/sd_diskio.o
+ .debug_line    0x0000000000012285      0x800 Src/stm32f4xx_hal_msp.o
+ .debug_line    0x0000000000012a85      0x7c3 Src/stm32f4xx_it.o
+ .debug_line    0x0000000000013248      0x73d Src/syscalls.o
+ .debug_line    0x0000000000013985      0x559 Src/sysmem.o
+ .debug_line    0x0000000000013ede      0x71c Src/system_stm32f4xx.o
+ .debug_line    0x00000000000145fa       0x81 Startup/startup_stm32f446retx.o
 
-.debug_str      0x0000000000000000    0xfba38
+.debug_str      0x0000000000000000    0xfb991
  .debug_str     0x0000000000000000    0xcdf44 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
                                       0xce333 (size before relaxing)
  .debug_str     0x00000000000cdf44      0x6e5 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.o
@@ -7012,29 +7049,29 @@ OUTPUT(BMS.elf elf32-littlearm)
                                       0xd2432 (size before relaxing)
  .debug_str     0x00000000000d685d       0xa2 Middlewares/Third_Party/FatFs/src/ff_gen_drv.o
                                       0xd125e (size before relaxing)
- .debug_str     0x00000000000d68ff    0x2312d Src/LTC6811.o
-                                      0xf4098 (size before relaxing)
- .debug_str     0x00000000000f9a2c      0x15b Src/bsp_driver_sd.o
+ .debug_str     0x00000000000d68ff    0x2305e Src/LTC6811.o
+                                      0xf3fda (size before relaxing)
+ .debug_str     0x00000000000f995d      0x15b Src/bsp_driver_sd.o
                                       0xcddf6 (size before relaxing)
- .debug_str     0x00000000000f9b87       0x5d Src/fatfs.o
+ .debug_str     0x00000000000f9ab8       0x5d Src/fatfs.o
                                       0xd12db (size before relaxing)
- .debug_str     0x00000000000f9be4       0x2f Src/fatfs_platform.o
+ .debug_str     0x00000000000f9b15       0x2f Src/fatfs_platform.o
                                       0xcd745 (size before relaxing)
- .debug_str     0x00000000000f9c13      0xff9 Src/main.o
-                                      0xf5c0f (size before relaxing)
- .debug_str     0x00000000000fac0c       0x8b Src/sd_diskio.o
+ .debug_str     0x00000000000f9b44     0x1021 Src/main.o
+                                      0xf5b84 (size before relaxing)
+ .debug_str     0x00000000000fab65       0x8b Src/sd_diskio.o
                                       0xd12c5 (size before relaxing)
- .debug_str     0x00000000000fac97       0x52 Src/stm32f4xx_hal_msp.o
+ .debug_str     0x00000000000fabf0       0x52 Src/stm32f4xx_hal_msp.o
                                       0xcebc8 (size before relaxing)
- .debug_str     0x00000000000face9       0xe0 Src/stm32f4xx_it.o
+ .debug_str     0x00000000000fac42       0xe0 Src/stm32f4xx_it.o
                                       0xcdd50 (size before relaxing)
- .debug_str     0x00000000000fadc9      0xbb3 Src/syscalls.o
+ .debug_str     0x00000000000fad22      0xbb3 Src/syscalls.o
                                        0x8883 (size before relaxing)
- .debug_str     0x00000000000fb97c       0x31 Src/sysmem.o
+ .debug_str     0x00000000000fb8d5       0x31 Src/sysmem.o
                                        0x7adc (size before relaxing)
- .debug_str     0x00000000000fb9ad       0x5a Src/system_stm32f4xx.o
+ .debug_str     0x00000000000fb906       0x5a Src/system_stm32f4xx.o
                                       0xcd820 (size before relaxing)
- .debug_str     0x00000000000fba07       0x31 Startup/startup_stm32f446retx.o
+ .debug_str     0x00000000000fb960       0x31 Startup/startup_stm32f446retx.o
                                          0x5e (size before relaxing)
 
 .comment        0x0000000000000000       0x7b
@@ -7065,7 +7102,7 @@ OUTPUT(BMS.elf elf32-littlearm)
  .comment       0x000000000000007b       0x7c Src/sysmem.o
  .comment       0x000000000000007b       0x7c Src/system_stm32f4xx.o
 
-.debug_frame    0x0000000000000000     0x717c
+.debug_frame    0x0000000000000000     0x71d0
  .debug_frame   0x0000000000000000      0x374 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
  .debug_frame   0x0000000000000374      0x5a0 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.o
  .debug_frame   0x0000000000000914      0x498 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
@@ -7084,31 +7121,31 @@ OUTPUT(BMS.elf elf32-littlearm)
  .debug_frame   0x00000000000055c8      0x258 Src/bsp_driver_sd.o
  .debug_frame   0x0000000000005820       0x4c Src/fatfs.o
  .debug_frame   0x000000000000586c       0x34 Src/fatfs_platform.o
- .debug_frame   0x00000000000058a0      0xd1c Src/main.o
- .debug_frame   0x00000000000065bc       0xe8 Src/sd_diskio.o
- .debug_frame   0x00000000000066a4      0x184 Src/stm32f4xx_hal_msp.o
- .debug_frame   0x0000000000006828      0x144 Src/stm32f4xx_it.o
- .debug_frame   0x000000000000696c      0x2ac Src/syscalls.o
- .debug_frame   0x0000000000006c18       0x34 Src/sysmem.o
- .debug_frame   0x0000000000006c4c       0x58 Src/system_stm32f4xx.o
- .debug_frame   0x0000000000006ca4       0x28 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libstdc++_nano.a(new_op.o)
- .debug_frame   0x0000000000006ccc       0x30 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libstdc++_nano.a(new_handler.o)
- .debug_frame   0x0000000000006cfc       0x40 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a(lib_a-wf_log.o)
- .debug_frame   0x0000000000006d3c       0x20 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a(lib_a-ef_log.o)
- .debug_frame   0x0000000000006d5c       0x20 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a(lib_a-s_matherr.o)
- .debug_frame   0x0000000000006d7c       0x20 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a(lib_a-s_nan.o)
- .debug_frame   0x0000000000006d9c       0x28 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-abort.o)
- .debug_frame   0x0000000000006dc4       0x20 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-errno.o)
- .debug_frame   0x0000000000006de4       0x2c c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-init.o)
- .debug_frame   0x0000000000006e10       0x30 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-malloc.o)
- .debug_frame   0x0000000000006e40       0x20 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-memset.o)
- .debug_frame   0x0000000000006e60       0x2c c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-nano-mallocr.o)
- .debug_frame   0x0000000000006e8c       0x2c c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-sbrkr.o)
- .debug_frame   0x0000000000006eb8       0xcc c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-signal.o)
- .debug_frame   0x0000000000006f84       0x3c c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-signalr.o)
- .debug_frame   0x0000000000006fc0       0x30 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-mlock.o)
- .debug_frame   0x0000000000006ff0       0x5c c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-reent.o)
- .debug_frame   0x000000000000704c       0xac c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_addsubdf3.o)
- .debug_frame   0x00000000000070f8       0x24 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_truncdfsf2.o)
- .debug_frame   0x000000000000711c       0x2c c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_aeabi_uldivmod.o)
- .debug_frame   0x0000000000007148       0x34 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_udivmoddi4.o)
+ .debug_frame   0x00000000000058a0      0xd70 Src/main.o
+ .debug_frame   0x0000000000006610       0xe8 Src/sd_diskio.o
+ .debug_frame   0x00000000000066f8      0x184 Src/stm32f4xx_hal_msp.o
+ .debug_frame   0x000000000000687c      0x144 Src/stm32f4xx_it.o
+ .debug_frame   0x00000000000069c0      0x2ac Src/syscalls.o
+ .debug_frame   0x0000000000006c6c       0x34 Src/sysmem.o
+ .debug_frame   0x0000000000006ca0       0x58 Src/system_stm32f4xx.o
+ .debug_frame   0x0000000000006cf8       0x28 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libstdc++_nano.a(new_op.o)
+ .debug_frame   0x0000000000006d20       0x30 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libstdc++_nano.a(new_handler.o)
+ .debug_frame   0x0000000000006d50       0x40 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a(lib_a-wf_log.o)
+ .debug_frame   0x0000000000006d90       0x20 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a(lib_a-ef_log.o)
+ .debug_frame   0x0000000000006db0       0x20 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a(lib_a-s_matherr.o)
+ .debug_frame   0x0000000000006dd0       0x20 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a(lib_a-s_nan.o)
+ .debug_frame   0x0000000000006df0       0x28 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-abort.o)
+ .debug_frame   0x0000000000006e18       0x20 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-errno.o)
+ .debug_frame   0x0000000000006e38       0x2c c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-init.o)
+ .debug_frame   0x0000000000006e64       0x30 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-malloc.o)
+ .debug_frame   0x0000000000006e94       0x20 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-memset.o)
+ .debug_frame   0x0000000000006eb4       0x2c c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-nano-mallocr.o)
+ .debug_frame   0x0000000000006ee0       0x2c c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-sbrkr.o)
+ .debug_frame   0x0000000000006f0c       0xcc c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-signal.o)
+ .debug_frame   0x0000000000006fd8       0x3c c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-signalr.o)
+ .debug_frame   0x0000000000007014       0x30 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-mlock.o)
+ .debug_frame   0x0000000000007044       0x5c c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-reent.o)
+ .debug_frame   0x00000000000070a0       0xac c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_addsubdf3.o)
+ .debug_frame   0x000000000000714c       0x24 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_truncdfsf2.o)
+ .debug_frame   0x0000000000007170       0x2c c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_aeabi_uldivmod.o)
+ .debug_frame   0x000000000000719c       0x34 c:/st/stm32cubeide_1.0.2/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.win32_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_udivmoddi4.o)
