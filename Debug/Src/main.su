@@ -1,8 +1,12 @@
 atomic_base.h:80:3:constexpr std::memory_order std::operator&(std::memory_order, std::__memory_order_modifier)	16	static
+atomic:75:15:constexpr std::atomic<bool>::atomic(bool)	16	static
+atomic:78:5:bool std::atomic<bool>::operator=(bool)	16	static
+atomic:110:5:bool std::atomic<bool>::load(std::memory_order) const	24	static
 atomic:741:17:constexpr std::atomic<long unsigned int>::atomic(std::atomic<long unsigned int>::__integral_type)	16	static
 NLG5.h:18:5:NLG5::NLG5(uint16_t, uint16_t, uint16_t)	24	static
 NLG5.h:20:10:void NLG5::SetChargeCurrent(uint16_t)	16	static
-NLG5.h:27:10:bool NLG5::isChargerEvent() const	24	static
+NLG5.h:27:10:void NLG5::tick()	16	static
+NLG5.h:48:10:bool NLG5::isChargerEvent()	24	static
 gthr-default.h:229:1:int __gthread_key_delete(__gthread_key_t)	16	static
 optional:97:3:void std::__throw_bad_optional_access()	8	static
 LTC6811.h:112:10:void LTC6811::SetDischargeMode(LTC6811::DischargeMode)	16	static
@@ -31,34 +35,36 @@ optional:718:22:constexpr bool std::optional<_Tp>::has_value() const [with _Tp =
 optional:385:22:constexpr bool std::_Optional_base<_Tp>::_M_is_engaged() const [with _Tp = LTC6811TempStatus]	16	static
 optional:722:7:constexpr const _Tp& std::optional<_Tp>::value() const & [with _Tp = LTC6811VoltageStatus]	16	static
 optional:722:7:constexpr const _Tp& std::optional<_Tp>::value() const & [with _Tp = LTC6811TempStatus]	16	static
-main.cpp:132:5:int main()	128	static
-main.cpp:351:6:void SystemClock_Config()	184	static
-main.cpp:404:13:void MX_CAN1_Init()	48	static
-main.cpp:457:13:void MX_CAN2_Init()	48	static
-main.cpp:508:13:void MX_SDIO_SD_Init()	4	static
-main.cpp:536:13:void MX_SPI1_Init()	8	static
-main.cpp:574:13:void MX_TIM2_Init()	64	static
-main.cpp:633:13:void MX_GPIO_Init()	48	static
-main.cpp:701:6:void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*)	56	static
-main.cpp:730:6:void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef*)	56	static
-main.cpp:796:10:uint32_t CAN0_Test()	16	static
-main.cpp:809:10:uint32_t CanTxOpMode()	24	static
-main.cpp:833:10:uint32_t CanTxError()	24	static
-main.cpp:861:10:uint32_t CANTxData(uint16_t, uint16_t, int16_t)	32	static
-main.cpp:884:10:uint32_t CANTxVoltage(const std::array<LTC6811RegisterGroup<short unsigned int>, 4>&)	64	static
-main.cpp:911:10:uint32_t CANTxTemperature(const std::array<LTC6811RegisterGroup<short int>, 2>&)	64	static
-main.cpp:939:10:uint32_t CANTxVoltageLimpTotal(uint32_t, bool)	24	static
-main.cpp:963:10:uint32_t CANTxDCCfg(const LTC6811RegisterGroup<unsigned char>&)	48	static
-main.cpp:988:10:uint32_t CANTxNLGAControl()	16	static
-main.cpp:1010:10:uint32_t CANTxNLGBControl()	16	static
-main.cpp:1031:10:uint32_t CANTxVolumeSize(uint32_t)	24	static
-main.cpp:1054:6:void Error_Handler()	4	static
-atomic_base.h:258:7:std::__atomic_base<_IntTp>::operator std::__atomic_base<_IntTp>::__int_type() const [with _ITp = long unsigned int]	24	static
-atomic:202:7:std::atomic<_Tp>::operator _Tp() const [with _Tp = float]	16	static
+main.cpp:132:5:int main()	120	static
+main.cpp:342:6:void SystemClock_Config()	184	static
+main.cpp:395:13:void MX_CAN1_Init()	48	static
+main.cpp:448:13:void MX_CAN2_Init()	48	static
+main.cpp:499:13:void MX_SDIO_SD_Init()	4	static
+main.cpp:527:13:void MX_SPI1_Init()	8	static
+main.cpp:565:13:void MX_TIM2_Init()	64	static
+main.cpp:624:13:void MX_GPIO_Init()	48	static
+main.cpp:692:6:void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*)	56	static
+main.cpp:721:6:void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef*)	56	static
+main.cpp:787:10:uint32_t CAN0_Test()	16	static
+main.cpp:800:10:uint32_t CanTxOpMode()	24	static
+main.cpp:824:10:uint32_t CanTxError()	24	static
+main.cpp:852:10:uint32_t CANTxData(uint16_t, uint16_t, int16_t)	32	static
+main.cpp:875:10:uint32_t CANTxVoltage(const std::array<LTC6811RegisterGroup<short unsigned int>, 4>&)	64	static
+main.cpp:902:10:uint32_t CANTxTemperature(const std::array<LTC6811RegisterGroup<short int>, 2>&)	64	static
+main.cpp:930:10:uint32_t CANTxVoltageLimpTotal(uint32_t, bool)	24	static
+main.cpp:954:10:uint32_t CANTxDCCfg(const LTC6811RegisterGroup<unsigned char>&)	48	static
+main.cpp:979:10:uint32_t CANTxNLGAControl()	16	static
+main.cpp:1001:10:uint32_t CANTxNLGBControl()	16	static
+main.cpp:1022:10:uint32_t CANTxVolumeSize(uint32_t)	24	static
+main.cpp:1045:6:void Error_Handler()	4	static
+atomic_base.h:256:17:constexpr std::__atomic_base<_IntTp>::__atomic_base(std::__atomic_base<_IntTp>::__int_type) [with _ITp = bool]	16	static
+atomic_base.h:265:7:std::__atomic_base<_IntTp>::__int_type std::__atomic_base<_IntTp>::operator=(std::__atomic_base<_IntTp>::__int_type) [with _ITp = bool]	24	static
 atomic_base.h:295:7:std::__atomic_base<_IntTp>::__int_type std::__atomic_base<_IntTp>::operator++() [with _ITp = long unsigned int]	16	static
+atomic_base.h:265:7:std::__atomic_base<_IntTp>::__int_type std::__atomic_base<_IntTp>::operator=(std::__atomic_base<_IntTp>::__int_type) [with _ITp = long unsigned int]	32	static
+atomic:202:7:std::atomic<_Tp>::operator _Tp() const [with _Tp = float]	16	static
+atomic_base.h:258:7:std::__atomic_base<_IntTp>::operator std::__atomic_base<_IntTp>::__int_type() const [with _ITp = long unsigned int]	24	static
 optional:394:7:constexpr const _Tp& std::_Optional_base<_Tp>::_M_get() const [with _Tp = LTC6811VoltageStatus]	16	static
 optional:394:7:constexpr const _Tp& std::_Optional_base<_Tp>::_M_get() const [with _Tp = LTC6811TempStatus]	16	static
-atomic_base.h:265:7:std::__atomic_base<_IntTp>::__int_type std::__atomic_base<_IntTp>::operator=(std::__atomic_base<_IntTp>::__int_type) [with _ITp = long unsigned int]	32	static
 atomic:209:7:_Tp std::atomic<_Tp>::operator=(_Tp) [with _Tp = float]	16	static
 array:130:7:constexpr const value_type* std::array<_Tp, _Nm>::begin() const [with _Tp = LTC6811RegisterGroup<short unsigned int>; unsigned int _Nm = 4]	16	static
 array:138:7:constexpr const value_type* std::array<_Tp, _Nm>::end() const [with _Tp = LTC6811RegisterGroup<short unsigned int>; unsigned int _Nm = 4]	16	static

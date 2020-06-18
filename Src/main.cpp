@@ -121,7 +121,7 @@ extern "C" { void HAL_IncTick(void) {
         ++ivt->tick;
 
     if (nlg5 != nullptr)
-        ++nlg5->tick;
+        nlg5->tick(); // This is a function unlike the other two. The other two should also be functions.
 }}
 /* USER CODE END 0 */
 
@@ -208,7 +208,8 @@ int main(void)
                         status->OpenPre();
                         break;
 
-                    case IVT::Hysteresis: // Do nothing
+                    case IVT::Hysteresis:
+                        // Do nothing
                         break;
 
                     default:
@@ -270,19 +271,11 @@ int main(void)
 #if CAN_ENABLED
         /* Send charger command message on CAN bus.
          * Every fifth time the timeout occurs a reset command is sent if charger is in fault state.
-         * Otherwise a charge command is sent. */
+         * Otherwise a charge command is sent.
+         * NOTE: It would be nicer if the NLG5 class had a reference to the CAN struct and sent this stuff itself when it was ready. */
         if (status->op_mode & Status::Charging && nlg5->isChargerEvent()) {
-            if ((nlg5->a_buffer[0] == 136 || nlg5->a_buffer[0] == 152) && (nlg5->b_buffer[0] == 136 || nlg5->b_buffer[0] == 152)) {
-                // This condition is just here to avoid annoyingly long and obtuse boolean operations. This is the non-fault state.
-            } else if (nlg5->event_counter++ > 4) {
-                nlg5->ctrl = NLG5::C_C_EL;
-                nlg5->event_counter = 0;
-            } else
-                nlg5->ctrl = NLG5::C_C_EN;
-
             CANTxNLGAControl();
             CANTxNLGBControl();
-            nlg5->previous_tick = nlg5->tick.load();
         }
 #endif
 
@@ -747,7 +740,7 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
             nlg5->b_buffer[3] = data[3];
             break;
 
-        case CAN1_ID::LoggerReq:
+        case CAN1_ID::LoggerReq: {
             // CANBus stuff is big endian so this should be right, but it's possible the switch should happen on data[0].
             switch (data[3]) {
             case 0:
@@ -778,17 +771,18 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
                 break;
             }
             break;
+        }
 
-            case CAN1_ID::Setting:
-                status->op_mode = data[2];
-                ltc6811->SetDischargeMode(static_cast<LTC6811::DischargeMode>(data[3]));
-                nlg5->oc_limit = data[6];
-                pwm_fan->manual_mode = static_cast<bool>(data[7] & 0x80);
-                pwm_fan->SetFanDutyCycle(data[7]);
-                break;
+        case CAN1_ID::Setting:
+            status->op_mode = data[2];
+            ltc6811->SetDischargeMode(static_cast<LTC6811::DischargeMode>(data[3]));
+            nlg5->oc_limit = data[6];
+            pwm_fan->manual_mode = static_cast<bool>(data[7] & 0x80);
+            pwm_fan->SetFanDutyCycle(data[7]);
+            break;
 
-            default:
-                break;
+        default:
+            break;
         }
     }
 }
