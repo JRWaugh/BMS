@@ -30216,8 +30216,8 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
  800bc36:	b08c      	sub	sp, #48	; 0x30
  800bc38:	af00      	add	r7, sp, #0
  800bc3a:	6078      	str	r0, [r7, #4]
-    CAN_RxHeaderTypeDef   RxHeader;
-    uint8_t data[8] = { 0 };
+    CAN_RxHeaderTypeDef RxHeader;
+    uint8_t data[8]{ 0 };
  800bc3c:	f107 030c 	add.w	r3, r7, #12
  800bc40:	2200      	movs	r2, #0
  800bc42:	601a      	str	r2, [r3, #0]
@@ -30249,9 +30249,9 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
  800bc7a:	f240 5221 	movw	r2, #1313	; 0x521
  800bc7e:	4293      	cmp	r3, r2
  800bc80:	d000      	beq.n	800bc84 <HAL_CAN_RxFifo0MsgPendingCallback+0x50>
+            ivt->U2 = static_cast<int32_t>(data[2] << 24 | data[3] << 16 | data[4] << 8 | data[5]) / 1000.0f;
             ivt->tick = 0;
             break;
-
 
         default:
             break;
@@ -30364,8 +30364,8 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
  800bd62:	b08c      	sub	sp, #48	; 0x30
  800bd64:	af00      	add	r7, sp, #0
  800bd66:	6078      	str	r0, [r7, #4]
-    CAN_RxHeaderTypeDef   RxHeader;
-    uint8_t data[8] = { 0 };
+    CAN_RxHeaderTypeDef RxHeader;
+    uint8_t data[8]{ 0 };
  800bd68:	f107 030c 	add.w	r3, r7, #12
  800bd6c:	2200      	movs	r2, #0
  800bd6e:	601a      	str	r2, [r3, #0]
@@ -30581,9 +30581,9 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
  800bef8:	20000258 	.word	0x20000258
 
 0800befc <_Z11CANTxStatusv>:
-        return -1;
-
-    return 0;
+        return Fail;
+    else
+        return Success;
 }
 
 uint32_t CANTxStatus(void) {
@@ -31236,7 +31236,7 @@ uint32_t CANTxTemperature(const std::array<LTC6811::RegisterGroup<int16_t>, 2>& 
 
 0800c350 <_Z21CANTxVoltageLimpTotalmb>:
 
-uint32_t CANTxVoltageLimpTotal(uint32_t sum_of_cells, bool limping) {
+uint32_t CANTxVoltageLimpTotal(uint32_t const sum_of_cells, bool const limping) {
  800c350:	b580      	push	{r7, lr}
  800c352:	b084      	sub	sp, #16
  800c354:	af00      	add	r7, sp, #0
@@ -31256,7 +31256,7 @@ uint32_t CANTxVoltageLimpTotal(uint32_t sum_of_cells, bool limping) {
  800c36a:	2208      	movs	r2, #8
  800c36c:	611a      	str	r2, [r3, #16]
 
-    uint8_t data[8] = {
+    uint8_t data[8]{
  800c36e:	f107 0308 	add.w	r3, r7, #8
  800c372:	2200      	movs	r2, #0
  800c374:	601a      	str	r2, [r3, #0]
@@ -31350,7 +31350,7 @@ uint32_t CANTxDCCfg(const LTC6811::RegisterGroup<uint8_t>& slave_cfg_rx) {
  800c3f6:	2300      	movs	r3, #0
  800c3f8:	f887 3027 	strb.w	r3, [r7, #39]	; 0x27
 
-    for (auto& IC : slave_cfg_rx.ICDaisyChain) {
+    for (const auto& IC : slave_cfg_rx.ICDaisyChain) {
  800c3fc:	687b      	ldr	r3, [r7, #4]
  800c3fe:	3304      	adds	r3, #4
  800c400:	61fb      	str	r3, [r7, #28]
@@ -31424,7 +31424,7 @@ uint32_t CANTxDCCfg(const LTC6811::RegisterGroup<uint8_t>& slave_cfg_rx) {
  800c496:	3301      	adds	r3, #1
  800c498:	4a05      	ldr	r2, [pc, #20]	; (800c4b0 <_Z10CANTxDCCfgRKN7LTC681113RegisterGroupIhEE+0xe0>)
  800c49a:	6013      	str	r3, [r2, #0]
-    for (auto& IC : slave_cfg_rx.ICDaisyChain) {
+    for (const auto& IC : slave_cfg_rx.ICDaisyChain) {
  800c49c:	6a3b      	ldr	r3, [r7, #32]
  800c49e:	3308      	adds	r3, #8
  800c4a0:	623b      	str	r3, [r7, #32]

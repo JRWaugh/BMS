@@ -125,7 +125,7 @@ static void MX_SPI1_Init(void);
 static void MX_TIM2_Init(void);
 uint32_t CAN0_Test(void);
 uint32_t CANTxData(uint16_t const v_min, uint16_t const v_max, int16_t const t_max);
-uint32_t CANTxVoltageLimpTotal(uint32_t sum_of_cells, bool limping);
+uint32_t CANTxVoltageLimpTotal(uint32_t const sum_of_cells, bool const limping);
 uint32_t CANTxDCCfg(const LTC6811::RegisterGroup<uint8_t>& slave_cfg_rx);
 uint32_t CANTxVoltage(const std::array<LTC6811::RegisterGroup<uint16_t>, 4>& cell_data);
 uint32_t CANTxTemperature(const std::array<LTC6811::RegisterGroup<int16_t>, 2>& temp_data);
@@ -291,23 +291,26 @@ int main(void)
                     status->ClosePre();
 #endif
                 }
-
+#if CAN_ENABLED
                 CANTxData(voltage_status.min, voltage_status.max, temp_status.max);
                 CANTxVoltageLimpTotal(voltage_status.sum, true);
+#endif
             }
-
+#if CAN_ENABLED
             CANTxStatus();
             CANTxPECError();
+#endif
         }
-#if CAN_ENABLED
+
         /*  Send charger command messages on CAN bus.  */
+#if CAN_ENABLED
         if (op_mode & Status::Charging) {
             if (nlg5->isChargerEvent()) {
                 CANTxNLGAControl();
                 CANTxNLGBControl();
             }
         }
-#endif
+
 #if CAN_DEBUG
         /*  Functions for debugging and untested code.  */
         if (op_mode & Status::Debug) {
@@ -317,6 +320,8 @@ int main(void)
             CANTxStatus();
         }
 #endif
+#endif
+
         /*  Log data to SD card.  */
         if (op_mode & Status::Logging) {
             if (BSP_SD_IsDetected()) {
@@ -723,8 +728,8 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 // CAN0 / CAN2
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
-    CAN_RxHeaderTypeDef   RxHeader;
-    uint8_t data[8] = { 0 };
+    CAN_RxHeaderTypeDef RxHeader;
+    uint8_t data[8]{ 0 };
 
     if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &RxHeader, data) == HAL_OK) {
         switch(static_cast<CAN0_ID>(RxHeader.StdId)) {
@@ -743,7 +748,6 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
             ivt->tick = 0;
             break;
 
-
         default:
             break;
         }
@@ -752,7 +756,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
 
 // CAN1
 void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
-    CAN_RxHeaderTypeDef   RxHeader;
+    CAN_RxHeaderTypeDef RxHeader;
     uint8_t data[8]{ 0 };
 
     if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &RxHeader, data) == HAL_OK) {
@@ -823,7 +827,7 @@ uint32_t CAN0_Test(void) {
     TxHeader.IDE = CAN_ID_STD;
     TxHeader.DLC = 8;
 
-    uint8_t data[] = { 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA };
+    uint8_t data[]{ 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA };
 
     if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
         return Fail;
@@ -961,21 +965,21 @@ uint32_t CANTxTemperature(const std::array<LTC6811::RegisterGroup<int16_t>, 2>& 
     return Success;
 }
 
-uint32_t CANTxVoltageLimpTotal(uint32_t sum_of_cells, bool limping) {
+uint32_t CANTxVoltageLimpTotal(uint32_t const sum_of_cells, bool const limping) {
     TxHeader.StdId = CAN1_ID::VoltTotal;
     TxHeader.IDE = CAN_ID_STD;
     TxHeader.DLC = 8;
 
-    uint8_t data[8] = {
-            // Swap endian-ness of SOC value
-            static_cast<uint8_t>(sum_of_cells >> 24),
-            static_cast<uint8_t>(sum_of_cells >> 16),
-            static_cast<uint8_t>(sum_of_cells >>  8),
-            static_cast<uint8_t>(sum_of_cells >>  0),
-            limping,
-            0x0,
-            0x0,
-            0x0
+    uint8_t data[8]{
+        // Swap endian-ness of SOC value
+        static_cast<uint8_t>(sum_of_cells >> 24),
+                static_cast<uint8_t>(sum_of_cells >> 16),
+                static_cast<uint8_t>(sum_of_cells >>  8),
+                static_cast<uint8_t>(sum_of_cells >>  0),
+                limping,
+                0x0,
+                0x0,
+                0x0
     };
 
     if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
@@ -993,7 +997,7 @@ uint32_t CANTxDCCfg(const LTC6811::RegisterGroup<uint8_t>& slave_cfg_rx) {
     uint8_t data[8]{ 0 };
     uint8_t byte_position{ 0 };
 
-    for (auto& IC : slave_cfg_rx.ICDaisyChain) {
+    for (const auto& IC : slave_cfg_rx.ICDaisyChain) {
         data[byte_position++] = IC.data[5];
         data[byte_position++] = IC.data[4];
 
