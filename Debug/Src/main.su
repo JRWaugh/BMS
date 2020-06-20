@@ -3,17 +3,22 @@ atomic:75:15:constexpr std::atomic<bool>::atomic(bool)	16	static
 atomic:78:5:bool std::atomic<bool>::operator=(bool)	16	static
 atomic:110:5:bool std::atomic<bool>::load(std::memory_order) const	24	static
 atomic:741:17:constexpr std::atomic<long unsigned int>::atomic(std::atomic<long unsigned int>::__integral_type)	16	static
-Status.h:49:5:Status::Status(uint8_t)	24	static
-Status.h:54:10:void Status::setOpMode(uint8_t)	16	static
-Status.h:58:27:uint8_t Status::getOpMode() const	16	static
-Status.h:63:10:void Status::setPrechargeState(State)	16	static
-Status.h:69:24:bool Status::getPrechargeState() const	16	static
-Status.h:74:10:void Status::setAIRState(State)	16	static
-Status.h:80:24:bool Status::getAIRState() const	16	static
-Status.h:84:10:bool Status::isError(Status::Error, bool)	16	static
-Status.h:99:28:uint32_t Status::getErrorCount(Status::Error) const	16	static
-Status.h:103:27:uint8_t Status::getLastError() const	16	static
-Status.h:128:10:void Status::GoToSafeState(Status::Error)	16	static
+Status.h:29:5:Counter::Counter(int8_t)	16	static
+Status.h:31:14:Counter& Counter::incrementBy(uint8_t)	16	static
+Status.h:37:14:Counter& Counter::decrementBy(uint8_t)	16	static
+Status.h:46:24:bool Counter::isOverLimit() const	16	static
+Status.h:50:26:int8_t Counter::getCount() const	16	static
+Status.h:83:5:Status::Status(uint8_t)	16	static
+Status.h:88:10:void Status::setOpMode(uint8_t)	16	static
+Status.h:92:27:uint8_t Status::getOpMode() const	16	static
+Status.h:97:10:void Status::setPrechargeState(State)	16	static
+Status.h:103:25:State Status::getPrechargeState() const	16	static
+Status.h:108:10:void Status::setAIRState(State)	16	static
+Status.h:114:25:State Status::getAIRState() const	16	static
+Status.h:118:10:bool Status::isError(Status::Error, bool)	16	static
+Status.h:131:28:uint32_t Status::getErrorCount(Status::Error) const	16	static
+Status.h:135:27:uint8_t Status::getLastError() const	16	static
+Status.h:168:10:void Status::goToSafeState(Status::Error)	16	static
 NLG5.h:18:5:NLG5::NLG5(uint16_t, uint16_t, uint16_t)	24	static
 NLG5.h:20:10:void NLG5::setChargeCurrent(uint16_t)	16	static
 NLG5.h:27:10:void NLG5::tick()	16	static

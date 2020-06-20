@@ -295,7 +295,7 @@ int main(void)
                 }
 #if CAN_ENABLED
                 CANTxData(voltage_status.min, voltage_status.max, temp_status.max);
-                CANTxVoltageLimpTotal(voltage_status.sum, true);
+                CANTxVoltageLimpTotal(voltage_status.sum, status->isErrorOverLimit(Status::Limping));
 #endif
             }
 #if CAN_ENABLED

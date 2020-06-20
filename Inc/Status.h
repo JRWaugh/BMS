@@ -24,6 +24,38 @@ enum State : bool {
     Open, Closed
 };
 
+class Counter {
+public:
+    Counter(int8_t const limit) : count{ 0 }, limit{ limit } {}
+
+    Counter& incrementBy(uint8_t const amount = 1) {
+        count += amount;
+
+        return *this;
+    }
+
+    Counter& decrementBy(uint8_t const amount = 1) {
+        count -= amount;
+
+        if (count < 0)
+            count = 0;
+
+        return *this;
+    }
+
+    [[nodiscard]] bool isOverLimit() const noexcept {
+        return count > limit;
+    }
+
+    [[nodiscard]] int8_t getCount() const noexcept {
+        return count;
+    }
+
+private:
+    int8_t count;
+    int8_t const limit;
+};
+
 struct Status {
 public:
     enum Error : uint8_t {
@@ -66,7 +98,7 @@ public:
         precharge_state = state;
     }
 
-    [[nodiscard]] bool getPrechargeState(void) const noexcept {
+    [[nodiscard]] State getPrechargeState(void) const noexcept {
         return precharge_state;
     }
 
@@ -77,35 +109,35 @@ public:
         AIR_state = state;
     }
 
-    [[nodiscard]] bool getAIRState(void) const noexcept {
+    [[nodiscard]] State getAIRState(void) const noexcept {
         return AIR_state;
     }
 
     bool isError(Error const e, bool const is_error) noexcept {
-        if (is_error && ++error_counters[e] > error_limits[e]) {
-            if (e == Limping)
-                error_counters[e] += 9; // Add some amount to the counter when limping so that it takes some time to return to non-limping
-            else {
-                GoToSafeState(e); // This function call is the most glaring, ugly side-effect in the entire BMS. Should not be hidden away like this.
-                error_counters[e] = error_limits[e];
+        if (is_error) {
+            if (error_counters[e].incrementBy(1).isOverLimit()) {
+                if (e == Limping)
+                    error_counters[e].incrementBy(9); // Add some amount to the counter when limping so that it takes some time to return to non-limping
+                else
+                    goToSafeState(e); // This function call is the most glaring, ugly side-effect in the entire BMS. Should not be hidden away like this.
             }
-        } else if (error_counters[e] > 0) {
-            --error_counters[e];
+        } else {
+            error_counters[e].decrementBy(1);
         }
 
         return is_error;
     }
 
     [[nodiscard]] uint32_t getErrorCount(Error const e) const noexcept {
-        return error_counters[e];
+        return error_counters[e].getCount();
+    }
+
+    [[nodiscard]] bool isErrorOverLimit(Error const e) const noexcept {
+        return error_counters[e].isOverLimit();
     }
 
     [[nodiscard]] uint8_t getLastError(void) const noexcept {
         return last_error;
-    }
-
-    [[nodiscard]] bool isLimping() const noexcept {
-        return error_counters[Limping] > error_limits[Limping];
     }
 
     std::atomic<uint32_t> tick{ 0 }; // time in ms
@@ -113,19 +145,27 @@ public:
     struct tm rtc{ 0 };
 
 private:
-    bool precharge_state{ false };
-    bool AIR_state{ false };
+    State precharge_state;
+    State AIR_state;
     uint8_t op_mode;
     Error last_error{ NoError };
-    uint8_t error_counters[NumberOfErrors] { 0 };
-    uint8_t error_limits[NumberOfErrors] {
-        [NoError] = 0, [OverVoltage] = 2, [UnderVoltage] = 2, [Limping] = 2,
-                [OverTemp] = 2, [UnderTemp] = 2, [OverCurrent] = 2,
-                [OverPower] = 2, [Extern] = 2, [PECError] = 2,
-                [AccuUnderVoltage] = 2, [IVTLost] = 1, [OverTempCharging] = 2
+    Counter error_counters[NumberOfErrors] {
+        [NoError] = Counter{ 0 },
+        [OverVoltage] = Counter{ 2 },
+        [UnderVoltage] = Counter{ 2 },
+        [Limping] = Counter{ 2 },
+        [OverTemp] = Counter{ 2 },
+        [UnderTemp] = Counter{ 2 },
+        [OverCurrent] = Counter{ 2 },
+        [OverPower] = Counter{ 2 },
+        [Extern] = Counter{ 2 },
+        [PECError] = Counter{ 2 },
+        [AccuUnderVoltage] = Counter{ 2 },
+        [IVTLost] = Counter{ 1 },
+        [OverTempCharging] = Counter{ 2 }
     };
 
-    void GoToSafeState(Error const e) noexcept {
+    void goToSafeState(Error const e) noexcept {
 #if BMS_RELAY_CTRL_BYPASS
         // Do nothing.
 #elif SKIP_PEC_ERROR_ACTIONS
@@ -137,7 +177,6 @@ private:
         setAIRState(Open);
         setPrechargeState(Open);
 #endif
-
 #if STOP_CORE_ON_SAFE_STATE
         op_mode &= ~Core;
 #endif
@@ -146,8 +185,6 @@ private:
 #endif
         last_error = e;
     }
-
-
 };
 
 #endif /* STATUS_H_ */
