@@ -24,16 +24,18 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Status.h"
+#include "NLG5.h"
 #include "LTC6811.h"
 #include "PWM_Fan.h"
-#include <optional>
-#include <atomic>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 struct IVT {
-    enum { Charged, NotCharged, Hysteresis };
+    enum {
+        Charged, NotCharged, Hysteresis
+    };
+
     std::atomic<float> U1; // Called pre in old code
     std::atomic<float> U2; // Called air_p in old code
     std::atomic<float> I;
@@ -62,8 +64,27 @@ struct IVT {
     }
 };
 
-enum { Success, Fail };
+enum {
+    Success, Fail
+};
 
+enum CAN0_ID {
+    TMPTesting = 77,
+    IVT_I = 1313, IVT_U1, IVT_U2, IVT_U3, IVT_T, IVT_P, IVT_E
+};
+enum CAN1_ID {
+    OpMode = 8, PECError, Data, VoltTotal,
+    NLGAStat = 1552,
+    NLGACtrl = 1560,
+    NLGBStat = 1568,
+    NLGBCtrl = 1576,
+    SpamStart = 1900,
+    Setting = 1902,
+    DishB = 1909,
+    Volt = 1912,
+    Temp = 1948,
+    SpamEnd = 1971, LoggerReq, LoggerResp
+};
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -102,11 +123,17 @@ static void MX_SDIO_SD_Init(void);
 static void MX_SPI1_Init(void);
 /* USER CODE BEGIN PFP */
 static void MX_TIM2_Init(void);
+uint32_t CAN0_Test(void);
 uint32_t CANTxData(uint16_t const v_min, uint16_t const v_max, int16_t const t_max);
 uint32_t CANTxVoltageLimpTotal(uint32_t sum_of_cells, bool limping);
-uint32_t CANTxDCCfg(const LTC6811RegisterGroup<uint8_t>& slave_cfg_rx);
-uint32_t CANTxVoltage(const std::array<LTC6811RegisterGroup<uint16_t>, 4>& cell_data);
-uint32_t CANTxTemperature(const std::array<LTC6811RegisterGroup<int16_t>, 2>& temp_data);
+uint32_t CANTxDCCfg(const LTC6811::RegisterGroup<uint8_t>& slave_cfg_rx);
+uint32_t CANTxVoltage(const std::array<LTC6811::RegisterGroup<uint16_t>, 4>& cell_data);
+uint32_t CANTxTemperature(const std::array<LTC6811::RegisterGroup<int16_t>, 2>& temp_data);
+uint32_t CANTxStatus(void);
+uint32_t CANTxPECError(void);
+uint32_t CANTxNLGAControl(void);
+uint32_t CANTxNLGBControl(void);
+uint32_t CANTxVolumeSize(uint32_t const size_of_log);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -189,17 +216,26 @@ int main(void)
         /* USER CODE BEGIN 3 */
         HAL_GPIO_TogglePin(Led0_GPIO_Port, Led0_Pin);
 
-        if (status->op_mode & Status::Core) {
-            auto const voltage_status = ltc6811->GetVoltageStatus();
-            auto const temp_status = ltc6811->GetTemperatureStatus();
+        auto op_mode = status->getOpMode();
 
-            if (!status->isError(Status::PECError, !voltage_status.has_value()) && !status->isError(Status::PECError, !temp_status.has_value())) {
-                status->isError(Status::Limping, voltage_status.value().min < Status::kLimpMinVoltage);
-                nlg5->SetChargeCurrent(voltage_status.value().max);
-                pwm_fan->SetFanDutyCycle(pwm_fan->CalcDutyCycle(temp_status.value().max));
+        /*  Core routine for monitoring voltage and temperature of the cells.  */
+        if (op_mode & Status::Core) {
+            auto const voltage_status_opt = ltc6811->getVoltageStatus();
+            auto const temp_status_opt = ltc6811->getTemperatureStatus();
+
+            if (!status->isError(Status::PECError, !voltage_status_opt.has_value()) && !status->isError(Status::PECError, !temp_status_opt.has_value())) {
+                auto voltage_status = voltage_status_opt.value();
+                auto temp_status = temp_status_opt.value();
+
+                status->isError(Status::Limping, voltage_status.min < Status::kLimpMinVoltage);
+                nlg5->SetChargeCurrent(voltage_status.max);
+                pwm_fan->setDutyCycle(pwm_fan->calcDutyCycle(temp_status.max));
+
+                if (op_mode & Status::Balance)
+                    ltc6811->BuildDischargeConfig(voltage_status);
 #if CHECK_IVT
                 if (!ivt->isLost()) { // This, if anything, will be the cause of error false positives
-                    switch (ivt->prechargeCompare(voltage_status.value().sum)) {
+                    switch (ivt->prechargeCompare(voltage_status.sum)) {
                     case IVT::Charged:
                         status->ClosePre();
                         break;
@@ -224,7 +260,7 @@ int main(void)
                         !status->isError(Status::IVTLost, ivt->isLost()) &
 #endif
 #if TEST_OVERPOWER
-                        !status->isError(Status::OverPower, voltage_status.value().sum * ivt->I > Status::kMaxPower) &
+                        !status->isError(Status::OverPower, voltage_status.sum * ivt->I > Status::kMaxPower) &
 #endif
 #if TEST_OVERCURRENT
                         !status->isError(Status::OverCurrent, ivt->I > Status::kMaxCurrent) &
@@ -234,19 +270,19 @@ int main(void)
 #endif
 #endif
 #if TEST_UNDERVOLTAGE
-                        !status->isError(Status::UnderVoltage, voltage_status.value().min < Status::kMinVoltage) &
+                        !status->isError(Status::UnderVoltage, voltage_status.min < Status::kMinVoltage) &
 #endif
 #if TEST_OVERVOLTAGE
-                        !status->isError(Status::OverVoltage, voltage_status.value().max > Status::kMaxVoltage) &
+                        !status->isError(Status::OverVoltage, voltage_status.max > Status::kMaxVoltage) &
 #endif
 #if TEST_UNDERTEMPERATURE
-                        !status->isError(Status::UnderTemp, temp_status.value().min < Status::kMinTemp) &
+                        !status->isError(Status::UnderTemp, temp_status.min < Status::kMinTemp) &
 #endif
 #if TEST_OVERTEMPERATURE
-                        !status->isError(Status::OverTemp, temp_status.value().max > Status::kMaxTemp) &
+                        !status->isError(Status::OverTemp, temp_status.max > Status::kMaxTemp) &
 #endif
 #if TEST_OVERTEMPERATURE_CHARGING
-                        !status->isError(Status::OverTempCharging, (status->op_mode & Status::Charging) && (temp_status.value().max > Status::kMaxChargeTemp)) &
+                        !status->isError(Status::OverTempCharging, (op_mode & Status::Charging) && (temp_status.max > Status::kMaxChargeTemp)) &
 #endif
                         true
                 ) {
@@ -256,78 +292,73 @@ int main(void)
 #endif
                 }
 
-                CANTxData(voltage_status.value().min, voltage_status.value().max, temp_status.value().max);
-                CANTxVoltageLimpTotal(voltage_status.value().sum, true);
+                CANTxData(voltage_status.min, voltage_status.max, temp_status.max);
+                CANTxVoltageLimpTotal(voltage_status.sum, true);
             }
 
-            CanTxOpMode();
-            CanTxError();
-
-
-            if (status->op_mode & Status::Balance)
-                ltc6811->BuildDischargeConfig(voltage_status.value());
+            CANTxStatus();
+            CANTxPECError();
         }
-
 #if CAN_ENABLED
-        /* Send charger command message on CAN bus.
-         * Every fifth time the timeout occurs a reset command is sent if charger is in fault state.
-         * Otherwise a charge command is sent.
-         * NOTE: It would be nicer if the NLG5 class had a reference to the CAN struct and sent this stuff itself when it was ready. */
-        if (status->op_mode & Status::Charging && nlg5->isChargerEvent()) {
-            CANTxNLGAControl();
-            CANTxNLGBControl();
+        /*  Send charger command messages on CAN bus.  */
+        if (op_mode & Status::Charging) {
+            if (nlg5->isChargerEvent()) {
+                CANTxNLGAControl();
+                CANTxNLGBControl();
+            }
         }
 #endif
-
 #if CAN_DEBUG
-        /*  Functions for debugging and untested code. */
-        if (status->op_mode & Status::Debug) {
+        /*  Functions for debugging and untested code.  */
+        if (op_mode & Status::Debug) {
             CANTxVoltage(ltc6811->GetCellData());
             CANTxTemperature(ltc6811->GetTempData());
             CANTxDCCfg(ltc6811->GetSlaveCfg());
-            CanTxOpMode();
+            CANTxStatus();
         }
 #endif
-
-        if (status->op_mode & Status::Logging) {
-            FILINFO inf;
+        /*  Log data to SD card.  */
+        if (op_mode & Status::Logging) {
             if (BSP_SD_IsDetected()) {
                 HAL_GPIO_TogglePin(Led2_GPIO_Port, Led2_Pin);
+
+                FILINFO inf;
 
                 if (f_stat(kDirectory, &inf) == FR_NO_FILE)
                     f_mkdir(kDirectory);
 
-                // Magic number below is probably 500MB
+                // Magic number below is probably 500MiB
                 if (f_size(&SDFile) < 524288000 && f_open(&SDFile, kFile, FA_WRITE | FA_OPEN_APPEND) == FR_OK) {
-                    f_printf(&SDFile, "%u,", status->tick / 100); // TODO If the uptime number seems wrong, just change or remove the 100.
+                    /* NOTE: f_printf might be pretty slow compared to f_write. */
+                    f_printf(&SDFile, "%u,", status->tick / 100); // If the uptime number seems wrong, just change or remove the / 100.
                     /* ISO 8601 Notation (yyyy-mm-ddThh:mm:ss) */
+                    // TODO Not implemented.
                     f_printf(&SDFile, "%02u-%02u-%02uT%02u:%02u:%02u,",
                             status->rtc.tm_year, status->rtc.tm_mon, status->rtc.tm_mday, status->rtc.tm_hour, status->rtc.tm_min, status->rtc.tm_sec);
-                    // TODO Not implemented.
 
-                    UINT number_written = 0;
-                    uint8_t write_error{ 0 };
+                    UINT number_written{ 0 };
+                    uint16_t buffer[4 * LTC6811::kDaisyChainLength * 3]{ 0 };
 
-                    // TODO need to chop out the PEC data and write to file
-#if 0
-                    for (auto& reg : cell_data) {
-                        auto serialized_reg = reinterpret_cast<uint8_t*>(reg.data.data()->data());
+                    size_t position{ 0 };
+                    auto const cell_data = ltc6811->GetCellData();
 
-                        f_write(&SDFile, serialized_reg, kBytesPerRegister * kDaisyChainLength, &number_written);
+                    for (const auto& register_group : cell_data) // 4 voltage register groups
+                        for (const auto& IC : register_group.ICDaisyChain) // N ICs in daisy chain, determined by kDaisyChainLength
+                            for (const auto voltage : IC.data) // 3 voltages in IC.data
+                                buffer[position++] = voltage;
 
-                        if (number_written != kBytesPerRegister * kDaisyChainLength)
-                            write_error = 1;
-                    }
+                    f_write(&SDFile, buffer, sizeof(buffer), &number_written);
 
-                    for (auto& reg : temp_data) {
-                        auto serialized_reg = reinterpret_cast<uint8_t*>(reg.data.data()->data());
+                    position = 0;
+                    auto const temp_data = ltc6811->GetTempData();
 
-                        f_write(&SDFile, serialized_reg, kBytesPerRegister * kDaisyChainLength, &number_written);
+                    for (const auto& register_group : temp_data) // 2 temperature register groups
+                        for (const auto& IC : register_group.ICDaisyChain) // N ICs in daisy chain, determined by kDaisyChainLength
+                            for (const auto temperature : IC.data) // 3 temperatures in IC.data
+                                buffer[position++] = temperature;
 
-                        if (number_written != kBytesPerRegister * kDaisyChainLength)
-                            write_error = 1;
-                    }
-#endif
+                    f_write(&SDFile, buffer, sizeof(buffer) / 2, &number_written);
+
                     f_sync(&SDFile);
                     f_close(&SDFile);
                 }
@@ -774,11 +805,11 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
         }
 
         case CAN1_ID::Setting:
-            status->op_mode = data[2];
+            status->setOpMode(data[2]);
             ltc6811->SetDischargeMode(static_cast<LTC6811::DischargeMode>(data[3]));
             nlg5->oc_limit = data[6];
             pwm_fan->manual_mode = static_cast<bool>(data[7] & 0x80);
-            pwm_fan->SetFanDutyCycle(data[7]);
+            pwm_fan->setDutyCycle(data[7]);
             break;
 
         default:
@@ -800,7 +831,7 @@ uint32_t CAN0_Test(void) {
     return 0;
 }
 
-uint32_t CanTxOpMode(void) {
+uint32_t CANTxStatus(void) {
     TxHeader.StdId = CAN1_ID::OpMode;
     TxHeader.IDE = CAN_ID_STD;
     TxHeader.DLC = 8;
@@ -812,10 +843,10 @@ uint32_t CanTxOpMode(void) {
             static_cast<uint8_t>(uptime >> 16),
             static_cast<uint8_t>(uptime >>  8),
             static_cast<uint8_t>(uptime >>  0),
-            status->op_mode,
-            status->last_error,
-            status->precharge_flag,
-            status->AIR_flag
+            status->getOpMode(),
+            status->getLastError(),
+            status->getPrechargeFlag(),
+            status->getAIRFlag()
     };
 
     if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
@@ -824,7 +855,7 @@ uint32_t CanTxOpMode(void) {
         return Success;
 }
 
-uint32_t CanTxError(void) {
+uint32_t CANTxPECError(void) {
     TxHeader.StdId = CAN1_ID::PECError;
     TxHeader.IDE = CAN_ID_STD;
     TxHeader.DLC = 8;
@@ -875,7 +906,7 @@ uint32_t CANTxData(uint16_t const v_min, uint16_t const v_max, int16_t const t_m
         return Success;
 }
 
-uint32_t CANTxVoltage(const std::array<LTC6811RegisterGroup<uint16_t>, 4>& cell_data) {
+uint32_t CANTxVoltage(const std::array<LTC6811::RegisterGroup<uint16_t>, 4>& cell_data) {
     TxHeader.StdId = CAN1_ID::Volt;
     TxHeader.IDE = CAN_ID_STD;
     TxHeader.DLC = 8;
@@ -883,7 +914,7 @@ uint32_t CANTxVoltage(const std::array<LTC6811RegisterGroup<uint16_t>, 4>& cell_
     uint8_t data[8]{ 0 };
     uint8_t byte_position{ 0 };
 
-    for (size_t current_ic = 0; current_ic < kDaisyChainLength; ++current_ic) {
+    for (size_t current_ic = 0; current_ic < LTC6811::kDaisyChainLength; ++current_ic) {
         for (const auto& register_group : cell_data) { // 4 voltage register groups
             for (const auto voltage : register_group.ICDaisyChain[current_ic].data) { // 3 voltages per IC
                 data[byte_position++] = static_cast<uint8_t>(voltage >> 8);
@@ -902,7 +933,7 @@ uint32_t CANTxVoltage(const std::array<LTC6811RegisterGroup<uint16_t>, 4>& cell_
     return Success;
 }
 
-uint32_t CANTxTemperature(const std::array<LTC6811RegisterGroup<int16_t>, 2>& temp_data) {
+uint32_t CANTxTemperature(const std::array<LTC6811::RegisterGroup<int16_t>, 2>& temp_data) {
     TxHeader.StdId = CAN1_ID::Temp;
     TxHeader.IDE = CAN_ID_STD;
     TxHeader.DLC = 8;
@@ -910,7 +941,7 @@ uint32_t CANTxTemperature(const std::array<LTC6811RegisterGroup<int16_t>, 2>& te
     uint8_t data[8]{ 0 };
     uint8_t byte_position{ 0 };
 
-    for (size_t current_ic = 0; current_ic < kDaisyChainLength; ++current_ic) {
+    for (size_t current_ic = 0; current_ic < LTC6811::kDaisyChainLength; ++current_ic) {
         for (const auto& register_group : temp_data) { // 2 voltage register groups
             for (const auto temperature : register_group.ICDaisyChain[current_ic].data) { // 3 temperatures per IC
                 data[byte_position++] = static_cast<uint8_t>(temperature >> 8);
@@ -954,7 +985,7 @@ uint32_t CANTxVoltageLimpTotal(uint32_t sum_of_cells, bool limping) {
 }
 
 /* Put discharge flag data on CAN bus. */
-uint32_t CANTxDCCfg(const LTC6811RegisterGroup<uint8_t>& slave_cfg_rx) {
+uint32_t CANTxDCCfg(const LTC6811::RegisterGroup<uint8_t>& slave_cfg_rx) {
     TxHeader.StdId = CAN1_ID::DishB;
     TxHeader.IDE = CAN_ID_STD;
     TxHeader.DLC = 8;

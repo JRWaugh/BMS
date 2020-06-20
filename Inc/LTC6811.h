@@ -2,18 +2,16 @@
  * LTC6820.h
  *
  *  Created on: 12 Mar 2020
- *      Author: Joshua
+ *      Author: Joshua Waugh
  */
 
 #ifndef LTC6811_H_
 #define LTC6811_H_
 
-#include "Status.h"
+#include "stm32f4xx_hal.h"
 #include <array>
-#include <algorithm>
 #include <cmath>
 #include <optional>
-
 
 /* Timing of states (in microseconds) */
 #define T_WAKE_MAX		400
@@ -22,45 +20,47 @@
 #define T_REFUP_MAX		4400
 #define T_CYCLE_FAST_MAX	1185	// Measure 12 Cells
 
-constexpr static size_t kBytesPerRegister{ 8 };
-constexpr static size_t kDaisyChainLength{ 12 };
-constexpr static size_t kCommandLength{ 4 };
-constexpr static uint8_t kDelta{ 100 };
-
-using LTC6811Command = std::array<uint8_t, kCommandLength>;
-
-template <typename T>
-struct LTC6811Register {
-    /* An LTC6811 register is 8 bytes: 6 bytes of data, and 2 bytes of PEC. sizeof(LTC6811<T>) will always return 8 */
-    std::array<T, 6 / sizeof(T)> data;
-    uint16_t PEC;
-};
-
-template<typename T>
-struct LTC6811RegisterGroup {
-    /* This class bundles together the command to access some register group and data sent/received after that command */
-    LTC6811Command const command;
-    std::array<LTC6811Register<T>, kDaisyChainLength> ICDaisyChain;
-    LTC6811RegisterGroup(LTC6811Command&& command) : command{ std::move(command) } {};
-};
-
-struct LTC6811VoltageStatus {
-    uint32_t sum{ 0 };
-    uint16_t min{ std::numeric_limits<uint16_t>::max() };
-    size_t min_id{ 0 };
-    uint16_t max{ std::numeric_limits<uint16_t>::min() };
-    size_t max_id{ 0 };
-};
-
-struct LTC6811TempStatus {
-    int16_t min{ std::numeric_limits<int16_t>::max() };
-    size_t min_id{ 0 };
-    int16_t max{ std::numeric_limits<int16_t>::min() };
-    size_t max_id{ 0 };
-};
-
 class LTC6811 {
 public:
+    /*** Change this value according to how many cells are in the stack ***/
+    constexpr static size_t kDaisyChainLength{ 12 };
+
+    constexpr static size_t kBytesPerRegister{ 8 };
+    constexpr static size_t kCommandLength{ 4 };
+    constexpr static uint8_t kDelta{ 100 };
+
+    using Command = std::array<uint8_t, kCommandLength>;
+
+    template <typename T>
+    struct Register {
+        /* An LTC6811 register is 8 bytes: 6 bytes of data, and 2 bytes of PEC. */
+        std::array<T, 6 / sizeof(T)> data;
+        uint16_t PEC;
+    };
+
+    template<typename T>
+    struct RegisterGroup {
+        /* This class bundles together the command to access some register group and data sent/received after that command */
+        Command const command;
+        std::array<Register<T>, kDaisyChainLength> ICDaisyChain;
+        RegisterGroup(Command&& command) : command{ std::move(command) } {};
+    };
+
+    struct VoltageStatus {
+        uint32_t sum{ 0 };
+        uint16_t min{ std::numeric_limits<uint16_t>::max() };
+        size_t min_id{ 0 };
+        uint16_t max{ std::numeric_limits<uint16_t>::min() };
+        size_t max_id{ 0 };
+    };
+
+    struct TempStatus {
+        int16_t min{ std::numeric_limits<int16_t>::max() };
+        size_t min_id{ 0 };
+        int16_t max{ std::numeric_limits<int16_t>::min() };
+        size_t max_id{ 0 };
+    };
+
     /* Conversion mode */
     enum Mode { Fast = 1, Normal, Filtered };
     /* Conversion channels */
@@ -75,6 +75,7 @@ public:
     enum Group { A, B, C, D };
 
     enum DischargeMode { GTMinPlusDelta, MaxOnly, GTMeanPlusDelta };
+
 
     LTC6811(SPI_HandleTypeDef& hspi, Mode mode = Mode::Normal, DCP dcp = DCP::Disabled,
             CellCh cell = AllCell, AuxCh aux = AllAux, STSCh sts = AllStat);
@@ -103,11 +104,11 @@ public:
     /* Clear the LTC6811 Auxiliary registers. */
     void ClearAuxRegisters(void);
 
-    [[nodiscard]] std::optional<LTC6811VoltageStatus> GetVoltageStatus(void);
+    [[nodiscard]] std::optional<VoltageStatus> getVoltageStatus(void);
 
-    [[nodiscard]] std::optional<LTC6811TempStatus> GetTemperatureStatus(void);
+    [[nodiscard]] std::optional<TempStatus> getTemperatureStatus(void);
 
-    void BuildDischargeConfig(const LTC6811VoltageStatus& voltage_status);
+    void BuildDischargeConfig(const VoltageStatus& voltage_status);
 
     void SetDischargeMode(DischargeMode const discharge_mode) noexcept {
         this->discharge_mode = discharge_mode;
@@ -122,25 +123,23 @@ private:
 
     DischargeMode discharge_mode{ GTMinPlusDelta };
 
-    LTC6811RegisterGroup<uint8_t> slave_cfg_tx{ LTC6811Command{ 0x00, 0x01, 0x3D, 0x6E } };
-    LTC6811RegisterGroup<uint8_t> slave_cfg_rx{ LTC6811Command{ 0x00, 0x02, 0x2B, 0x0A } };
-    std::array<LTC6811RegisterGroup<uint16_t>, 4> cell_data{
-        LTC6811Command{ 0, 4, 7, 194}, LTC6811Command{ 0, 6, 154, 148 }, LTC6811Command{ 0, 8, 94, 82 }, LTC6811Command{ 0, 10, 195, 4 } };
-    std::array<LTC6811RegisterGroup<int16_t>, 2> temp_data{
-        LTC6811Command{ 0, 12, 239, 204 }, LTC6811Command{ 0, 14, 114, 154 } };
-    std::array<LTC6811RegisterGroup<uint8_t>, 2> status_registers{
-        LTC6811Command{ 0x00, 0x10, 0xED, 0x72 }, LTC6811Command{ 0x00, 0x12, 0x70, 0x24 } };
+    RegisterGroup<uint8_t> slave_cfg_tx{ Command{ 0x00, 0x01, 0x3D, 0x6E } };
+    RegisterGroup<uint8_t> slave_cfg_rx{ Command{ 0x00, 0x02, 0x2B, 0x0A } };
 
-    LTC6811Command ADCV; 	// Cell Voltage conversion command
-    LTC6811Command ADAX; 	// Aux conversion command
-    LTC6811Command ADSTAT; 	// Status conversion command
+    std::array<RegisterGroup<uint16_t>, 4> cell_data{ Command{ 0, 4, 7, 194}, Command{ 0, 6, 154, 148 }, Command{ 0, 8, 94, 82 }, Command{ 0, 10, 195, 4 } };
+    std::array<RegisterGroup<int16_t>, 2> temp_data{ Command{ 0, 12, 239, 204 }, Command{ 0, 14, 114, 154 } };
+    std::array<RegisterGroup<uint8_t>, 2> status_registers{ Command{ 0x00, 0x10, 0xED, 0x72 }, Command{ 0x00, 0x12, 0x70, 0x24 } };
+
+    Command ADCV; 	// Cell Voltage conversion command
+    Command ADAX; 	// Aux conversion command
+    Command ADSTAT; 	// Status conversion command
 
     /* Start a Cell Voltage, Aux, Status, etc. Conversion */
-    void StartConversion(const LTC6811Command& command);
+    void StartConversion(const Command& command);
 
     /* Write Register Function. Return 0 if success, 1 if failure. */
     template <typename T>
-    bool WriteRegisterGroup(LTC6811RegisterGroup<T>& register_group) {
+    bool WriteRegisterGroup(RegisterGroup<T>& register_group) {
         WakeFromIdle();
 
         auto serialized_data = reinterpret_cast<uint8_t*>(&register_group);
@@ -154,7 +153,7 @@ private:
 
     /* Read Register Function. Return 0 if success, 1 if failure. */
     template <typename T>
-    bool ReadRegisterGroup(LTC6811RegisterGroup<T>& register_group) {
+    bool ReadRegisterGroup(RegisterGroup<T>& register_group) {
         WakeFromIdle();
 
         auto serialized_data = reinterpret_cast<uint8_t*>(register_group.ICDaisyChain.begin());

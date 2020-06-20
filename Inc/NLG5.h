@@ -2,7 +2,7 @@
  * NLG5.h
  *
  *  Created on: 14 Mar 2020
- *      Author: Joshua
+ *      Author: Joshua Waugh
  */
 
 #ifndef NLG5_H_
@@ -25,20 +25,22 @@ struct NLG5 {
     }
 
     void tick() {
+        /* Every fifth time the timeout occurs, ctrl is set to a reset command if charger is in fault state. Otherwise it is set to a charge command.
+         * NOTE: It would be nicer if the NLG5 class had a reference to the CAN struct and sent this stuff itself when it was ready. */
         if (++counter >= kChargerEventTimeout) {
             /* This code used to check the below condition and put the charger event stuff in an else if
              * I'm not sure if I inverted the condition properly, which is why this comment is here! */
 #if OLDCODE
             if ((a_buffer[0] == 136 || a_buffer[0] == 152) && (b_buffer[0] == 136 || b_buffer[0] == 152))
 #endif
-            if ((a_buffer[0] != 136 && a_buffer[0] != 152) || (b_buffer[0] != 136 && b_buffer[0] != 152)) {
-                if (++event_counter >= 5) {
-                    ctrl = NLG5::C_C_EL;
-                    event_counter = 0;
-                } else {
-                    ctrl = NLG5::C_C_EN;
+                if ((a_buffer[0] != 136 && a_buffer[0] != 152) || (b_buffer[0] != 136 && b_buffer[0] != 152)) {
+                    if (++event_counter >= 5) {
+                        ctrl = NLG5::C_C_EL;
+                        event_counter = 0;
+                    } else {
+                        ctrl = NLG5::C_C_EN;
+                    }
                 }
-            }
 
             counter = 0;
             charger_flag = true;

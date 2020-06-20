@@ -32,9 +32,6 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-enum CAN0_ID { TMPTesting = 77, IVT_I = 1313, IVT_U1, IVT_U2, IVT_U3, IVT_T, IVT_P, IVT_E };
-enum CAN1_ID { OpMode = 8, PECError, Data, VoltTotal, NLGAStat = 1552, NLGACtrl = 1560, NLGBStat = 1568,
-    NLGBCtrl = 1576, SpamStart = 1900, Setting = 1902, DishB = 1909, Volt = 1912, Temp = 1948, SpamEnd = 1971, LoggerReq, LoggerResp };
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -60,13 +57,6 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 
-/*** BMS.H function prototypes ***/
-uint32_t CAN0_Test(void);
-uint32_t CanTxOpMode(void);
-uint32_t CanTxError(void);
-uint32_t CANTxNLGAControl(void);
-uint32_t CANTxNLGBControl(void);
-uint32_t CANTxVolumeSize(uint32_t size_of_log);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -104,6 +94,10 @@ uint32_t CANTxVolumeSize(uint32_t size_of_log);
 #define SOS_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 /*** Test enable/disable ***/
+#define CAN_DEBUG                           1
+#define CAN_ENABLED                         1
+#define SD_CARD_DEBUG                       1
+#define FAN_DEBUG                           1
 #define TEST_OVERVOLTAGE                    1
 #define TEST_UNDERVOLTAGE                   1
 #define TEST_OVERTEMPERATURE                1

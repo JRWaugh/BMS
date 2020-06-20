@@ -1,12 +1,22 @@
+/*
+ * PWM_Fan.h
+ *
+ *  Created on: 12 Mar 2020
+ *      Author: Joshua Waugh
+ */
+
+#ifndef PWMFAN_H_
+#define PWMFAN_H_
+
 #include "stm32f4xx_hal.h"
 
 class PWM_Fan {
 public:
     PWM_Fan(uint8_t duty_cycle = kFanLowDutyCycle) {
-        SetFanDutyCycle(duty_cycle);
+        setDutyCycle(duty_cycle);
     }
 
-    void SetFanDutyCycle(uint8_t duty_cycle) const {
+    void setDutyCycle(uint8_t duty_cycle) const noexcept {
         if (!manual_mode) {
             if (duty_cycle > kFanDCMax)
                 duty_cycle = kFanDCMax;
@@ -19,7 +29,7 @@ public:
         }
     }
 
-    uint8_t CalcDutyCycle(int16_t const max_temp) const {
+    [[nodiscard]] uint8_t calcDutyCycle(int16_t const max_temp) const noexcept {
         if (max_temp > kT2DCHighTemp)
             return kFanDCMax;
         else if (max_temp < kT2DCLowTemp)
@@ -39,3 +49,5 @@ private:
     static constexpr uint16_t kT2DCHighTemp{ 6000 };
     static constexpr float kT2DC_M{ static_cast<float>(kFanHighDutyCycle - kFanLowDutyCycle) / (kT2DCHighTemp - kT2DCLowTemp) };
 };
+
+#endif /* PWMFAN_H_ */

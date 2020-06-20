@@ -1,4 +1,4 @@
-Src/Status.o: ../Src/Status.cpp ../Inc/Status.h ../Inc/NLG5.h \
+Src/Status.o: ../Src/Status.cpp ../Inc/Status.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
@@ -29,12 +29,9 @@ Src/Status.o: ../Src/Status.cpp ../Inc/Status.h ../Inc/NLG5.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_sdmmc.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
- ../Inc/LTC6811.h ../Inc/Status.h
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 
 ../Inc/Status.h:
-
-../Inc/NLG5.h:
 
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 
@@ -97,7 +94,3 @@ Src/Status.o: ../Src/Status.cpp ../Inc/Status.h ../Inc/NLG5.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
 
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
-
-../Inc/LTC6811.h:
-
-../Inc/Status.h:

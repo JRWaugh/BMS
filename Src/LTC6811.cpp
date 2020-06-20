@@ -91,7 +91,7 @@ bool LTC6811::WriteConfigRegisterGroup(void) {
 
 /* Clear the LTC6811 cell voltage registers. */
 void LTC6811::ClearVoltageRegisters(void) {
-    constexpr static LTC6811Command command{ 7, 17, 201, 192 };
+    constexpr static Command command{ 7, 17, 201, 192 };
 
     WakeFromIdle();
 
@@ -102,7 +102,7 @@ void LTC6811::ClearVoltageRegisters(void) {
 
 /* Clear the LTC6811 Auxiliary registers. */
 void LTC6811::ClearAuxRegisters(void) {
-    constexpr static LTC6811Command command{ 7, 18, 223, 164 };
+    constexpr static Command command{ 7, 18, 223, 164 };
 
     WakeFromIdle();
 
@@ -114,8 +114,8 @@ void LTC6811::ClearAuxRegisters(void) {
 /* Generate a status report of the cell voltage register groups.
  * Returns an LTC6811VoltageStatus on success, nullopt if error
  */
-std::optional<LTC6811VoltageStatus> LTC6811::GetVoltageStatus(void) {
-    LTC6811VoltageStatus status{};
+std::optional<LTC6811::VoltageStatus> LTC6811::getVoltageStatus(void) {
+    LTC6811::VoltageStatus status{};
     size_t count{ 0 };
 
     StartConversion(ADCV);
@@ -147,8 +147,8 @@ std::optional<LTC6811VoltageStatus> LTC6811::GetVoltageStatus(void) {
 /* Generate a status report of the current temperatures from aux voltage register groups.
  * Returns an LTC6811TempStatus on success, nullopt if error
  */
-std::optional<LTC6811TempStatus> LTC6811::GetTemperatureStatus() {
-    LTC6811TempStatus status{};
+std::optional<LTC6811::TempStatus> LTC6811::getTemperatureStatus() {
+    LTC6811::TempStatus status{};
     size_t count{ 0 };
     auto steinharthart = [](int16_t const NTC_voltage) noexcept {
         constexpr auto Vin = 30000.0f; // 3[V], or 30000[V * 10-5]
@@ -189,7 +189,7 @@ std::optional<LTC6811TempStatus> LTC6811::GetTemperatureStatus() {
 }
 
 // TODO to be fully functional programming, make this return the discharge array instead of being void
-void LTC6811::BuildDischargeConfig(const LTC6811VoltageStatus& voltage_status) {
+void LTC6811::BuildDischargeConfig(const VoltageStatus& voltage_status) {
     uint16_t DCCx{ 0 };
     uint8_t current_cell{ 0 }, current_ic{ kDaisyChainLength - 1 };
 
@@ -253,7 +253,7 @@ void LTC6811::BuildDischargeConfig(const LTC6811VoltageStatus& voltage_status) {
 
 
 /* Start a conversion */
-void LTC6811::StartConversion(const LTC6811Command& command) {
+void LTC6811::StartConversion(const Command& command) {
     WakeFromIdle(); // It's possible all of these can be removed
 
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
