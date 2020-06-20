@@ -98,8 +98,8 @@ static constexpr auto kFile = "/hpf20/data.txt";
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-CAN_HandleTypeDef hcan1;
-CAN_HandleTypeDef hcan2; // CAN0
+CAN_HandleTypeDef hcan1; // CAN1
+CAN_HandleTypeDef hcan2; // CAN0. Confusing, I know! Blame the electrical boys.
 SD_HandleTypeDef hsd;
 SPI_HandleTypeDef hspi1;
 
@@ -753,7 +753,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
 // CAN1
 void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
     CAN_RxHeaderTypeDef   RxHeader;
-    uint8_t data[8] = { 0 };
+    uint8_t data[8]{ 0 };
 
     if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &RxHeader, data) == HAL_OK) {
         switch(static_cast<CAN1_ID>(RxHeader.StdId)) {
@@ -826,9 +826,9 @@ uint32_t CAN0_Test(void) {
     uint8_t data[] = { 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA };
 
     if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
-        return -1;
-
-    return 0;
+        return Fail;
+    else
+        return Success;
 }
 
 uint32_t CANTxStatus(void) {
