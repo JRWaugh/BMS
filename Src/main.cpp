@@ -23,6 +23,7 @@
 #include "fatfs.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "IVT.h"
 #include "Status.h"
 #include "NLG5.h"
 #include "LTC6811.h"
@@ -31,41 +32,8 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-struct IVT {
-    enum {
-        Charged, NotCharged, Hysteresis
-    };
-
-    std::atomic<float> U1; // Called pre in old code
-    std::atomic<float> U2; // Called air_p in old code
-    std::atomic<float> I;
-    std::atomic<uint32_t> tick{ 0 }; // time in ms
-
-    static constexpr uint32_t kMaxDelay{ 500 }; // time in ms
-    static constexpr float kPrechargeMinStartVoltage{ 470.0f };
-    static constexpr float kPrechargeMaxEndVoltage{ 450.0f };
-    static constexpr uint8_t kHysteresis{ 10 };
-
-    int prechargeCompare(uint32_t const sum_of_cells) const {
-        float percentage = U1 * 100 / U2;
-        float match_percentage = U2 * 100 / sum_of_cells - 100;
-        bool voltage_match = match_percentage < kHysteresis && match_percentage > -kHysteresis;
-
-        if (percentage >= 95 && voltage_match && U1 > kPrechargeMinStartVoltage && U2 > kPrechargeMinStartVoltage)
-            return Charged;
-        else if (U1 < kPrechargeMaxEndVoltage || U2 < kPrechargeMaxEndVoltage)
-            return NotCharged;
-        else
-            return Hysteresis;
-    }
-
-    bool isLost() const {
-        return tick > kMaxDelay;
-    }
-};
-
 enum {
-    Success, Fail
+    Success = 0, Fail
 };
 
 enum CAN0_ID {
@@ -255,8 +223,8 @@ int main(void)
                     }
                 }
 #endif
-                // NOTE: Bitwise & will not short circuit like Logical &&. We want all isError() calls to happen, so do not replace & with &&.
-                if (
+
+                if ( // NOTE: Bitwise & will not short circuit like Logical &&. We want all isError() calls to happen, so do not replace & with &&.
 #if CHECK_IVT
 #if IVT_TIMEOUT
                         !status->isError(Status::IVTLost, ivt->isLost()) &
