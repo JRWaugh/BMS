@@ -203,11 +203,11 @@ int main(void)
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
 #if BYPASS_INITIAL_CHECK
-    status->CloseAIR();
+    status->setAIRState(Closed);
 #endif
     HAL_Delay(5000);
 #if BYPASS_INITIAL_CHECK
-    status->ClosePre();
+    status->setPrechargeState(Closed);
 #endif
 
     while (1) {
@@ -224,12 +224,14 @@ int main(void)
             auto const temp_status_opt = ltc6811->getTemperatureStatus();
 
             if (!status->isError(Status::PECError, !voltage_status_opt.has_value()) && !status->isError(Status::PECError, !temp_status_opt.has_value())) {
-                auto voltage_status = voltage_status_opt.value();
-                auto temp_status = temp_status_opt.value();
+                auto const voltage_status = voltage_status_opt.value();
+                auto const temp_status = temp_status_opt.value();
 
                 status->isError(Status::Limping, voltage_status.min < Status::kLimpMinVoltage);
-                nlg5->SetChargeCurrent(voltage_status.max);
-                pwm_fan->setDutyCycle(pwm_fan->calcDutyCycle(temp_status.max));
+                nlg5->setChargeCurrent(voltage_status.max);
+
+                if (pwm_fan->getMode() == PWM_Fan::Automatic)
+                    pwm_fan->setDutyCycle(PWM_Fan::calcDutyCycle(temp_status.max));
 
                 if (op_mode & Status::Balance)
                     ltc6811->BuildDischargeConfig(voltage_status);
@@ -237,11 +239,11 @@ int main(void)
                 if (!ivt->isLost()) { // This, if anything, will be the cause of error false positives
                     switch (ivt->prechargeCompare(voltage_status.sum)) {
                     case IVT::Charged:
-                        status->ClosePre();
+                        status->setPrechargeState(Closed);
                         break;
 
                     case IVT::NotCharged:
-                        status->OpenPre();
+                        status->setPrechargeState(Open);
                         break;
 
                     case IVT::Hysteresis:
@@ -286,9 +288,9 @@ int main(void)
 #endif
                         true
                 ) {
-                    status->CloseAIR();
+                    status->setAIRState(Closed);
 #if !CHECK_IVT
-                    status->ClosePre();
+                    status->setPrechargeState(Closed);
 #endif
                 }
 #if CAN_ENABLED
@@ -314,9 +316,9 @@ int main(void)
 #if CAN_DEBUG
         /*  Functions for debugging and untested code.  */
         if (op_mode & Status::Debug) {
-            CANTxVoltage(ltc6811->GetCellData());
-            CANTxTemperature(ltc6811->GetTempData());
-            CANTxDCCfg(ltc6811->GetSlaveCfg());
+            CANTxVoltage(ltc6811->getCellData());
+            CANTxTemperature(ltc6811->getTempData());
+            CANTxDCCfg(ltc6811->getSlaveCfg());
             CANTxStatus();
         }
 #endif
@@ -345,7 +347,7 @@ int main(void)
                     uint16_t buffer[4 * LTC6811::kDaisyChainLength * 3]{ 0 };
 
                     size_t position{ 0 };
-                    auto const cell_data = ltc6811->GetCellData();
+                    auto const cell_data = ltc6811->getCellData();
 
                     for (const auto& register_group : cell_data) // 4 voltage register groups
                         for (const auto& IC : register_group.ICDaisyChain) // N ICs in daisy chain, determined by kDaisyChainLength
@@ -355,7 +357,7 @@ int main(void)
                     f_write(&SDFile, buffer, sizeof(buffer), &number_written);
 
                     position = 0;
-                    auto const temp_data = ltc6811->GetTempData();
+                    auto const temp_data = ltc6811->getTempData();
 
                     for (const auto& register_group : temp_data) // 2 temperature register groups
                         for (const auto& IC : register_group.ICDaisyChain) // N ICs in daisy chain, determined by kDaisyChainLength
@@ -776,7 +778,7 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
             break;
 
         case CAN1_ID::LoggerReq: {
-            // CANBus stuff is big endian so this should be right, but it's possible the switch should happen on data[0].
+            // NOTE: It's possible the switch should happen on data[0] if I got the endianness wrong.
             switch (data[3]) {
             case 0:
                 /* Call appropriate logger function */
@@ -812,8 +814,11 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
             status->setOpMode(data[2]);
             ltc6811->SetDischargeMode(static_cast<LTC6811::DischargeMode>(data[3]));
             nlg5->oc_limit = data[6];
-            pwm_fan->manual_mode = static_cast<bool>(data[7] & 0x80);
-            pwm_fan->setDutyCycle(data[7]);
+            pwm_fan->setMode(static_cast<PWM_Fan::Mode>(data[7] & 0x80));
+
+            if (pwm_fan->getMode() == PWM_Fan::Manual)
+                pwm_fan->setDutyCycle(data[7]);
+
             break;
 
         default:
@@ -849,8 +854,8 @@ uint32_t CANTxStatus(void) {
             static_cast<uint8_t>(uptime >>  0),
             status->getOpMode(),
             status->getLastError(),
-            status->getPrechargeFlag(),
-            status->getAIRFlag()
+            status->getPrechargeState(),
+            status->getAIRState()
     };
 
     if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
@@ -866,7 +871,7 @@ uint32_t CANTxPECError(void) {
 
     static uint32_t last_error;
 
-    uint32_t total_error{ status->getPECError() };
+    uint32_t total_error{ status->getErrorCount(Status::PECError) };
     uint32_t error_change = total_error - last_error;
     uint8_t data[] = {
             static_cast<uint8_t>(total_error >> 24),
@@ -1035,7 +1040,7 @@ uint32_t CANTxNLGAControl(void) {
         return Success;
 }
 
-// TODO This is exactly the same as the function above?
+// TODO This is exactly the same as the function above
 uint32_t CANTxNLGBControl(void) {
     TxHeader.StdId = CAN1_ID::NLGBCtrl;
     TxHeader.IDE = CAN_ID_STD;

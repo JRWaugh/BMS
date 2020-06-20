@@ -17,7 +17,7 @@ struct NLG5 {
 
     NLG5(uint16_t const mc_limit = 160, uint16_t const oc_limit = 60, uint16_t const ov_limit = 2990) : mc_limit { mc_limit }, oc_limit { oc_limit }, ov_limit { ov_limit } {};
 
-    void SetChargeCurrent(uint16_t const max_voltage) {
+    void setChargeCurrent(uint16_t const max_voltage) {
         if (max_voltage > kChargerDis)
             ctrl = 0;
         else if (max_voltage < kChargerEn)
@@ -35,10 +35,10 @@ struct NLG5 {
 #endif
                 if ((a_buffer[0] != 136 && a_buffer[0] != 152) || (b_buffer[0] != 136 && b_buffer[0] != 152)) {
                     if (++event_counter >= 5) {
-                        ctrl = NLG5::C_C_EL;
+                        ctrl = C_C_EL;
                         event_counter = 0;
                     } else {
-                        ctrl = NLG5::C_C_EN;
+                        ctrl = C_C_EN;
                     }
                 }
 
@@ -47,14 +47,13 @@ struct NLG5 {
         }
     }
 
-    bool isChargerEvent() {
+    [[nodiscard]] bool isChargerEvent() noexcept {
         // Basically working like a 1-item queue.
         bool previous = charger_flag.load();
 
         charger_flag = false;
 
         return previous;
-
     }
 
     uint8_t ctrl;
@@ -63,6 +62,9 @@ struct NLG5 {
     uint16_t ov_limit;
     uint8_t a_buffer[4];
     uint8_t b_buffer[4];
+
+
+private:
     uint8_t event_counter{ 0 };
     std::atomic<uint32_t> counter{ 0 };
     std::atomic<bool> charger_flag{ false };

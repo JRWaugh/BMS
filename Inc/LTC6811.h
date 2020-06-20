@@ -76,7 +76,6 @@ public:
 
     enum DischargeMode { GTMinPlusDelta, MaxOnly, GTMeanPlusDelta };
 
-
     LTC6811(SPI_HandleTypeDef& hspi, Mode mode = Mode::Normal, DCP dcp = DCP::Disabled,
             CellCh cell = AllCell, AuxCh aux = AllAux, STSCh sts = AllStat);
 
@@ -114,9 +113,9 @@ public:
         this->discharge_mode = discharge_mode;
     };
 
-    [[nodiscard]] const auto& GetCellData() const noexcept { return cell_data; };
-    [[nodiscard]] const auto& GetTempData() const noexcept { return temp_data; };
-    [[nodiscard]] const auto& GetSlaveCfg() const noexcept { return slave_cfg_rx; };
+    [[nodiscard]] const auto& getCellData() const noexcept { return cell_data; };
+    [[nodiscard]] const auto& getTempData() const noexcept { return temp_data; };
+    [[nodiscard]] const auto& getSlaveCfg() const noexcept { return slave_cfg_rx; };
 
 private:
     SPI_HandleTypeDef& hspi;
