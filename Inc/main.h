@@ -36,7 +36,9 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
+enum {
+    Success = 0, Fail
+};
 /* USER CODE BEGIN PV */
 /* USER CODE END ET */
 

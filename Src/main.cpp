@@ -32,10 +32,6 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-enum {
-    Success = 0, Fail
-};
-
 enum CAN0_ID {
     TMPTesting = 77,
     IVT_I = 1313, IVT_U1, IVT_U2, IVT_U3, IVT_T, IVT_P, IVT_E
@@ -188,8 +184,8 @@ int main(void)
 
         /*  Core routine for monitoring voltage and temperature of the cells.  */
         if (op_mode & Status::Core) {
-            auto const voltage_status_opt = ltc6811->getVoltageStatus();
-            auto const temp_status_opt = ltc6811->getTemperatureStatus();
+            auto const voltage_status_opt = ltc6811->checkVoltageStatus();
+            auto const temp_status_opt = ltc6811->checkTemperatureStatus();
 
             if (!status->isError(Status::PECError, !voltage_status_opt.has_value()) && !status->isError(Status::PECError, !temp_status_opt.has_value())) {
                 auto const voltage_status = voltage_status_opt.value();
@@ -201,8 +197,11 @@ int main(void)
                 if (pwm_fan->getMode() == PWM_Fan::Automatic)
                     pwm_fan->setDutyCycle(PWM_Fan::calcDutyCycle(temp_status.max));
 
-                if (op_mode & Status::Balance)
-                    ltc6811->BuildDischargeConfig(voltage_status);
+                if (op_mode & Status::Balance) {
+                    auto cfg_register_group = ltc6811->makeDischargeConfig(voltage_status);
+                    ltc6811->writeConfigRegisterGroup(cfg_register_group);
+                }
+
 #if CHECK_IVT
                 if (!ivt->isLost()) { // This, if anything, will be the cause of error false positives
                     switch (ivt->prechargeCompare(voltage_status.sum)) {
@@ -318,7 +317,7 @@ int main(void)
                     auto const cell_data = ltc6811->getCellData();
 
                     for (const auto& register_group : cell_data) // 4 voltage register groups
-                        for (const auto& IC : register_group.ICDaisyChain) // N ICs in daisy chain, determined by kDaisyChainLength
+                        for (const auto& IC : register_group) // N ICs in daisy chain, determined by kDaisyChainLength
                             for (const auto voltage : IC.data) // 3 voltages in IC.data
                                 buffer[position++] = voltage;
 
@@ -328,7 +327,7 @@ int main(void)
                     auto const temp_data = ltc6811->getTempData();
 
                     for (const auto& register_group : temp_data) // 2 temperature register groups
-                        for (const auto& IC : register_group.ICDaisyChain) // N ICs in daisy chain, determined by kDaisyChainLength
+                        for (const auto& IC : register_group) // N ICs in daisy chain, determined by kDaisyChainLength
                             for (const auto temperature : IC.data) // 3 temperatures in IC.data
                                 buffer[position++] = temperature;
 
@@ -780,7 +779,7 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
 
         case CAN1_ID::Setting:
             status->setOpMode(data[2]);
-            ltc6811->SetDischargeMode(static_cast<LTC6811::DischargeMode>(data[3]));
+            ltc6811->setDischargeMode(static_cast<LTC6811::DischargeMode>(data[3]));
             nlg5->oc_limit = data[6];
             pwm_fan->setMode(static_cast<PWM_Fan::Mode>(data[7] & 0x80));
 
@@ -893,7 +892,7 @@ uint32_t CANTxVoltage(const std::array<LTC6811::RegisterGroup<uint16_t>, 4>& cel
 
     for (size_t current_ic = 0; current_ic < LTC6811::kDaisyChainLength; ++current_ic) {
         for (const auto& register_group : cell_data) { // 4 voltage register groups
-            for (const auto voltage : register_group.ICDaisyChain[current_ic].data) { // 3 voltages per IC
+            for (const auto voltage : register_group[current_ic].data) { // 3 voltages per IC
                 data[byte_position++] = static_cast<uint8_t>(voltage >> 8);
                 data[byte_position++] = static_cast<uint8_t>(voltage);
 
@@ -920,7 +919,7 @@ uint32_t CANTxTemperature(const std::array<LTC6811::RegisterGroup<int16_t>, 2>& 
 
     for (size_t current_ic = 0; current_ic < LTC6811::kDaisyChainLength; ++current_ic) {
         for (const auto& register_group : temp_data) { // 2 voltage register groups
-            for (const auto temperature : register_group.ICDaisyChain[current_ic].data) { // 3 temperatures per IC
+            for (const auto temperature : register_group[current_ic].data) { // 3 temperatures per IC
                 data[byte_position++] = static_cast<uint8_t>(temperature >> 8);
                 data[byte_position++] = static_cast<uint8_t>(temperature);
 
@@ -970,7 +969,7 @@ uint32_t CANTxDCCfg(const LTC6811::RegisterGroup<uint8_t>& slave_cfg_rx) {
     uint8_t data[8]{ 0 };
     uint8_t byte_position{ 0 };
 
-    for (const auto& IC : slave_cfg_rx.ICDaisyChain) {
+    for (const auto& IC : slave_cfg_rx) {
         data[byte_position++] = IC.data[5];
         data[byte_position++] = IC.data[4];
 

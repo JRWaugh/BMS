@@ -17,14 +17,14 @@ struct NLG5 {
 
     NLG5(uint16_t const mc_limit = 160, uint16_t const oc_limit = 60, uint16_t const ov_limit = 2990) : mc_limit { mc_limit }, oc_limit { oc_limit }, ov_limit { ov_limit } {};
 
-    void setChargeCurrent(uint16_t const max_voltage) {
+    void setChargeCurrent(uint16_t const max_voltage) noexcept {
         if (max_voltage > kChargerDis)
             ctrl = 0;
         else if (max_voltage < kChargerEn)
             ctrl = C_C_EN;
     }
 
-    void tick() {
+    void tick() noexcept {
         /* Every fifth time the timeout occurs, ctrl is set to a reset command if charger is in fault state. Otherwise it is set to a charge command.
          * NOTE: It would be nicer if the NLG5 class had a reference to the CAN struct and sent this stuff itself when it was ready. */
         if (++counter >= kChargerEventTimeout) {

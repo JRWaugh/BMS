@@ -9,42 +9,30 @@
 #define LTC6811_H_
 
 #include "stm32f4xx_hal.h"
+#include "main.h"
 #include <array>
 #include <cmath>
 #include <optional>
 
-/* Timing of states (in microseconds) */
-#define T_WAKE_MAX		400
-#define T_READY			10
-#define T_IDLE_MIN		4300
-#define T_REFUP_MAX		4400
-#define T_CYCLE_FAST_MAX	1185	// Measure 12 Cells
-
 class LTC6811 {
 public:
-    /*** Change this value according to how many cells are in the stack ***/
+    /* * * CELL STACK SIZE * * */
     constexpr static size_t kDaisyChainLength{ 12 };
 
-    constexpr static size_t kBytesPerRegister{ 8 };
-    constexpr static size_t kCommandLength{ 4 };
-    constexpr static uint8_t kDelta{ 100 };
-
-    using Command = std::array<uint8_t, kCommandLength>;
+    /* * * TYPE DEFINITIONS * * */
+    using Command = std::array<uint8_t, 4>;
 
     template <typename T>
     struct Register {
-        /* An LTC6811 register is 8 bytes: 6 bytes of data, and 2 bytes of PEC. */
+        /* An LTC6811 register is 8 bytes: 6 bytes of data, and 2 bytes of PEC. Type T must be one or two bytes. */
         std::array<T, 6 / sizeof(T)> data;
         uint16_t PEC;
+
+        static_assert(std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> || std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t>, "Register is of invalid type.");
     };
 
     template<typename T>
-    struct RegisterGroup {
-        /* This class bundles together the command to access some register group and data sent/received after that command */
-        Command const command;
-        std::array<Register<T>, kDaisyChainLength> ICDaisyChain;
-        RegisterGroup(Command&& command) : command{ std::move(command) } {};
-    };
+    using RegisterGroup = std::array<Register<T>, kDaisyChainLength>;
 
     struct VoltageStatus {
         uint32_t sum{ 0 };
@@ -79,37 +67,37 @@ public:
     LTC6811(SPI_HandleTypeDef& hspi, Mode mode = Mode::Normal, DCP dcp = DCP::Disabled,
             CellCh cell = AllCell, AuxCh aux = AllAux, STSCh sts = AllStat);
 
-    void WakeFromSleep(void);
-    void WakeFromIdle(void);
+    void WakeFromSleep(void) const noexcept;
+    void WakeFromIdle(void) const noexcept;
 
     /* Read from an LTC6811 cell voltage register group. */
-    bool ReadVoltageRegisterGroup(Group const group);
+    bool readVoltageRegisterGroup(Group const group) noexcept;
 
     /* Read from an LTC6811 auxiliary register group. */
-    bool ReadAuxRegisterGroup(Group const group);
+    bool readAuxRegisterGroup(Group const group) noexcept;
 
     /* Read from an LTC6811 status register group. */
-    bool ReadStatusRegisterGroup(Group const group);
+    bool readStatusRegisterGroup(Group const group) noexcept;
 
     /* Read from an LTC6811 configuration register group */
-    bool ReadConfigRegisterGroup(void);
+    bool readConfigRegisterGroup() noexcept;
 
     /* Write to the configuration registers of the LTC6811s in the daisy chain. */
-    bool WriteConfigRegisterGroup(void);
+    bool writeConfigRegisterGroup(RegisterGroup<uint8_t> const& cfg_register_group) noexcept;
 
     /* Clear the LTC6811 cell voltage registers. */
-    void ClearVoltageRegisters(void);
+    bool clearVoltageRegisterGroup() noexcept;
 
     /* Clear the LTC6811 Auxiliary registers. */
-    void ClearAuxRegisters(void);
+    bool clearAuxRegisterGroup() noexcept;
 
-    [[nodiscard]] std::optional<VoltageStatus> getVoltageStatus(void);
+    [[nodiscard]] std::optional<VoltageStatus> checkVoltageStatus(void) noexcept;
 
-    [[nodiscard]] std::optional<TempStatus> getTemperatureStatus(void);
+    [[nodiscard]] std::optional<TempStatus> checkTemperatureStatus(void) noexcept;
 
-    void BuildDischargeConfig(const VoltageStatus& voltage_status);
+    [[nodiscard]] RegisterGroup<uint8_t> makeDischargeConfig(VoltageStatus const& voltage_status) const noexcept;
 
-    void SetDischargeMode(DischargeMode const discharge_mode) noexcept {
+    void setDischargeMode(DischargeMode const discharge_mode) noexcept {
         this->discharge_mode = discharge_mode;
     };
 
@@ -122,53 +110,66 @@ private:
 
     DischargeMode discharge_mode{ GTMinPlusDelta };
 
-    RegisterGroup<uint8_t> slave_cfg_tx{ Command{ 0x00, 0x01, 0x3D, 0x6E } };
-    RegisterGroup<uint8_t> slave_cfg_rx{ Command{ 0x00, 0x02, 0x2B, 0x0A } };
-
-    std::array<RegisterGroup<uint16_t>, 4> cell_data{ Command{ 0, 4, 7, 194}, Command{ 0, 6, 154, 148 }, Command{ 0, 8, 94, 82 }, Command{ 0, 10, 195, 4 } };
-    std::array<RegisterGroup<int16_t>, 2> temp_data{ Command{ 0, 12, 239, 204 }, Command{ 0, 14, 114, 154 } };
-    std::array<RegisterGroup<uint8_t>, 2> status_registers{ Command{ 0x00, 0x10, 0xED, 0x72 }, Command{ 0x00, 0x12, 0x70, 0x24 } };
+    RegisterGroup<uint8_t> slave_cfg_rx;
+    std::array<RegisterGroup<uint16_t>, 4> cell_data;
+    std::array<RegisterGroup<int16_t>,  2> temp_data;
+    std::array<RegisterGroup<uint8_t>,  2> status_data;
 
     Command ADCV; 	// Cell Voltage conversion command
     Command ADAX; 	// Aux conversion command
-    Command ADSTAT; 	// Status conversion command
+    Command ADSTAT; // Status conversion command
 
     /* Start a Cell Voltage, Aux, Status, etc. Conversion */
-    void StartConversion(const Command& command);
+    void startConversion(Command const& command) const noexcept;
 
     /* Write Register Function. Return 0 if success, 1 if failure. */
     template <typename T>
-    bool WriteRegisterGroup(RegisterGroup<T>& register_group) {
+    bool writeRegisterGroup(Command const& command, RegisterGroup<T> const& register_group) const noexcept {
         WakeFromIdle();
-
-        auto serialized_data = reinterpret_cast<uint8_t*>(&register_group);
+        auto serialized = reinterpret_cast<uint8_t const *>(register_group.data());
 
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-        auto result = HAL_SPI_Transmit(&hspi, serialized_data, sizeof(register_group), HAL_MAX_DELAY);
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-
-        return result;
+        if (HAL_SPI_Transmit(&hspi, command.data(), sizeof(command), HAL_MAX_DELAY) == HAL_OK &&
+                HAL_SPI_Transmit(&hspi, serialized, sizeof(register_group), HAL_MAX_DELAY) == HAL_OK) {
+            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+            return Success;
+        } else {
+            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+            return Fail;
+        }
     }
 
     /* Read Register Function. Return 0 if success, 1 if failure. */
     template <typename T>
-    bool ReadRegisterGroup(RegisterGroup<T>& register_group) {
+    bool readRegisterGroup(Command const& command, RegisterGroup<T>& register_group) noexcept {
+        WakeFromIdle();
+        auto serialized = reinterpret_cast<uint8_t*>(register_group.data());
+
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+        if (HAL_SPI_Transmit(&hspi, command.data(), sizeof(command), HAL_MAX_DELAY) == HAL_OK) {
+            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+            if (HAL_SPI_Receive(&hspi, serialized, sizeof(register_group), HAL_MAX_DELAY) == HAL_OK) {
+                for (auto& IC : register_group)
+                    if (IC.PEC != PEC15Calc(IC.data))
+                        return Fail; // PEC error
+                return Success;
+            } else {
+                return Fail; // SPI error
+            }
+        } else {
+            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+            return Fail; // SPI error
+        }
+    }
+
+    bool clearRegisterGroup(Command const& command) const noexcept {
         WakeFromIdle();
 
-        auto serialized_data = reinterpret_cast<uint8_t*>(register_group.ICDaisyChain.begin());
-
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-        auto result = HAL_SPI_Transmit(&hspi, register_group.command.data(), kCommandLength, HAL_MAX_DELAY);
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+        auto result = HAL_SPI_Transmit(&hspi, command.data(), sizeof(Command), HAL_MAX_DELAY);
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
 
-        if (result == HAL_ERROR || HAL_SPI_Receive(&hspi, serialized_data, kBytesPerRegister * kDaisyChainLength, HAL_MAX_DELAY) == HAL_ERROR)
-            return 1; // SPI error
-        else {
-            for (auto& IC : register_group.ICDaisyChain)
-                if (IC.PEC != PEC15Calc(IC.data))
-                    return 1; // PEC error
-            return 0; // Success
-        }
+        return result;
     }
 
     constexpr static uint16_t crc15Table[256] {
@@ -192,12 +193,12 @@ private:
 
     /* This has been tested against the original code and is working properly */
     template <typename T, size_t S>
-    constexpr static uint16_t PEC15Calc(const std::array<T, S>& data, size_t size = S * sizeof(T)) {
+    [[nodiscard]] constexpr static uint16_t PEC15Calc(std::array<T, S> const& data, size_t const size = S * sizeof(T)) noexcept {
         uint16_t PEC{ 16 }, addr{ 0 };
-        auto serialized_data = reinterpret_cast<uint8_t const *>(data.data());
+        auto serialized = reinterpret_cast<uint8_t const *>(data.data());
 
         for (uint8_t i = 0; i < size; ++i) {
-            addr = (PEC >> 7 ^ serialized_data[i]) & 0xFF;
+            addr = (PEC >> 7 ^ serialized[i]) & 0xFF;
             PEC = PEC << 8 ^ crc15Table[addr];
         }
 

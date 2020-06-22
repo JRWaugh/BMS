@@ -28,13 +28,13 @@ class Counter {
 public:
     Counter(int8_t const limit) : count{ 0 }, limit{ limit } {}
 
-    Counter& incrementBy(uint8_t const amount = 1) {
+    Counter& incrementBy(uint8_t const amount = 1) noexcept {
         count += amount;
 
         return *this;
     }
 
-    Counter& decrementBy(uint8_t const amount = 1) {
+    Counter& decrementBy(uint8_t const amount = 1) noexcept {
         count -= amount;
 
         if (count < 0)

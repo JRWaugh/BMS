@@ -26,7 +26,7 @@ public:
 
         /* PWM period is 20000 cycles, so the duty cycle is:
          * (duty_cycle / 100) * 20000 or, duty_cycle * 200
-         * TODO: This is probably not working right? */
+         * TODO: This is probably not working right! */
         TIM2->CCR4 = duty_cycle * 200;
     }
 
