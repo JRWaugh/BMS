@@ -5,8 +5,8 @@
  *      Author: Joshua
  */
 
+#include <DWTWrapper.h>
 #include "LTC6811.h"
-#include "dwt_delay.h"
 
 LTC6811::LTC6811(SPI_HandleTypeDef& hspi, Mode mode, DCP dcp, CellCh cell, AuxCh aux, STSCh sts) : hspi{ hspi } {
     uint8_t md_bits = (mode & 0x02) >> 1;
@@ -33,7 +33,7 @@ LTC6811::LTC6811(SPI_HandleTypeDef& hspi, Mode mode, DCP dcp, CellCh cell, AuxCh
     ADSTAT[2] = static_cast<uint8_t>(PEC >> 8);
     ADSTAT[3] = static_cast<uint8_t>(PEC);
 
-    DWT_Init();
+    DWTWrapper::getInstance().init();
     WakeFromSleep(); // NOTE: Takes 2.2s to fall asleep so if this has to be called after this, we have problems
 }
 
@@ -42,9 +42,9 @@ void LTC6811::WakeFromSleep() const noexcept {
 
     for (size_t i = 0; i < kDaisyChainLength; ++i) {
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-        DWT_Delay(kMaxWakeTime); // Guarantees the LTC6811 will be in standby
+        DWTWrapper::getInstance().delay(kMaxWakeTime); // Guarantees the LTC6811 will be in standby
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-        DWT_Delay(10);
+        DWTWrapper::getInstance().delay(10);
     }
 }
 
@@ -105,8 +105,8 @@ bool LTC6811::writeConfigRegisterGroup(RegisterGroup<uint8_t> const& cfg_registe
     constexpr static Command kCommand{ 0x00, 0x01, 0x3D, 0x6E };
 
     if  (writeRegisterGroup(kCommand, cfg_register_group) == Success) {
-        DWT_Delay(500);
-        /* Funky place to do this, but fixing this would require substantially reworking the whole system.
+        DWTWrapper::getInstance().delay(500);
+        /* Funky place to do this, but fixing this would require substantially reworking the whole class.
          * The purpose is to read back the config register after writing to it to check that it was written to properly, apparently. */
         readConfigRegisterGroup();
         return Success;
@@ -166,7 +166,7 @@ bool LTC6811::clearAuxRegisterGroup() noexcept {
 [[nodiscard]] std::optional<LTC6811::TempStatus> LTC6811::checkTemperatureStatus() noexcept {
     LTC6811::TempStatus status;
     size_t count{ 0 };
-    auto steinharthart = [](int16_t const NTC_voltage) noexcept {
+    constexpr static auto steinharthart = [](int16_t const NTC_voltage) noexcept {
         constexpr auto Vin = 30000.0f; // 3[V], or 30000[V * 10-5]
         constexpr auto KtoC = 27315; // centiKelvin to centiDegCelsius
         constexpr auto A = 0.003354016f;
@@ -204,7 +204,6 @@ bool LTC6811::clearAuxRegisterGroup() noexcept {
     return status;
 }
 
-// TODO to be fully functional programming, make this return the discharge array instead of being void
 [[nodiscard]] LTC6811::RegisterGroup<uint8_t> LTC6811::makeDischargeConfig(VoltageStatus const& voltage_status) const noexcept {
     constexpr static uint8_t kDelta{ 100 };
 
@@ -219,12 +218,14 @@ bool LTC6811::clearAuxRegisterGroup() noexcept {
             current_cell = 0;
 
             for (auto const& register_group : cell_data) { // 4 voltage register groups
-                for (auto const voltage : register_group[current_ic--].data) { // 3 voltages per IC
+                for (auto const voltage : register_group[current_ic].data) { // 3 voltages per IC
                     if (voltage > voltage_status.min + kDelta)
                         DCCx |= 1 << current_cell;
                     ++current_cell;
                 } // 4 * 3 = 12 voltages associated with each LTC6811 in the daisy chain
             }
+            --current_ic;
+
             IC.data[0] = 0xFE;
             IC.data[4] = DCCx & 0xFF;
             IC.data[5] = DCCx >> 8 & 0xF;
@@ -252,12 +253,13 @@ bool LTC6811::clearAuxRegisterGroup() noexcept {
             current_cell = 0;
 
             for (auto const& register_group : cell_data) { // 4 voltage register groups
-                for (auto const voltage : register_group[current_ic--].data) { // 3 voltages per IC
+                for (auto const voltage : register_group[current_ic].data) { // 3 voltages per IC
                     if (voltage > average_voltage + kDelta)
                         DCCx |= 1 << current_cell;
                     ++current_cell;
                 } // 4 * 3 = 12 voltages associated with each LTC6811 in the daisy chain
             }
+            --current_ic;
 
             IC.data[0] = 0xFE;
             IC.data[4] = DCCx & 0xFF;
@@ -283,5 +285,5 @@ void LTC6811::startConversion(Command const& command) const noexcept {
     HAL_SPI_Transmit(&hspi, command.data(), sizeof(Command), HAL_MAX_DELAY); // Start cell voltage conversion.
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
 
-    DWT_Delay(kMaxRefWakeupTime + kMaxCycleTimeFast); // TODO we aren't in fast conversion mode??? Also these delays aren't in the Linduino library
+    DWTWrapper::getInstance().delay(kMaxRefWakeupTime + kMaxCycleTimeFast); // TODO we aren't in fast conversion mode??? Also these delays aren't in the Linduino library
 }

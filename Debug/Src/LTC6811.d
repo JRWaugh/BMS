@@ -1,4 +1,4 @@
-Src/LTC6811.o: ../Src/LTC6811.cpp ../Inc/LTC6811.h \
+Src/LTC6811.o: ../Src/LTC6811.cpp ../Inc/DWTWrapper.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
@@ -29,10 +29,10 @@ Src/LTC6811.o: ../Src/LTC6811.cpp ../Inc/LTC6811.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_sdmmc.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h ../Inc/main.h \
- ../Inc/dwt_delay.h
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
+ ../Inc/LTC6811.h ../Inc/main.h
 
-../Inc/LTC6811.h:
+../Inc/DWTWrapper.h:
 
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 
@@ -96,6 +96,6 @@ Src/LTC6811.o: ../Src/LTC6811.cpp ../Inc/LTC6811.h \
 
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
 
-../Inc/main.h:
+../Inc/LTC6811.h:
 
-../Inc/dwt_delay.h:
+../Inc/main.h:

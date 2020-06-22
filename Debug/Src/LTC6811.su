@@ -1,8 +1,5 @@
-dwt_delay.h:29:6:void DWT_Init()	0	static
-dwt_delay.h:36:6:void DWT_Delay(uint32_t)	0	static
-dwt_delay.h:43:20:auto DWT_GetTicks()	0	static
 LTC6811.cpp:11:1:LTC6811::LTC6811(SPI_HandleTypeDef&, LTC6811::Mode, LTC6811::DCP, LTC6811::CellCh, LTC6811::AuxCh, LTC6811::STSCh)	32	static
-LTC6811.cpp:40:6:void LTC6811::WakeFromSleep() const	24	static
+LTC6811.cpp:40:6:void LTC6811::WakeFromSleep() const	32	static
 LTC6811.cpp:51:6:void LTC6811::WakeFromIdle() const	16	static
 LTC6811.cpp:64:6:bool LTC6811::readVoltageRegisterGroup(LTC6811::Group)	24	static
 LTC6811.cpp:77:6:bool LTC6811::readAuxRegisterGroup(LTC6811::Group)	24	static
@@ -11,7 +8,7 @@ LTC6811.cpp:97:6:bool LTC6811::readConfigRegisterGroup()	32	static
 LTC6811.cpp:104:6:bool LTC6811::writeConfigRegisterGroup(LTC6811::RegisterGroup<unsigned char>&)	24	static
 LTC6811.cpp:119:6:bool LTC6811::clearVoltageRegisterGroup()	16	static
 LTC6811.cpp:126:6:bool LTC6811::clearAuxRegisterGroup()	16	static
+LTC6811.cpp:207:47:LTC6811::RegisterGroup<unsigned char> LTC6811::makeDischargeConfig(const LTC6811::VoltageStatus&) const	72	static
+LTC6811.cpp:278:6:void LTC6811::startConversion(const Command&) const	16	static
 LTC6811.cpp:134:53:std::optional<LTC6811::VoltageStatus> LTC6811::checkVoltageStatus()	40	static
-LTC6811.cpp:167:50:std::optional<LTC6811::TempStatus> LTC6811::checkTemperatureStatus()	32	static
-LTC6811.cpp:209:47:LTC6811::RegisterGroup<unsigned char> LTC6811::makeDischargeConfig(const LTC6811::VoltageStatus&) const	72	static
-LTC6811.cpp:277:6:void LTC6811::startConversion(const Command&) const	16	static
+LTC6811.cpp:166:50:std::optional<LTC6811::TempStatus> LTC6811::checkTemperatureStatus()	32	static

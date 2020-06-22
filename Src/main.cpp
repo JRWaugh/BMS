@@ -106,13 +106,13 @@ extern "C" { void HAL_IncTick(void) {
     uwTick += uwTickFreq;
 
     if (status != nullptr)
-        ++status->tick;
+        status->tick();
 
     if (ivt != nullptr)
-        ++ivt->tick;
+        ++ivt->tick; // This isn't a function but should be.
 
     if (nlg5 != nullptr)
-        nlg5->tick(); // This is a function unlike the other two. The other two should also be functions.
+        nlg5->tick();
 }}
 /* USER CODE END 0 */
 
@@ -188,7 +188,7 @@ int main(void)
             auto const temp_status_opt = ltc6811->checkTemperatureStatus();
 
             if (!status->isError(Status::PECError, !voltage_status_opt.has_value()) && !status->isError(Status::PECError, !temp_status_opt.has_value())) {
-                auto const voltage_status = voltage_status_opt.value();
+                auto const voltage_status = voltage_status_opt.value(); // Hopefully the compiler is clever enough to know that no exception handling is needed here.
                 auto const temp_status = temp_status_opt.value();
 
                 status->isError(Status::Limping, voltage_status.min < Status::kLimpMinVoltage);
@@ -197,14 +197,12 @@ int main(void)
                 if (pwm_fan->getMode() == PWM_Fan::Automatic)
                     pwm_fan->setDutyCycle(PWM_Fan::calcDutyCycle(temp_status.max));
 
-                if (op_mode & Status::Balance) {
-                    auto cfg_register_group = ltc6811->makeDischargeConfig(voltage_status);
-                    ltc6811->writeConfigRegisterGroup(cfg_register_group);
-                }
+                if (op_mode & Status::Balance)
+                    ltc6811->writeConfigRegisterGroup(ltc6811->makeDischargeConfig(voltage_status));
 
 #if CHECK_IVT
                 if (!ivt->isLost()) { // This, if anything, will be the cause of error false positives
-                    switch (ivt->prechargeCompare(voltage_status.sum)) {
+                    switch (ivt->comparePrecharge(voltage_status.sum)) {
                     case IVT::Charged:
                         status->setPrechargeState(Closed);
                         break;
@@ -286,7 +284,6 @@ int main(void)
             CANTxVoltage(ltc6811->getCellData());
             CANTxTemperature(ltc6811->getTempData());
             CANTxDCCfg(ltc6811->getSlaveCfg());
-            CANTxStatus();
         }
 #endif
 #endif
@@ -304,7 +301,7 @@ int main(void)
                 // Magic number below is probably 500MiB
                 if (f_size(&SDFile) < 524288000 && f_open(&SDFile, kFile, FA_WRITE | FA_OPEN_APPEND) == FR_OK) {
                     /* NOTE: f_printf might be pretty slow compared to f_write. */
-                    f_printf(&SDFile, "%u,", status->tick / 100); // If the uptime number seems wrong, just change or remove the / 100.
+                    f_printf(&SDFile, "%u,", status->getUptime());
                     /* ISO 8601 Notation (yyyy-mm-ddThh:mm:ss) */
                     // TODO Not implemented.
                     f_printf(&SDFile, "%02u-%02u-%02uT%02u:%02u:%02u,",
@@ -767,7 +764,7 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
                 break;
 
             case 3:
-                // TODO this didn't work on old BMS and will be different now. Worry about it at the office.
+                // TODO Not implemented. Don't know how to implement yet. Also Case 0-3 should have names.
                 // rtc_set_date_time(data);
                 break;
 
@@ -812,7 +809,7 @@ uint32_t CANTxStatus(void) {
     TxHeader.IDE = CAN_ID_STD;
     TxHeader.DLC = 8;
 
-    uint32_t uptime = status->tick / 100; // TODO petition to just give uptime in ms instead of ds
+    uint32_t uptime = status->getUptime();
 
     uint8_t data[] = {
             static_cast<uint8_t>(uptime >> 24),

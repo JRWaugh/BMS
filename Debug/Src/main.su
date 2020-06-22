@@ -1,17 +1,17 @@
 main.cpp:105:19:void HAL_IncTick()	0	static
-main.cpp:349:6:void SystemClock_Config()	192	static
+main.cpp:346:6:void SystemClock_Config()	192	static
 main.cpp:123:5:int main()	1016	static
-main.cpp:699:6:void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*)	48	static
-main.cpp:727:6:void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef*)	56	static
-main.cpp:797:10:uint32_t CAN0_Test()	24	static
-main.cpp:810:10:uint32_t CANTxStatus()	24	static
-main.cpp:834:10:uint32_t CANTxPECError()	32	static
-main.cpp:862:10:uint32_t CANTxData(uint16_t, uint16_t, int16_t)	32	static
-main.cpp:885:10:uint32_t CANTxVoltage(const std::array<std::array<LTC6811::Register<short unsigned int>, 12>, 4>&)	48	static
-main.cpp:912:10:uint32_t CANTxTemperature(const std::array<std::array<LTC6811::Register<short int>, 12>, 2>&)	48	static
-main.cpp:940:10:uint32_t CANTxVoltageLimpTotal(uint32_t, bool)	32	static
-main.cpp:964:10:uint32_t CANTxDCCfg(LTC6811::RegisterGroup<unsigned char>&)	32	static
-main.cpp:989:10:uint32_t CANTxNLGAControl()	24	static
-main.cpp:1011:10:uint32_t CANTxNLGBControl()	24	static
-main.cpp:1032:10:uint32_t CANTxVolumeSize(uint32_t)	24	static
-main.cpp:1055:6:void Error_Handler()	0	static
+main.cpp:696:6:void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*)	48	static
+main.cpp:724:6:void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef*)	56	static
+main.cpp:794:10:uint32_t CAN0_Test()	24	static
+main.cpp:807:10:uint32_t CANTxStatus()	24	static
+main.cpp:831:10:uint32_t CANTxPECError()	24	static
+main.cpp:859:10:uint32_t CANTxData(uint16_t, uint16_t, int16_t)	32	static
+main.cpp:882:10:uint32_t CANTxVoltage(const std::array<std::array<LTC6811::Register<short unsigned int>, 12>, 4>&)	48	static
+main.cpp:909:10:uint32_t CANTxTemperature(const std::array<std::array<LTC6811::Register<short int>, 12>, 2>&)	48	static
+main.cpp:937:10:uint32_t CANTxVoltageLimpTotal(uint32_t, bool)	32	static
+main.cpp:961:10:uint32_t CANTxDCCfg(LTC6811::RegisterGroup<unsigned char>&)	32	static
+main.cpp:986:10:uint32_t CANTxNLGAControl()	24	static
+main.cpp:1008:10:uint32_t CANTxNLGBControl()	24	static
+main.cpp:1029:10:uint32_t CANTxVolumeSize(uint32_t)	24	static
+main.cpp:1052:6:void Error_Handler()	0	static

@@ -16,12 +16,10 @@ C_SRCS += \
 
 CPP_SRCS += \
 ../Src/LTC6811.cpp \
-../Src/Status.cpp \
 ../Src/main.cpp 
 
 OBJS += \
 ./Src/LTC6811.o \
-./Src/Status.o \
 ./Src/bsp_driver_sd.o \
 ./Src/fatfs.o \
 ./Src/fatfs_platform.o \
@@ -46,15 +44,12 @@ C_DEPS += \
 
 CPP_DEPS += \
 ./Src/LTC6811.d \
-./Src/Status.d \
 ./Src/main.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
 Src/LTC6811.o: ../Src/LTC6811.cpp
 	arm-none-eabi-g++ -std=gnu++17 "$<" -mcpu=cortex-m4 -g3 -DUSE_HAL_DRIVER -DSTM32F446xx -DDEBUG -c -I../Inc -I../Drivers/CMSIS/Include -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Middlewares/Third_Party/FatFs/src -O3 -ffunction-sections -fdata-sections -fno-exceptions -fno-rtti -fno-threadsafe-statics -fno-use-cxa-atexit -Wall -std=gnu++17 -fstack-usage -MMD -MP -MF"Src/LTC6811.d" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
-Src/Status.o: ../Src/Status.cpp
-	arm-none-eabi-g++ -std=gnu++17 "$<" -mcpu=cortex-m4 -g3 -DUSE_HAL_DRIVER -DSTM32F446xx -DDEBUG -c -I../Inc -I../Drivers/CMSIS/Include -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Middlewares/Third_Party/FatFs/src -O3 -ffunction-sections -fdata-sections -fno-exceptions -fno-rtti -fno-threadsafe-statics -fno-use-cxa-atexit -Wall -std=gnu++17 -fstack-usage -MMD -MP -MF"Src/Status.d" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
 Src/bsp_driver_sd.o: ../Src/bsp_driver_sd.c
 	arm-none-eabi-gcc "$<" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F446xx -DDEBUG -c -I../Inc -I../Drivers/CMSIS/Include -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Middlewares/Third_Party/FatFs/src -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Src/bsp_driver_sd.d" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
 Src/fatfs.o: ../Src/fatfs.c

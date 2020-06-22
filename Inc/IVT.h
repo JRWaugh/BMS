@@ -23,7 +23,7 @@ public:
     std::atomic<float> I;  // Current.
     std::atomic<uint32_t> tick{ 0 }; // Time in milliseconds.
 
-    [[nodiscard]] int prechargeCompare(uint32_t const sum_of_cells) const noexcept {
+    [[nodiscard]] int comparePrecharge(uint32_t const sum_of_cells) const noexcept {
         float percentage = U1 * 100 / U2;
         float match_percentage = U2 * 100 / sum_of_cells - 100;
         bool voltage_match = match_percentage < kHysteresis && match_percentage > -kHysteresis;
