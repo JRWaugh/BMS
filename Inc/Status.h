@@ -11,7 +11,6 @@
 #include "stm32f4xx_hal.h"
 #include "main.h"
 #include <ctime>
-#include <atomic>
 
 /* * * Debug functionality enable/disable * * */
 #define BMS_RELAY_CTRL_BYPASS		0
@@ -151,14 +150,14 @@ public:
         /* Put anything else you want to happen inside this class each systick (every millisecond) */
     }
 
-    struct tm rtc{ 0 };
+    struct tm volatile rtc{ 0 };
 
 private:
-    uint8_t mOpMode;
+    uint8_t volatile mOpMode;
     Error mLastError{ NoError };
     State mPreState;
     State mAIRState;
-    std::atomic<uint32_t> mCounter{ 0 }; // time in ms
+    uint32_t volatile mCounter{ 0 }; // time in ms
 
     Counter mErrorCounters[NumberOfErrors] {
         [NoError] = Counter{ 0 },

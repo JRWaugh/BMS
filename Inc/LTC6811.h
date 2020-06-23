@@ -108,7 +108,7 @@ public:
 private:
     SPI_HandleTypeDef& hspi;
 
-    DischargeMode discharge_mode{ GTMinPlusDelta };
+    DischargeMode volatile discharge_mode{ GTMinPlusDelta };
 
     RegisterGroup<uint8_t> slave_cfg_rx;
     std::array<RegisterGroup<uint16_t>, 4> cell_data;

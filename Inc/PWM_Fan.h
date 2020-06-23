@@ -48,7 +48,7 @@ public:
     }
 
 private:
-    Mode mode{ Automatic };
+    Mode volatile mode{ Automatic };
 
     static constexpr uint8_t kMinDutyCycle{ 0 };
     static constexpr uint8_t kLowDutyCycle{ 10 };

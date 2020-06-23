@@ -109,7 +109,7 @@ extern "C" { void HAL_IncTick(void) {
         status->tick();
 
     if (ivt != nullptr)
-        ++ivt->tick; // This isn't a function but should be.
+        ivt->tick();
 
     if (nlg5 != nullptr)
         nlg5->tick();
@@ -227,13 +227,13 @@ int main(void)
                         !status->isError(Status::IVTLost, ivt->isLost()) &
 #endif
 #if TEST_OVERPOWER
-                        !status->isError(Status::OverPower, voltage_status.sum * ivt->I > Status::kMaxPower) &
+                        !status->isError(Status::OverPower, voltage_status.sum * ivt->getCurrent() > Status::kMaxPower) &
 #endif
 #if TEST_OVERCURRENT
-                        !status->isError(Status::OverCurrent, ivt->I > Status::kMaxCurrent) &
+                        !status->isError(Status::OverCurrent, ivt->getCurrent() > Status::kMaxCurrent) &
 #endif
 #if TEST_ACCU_UNDERVOLTAGE
-                        !status->isError(Status::AccuUnderVoltage, ivt->U2 < Status::kAccuMinVoltage) &
+                        !status->isError(Status::AccuUnderVoltage, ivt->getVoltage2() < Status::kAccuMinVoltage) &
 #endif
 #endif
 #if TEST_UNDERVOLTAGE
@@ -700,18 +700,15 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
     if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &RxHeader, data) == HAL_OK) {
         switch(static_cast<CAN0_ID>(RxHeader.StdId)) {
         case IVT_I:
-            ivt->I = static_cast<int32_t>(data[2] << 24 | data[3] << 16 | data[4] << 8 | data[5]) / 1000.0f;
-            ivt->tick = 0;
+            ivt->setCurrent(static_cast<int32_t>(data[2] << 24 | data[3] << 16 | data[4] << 8 | data[5]) / 1000.0f);
             break;
 
         case IVT_U1:
-            ivt->U1 = static_cast<int32_t>(data[2] << 24 | data[3] << 16 | data[4] << 8 | data[5]) / 1000.0f;
-            ivt->tick = 0;
+            ivt->setVoltage1(static_cast<int32_t>(data[2] << 24 | data[3] << 16 | data[4] << 8 | data[5]) / 1000.0f);
             break;
 
         case IVT_U2:
-            ivt->U2 = static_cast<int32_t>(data[2] << 24 | data[3] << 16 | data[4] << 8 | data[5]) / 1000.0f;
-            ivt->tick = 0;
+            ivt->setVoltage2(static_cast<int32_t>(data[2] << 24 | data[3] << 16 | data[4] << 8 | data[5]) / 1000.0f);
             break;
 
         default:
@@ -861,7 +858,7 @@ uint32_t CANTxData(uint16_t const v_min, uint16_t const v_max, int16_t const t_m
     TxHeader.IDE = CAN_ID_STD;
     TxHeader.DLC = 8;
 
-    uint16_t U1 = static_cast<uint16_t>(ivt->U1); // TODO this is bad
+    uint16_t U1 = static_cast<uint16_t>(ivt->getVoltage1()); // TODO this is bad
     uint8_t data[] = {
             static_cast<uint8_t>(U1 >> 8),
             static_cast<uint8_t>(U1 >> 0),
