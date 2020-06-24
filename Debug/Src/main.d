@@ -36,8 +36,8 @@ Src/main.o: ../Src/main.cpp ../Inc/main.h \
  ../Middlewares/Third_Party/FatFs/src/ff_gen_drv.h \
  ../Middlewares/Third_Party/FatFs/src/diskio.h \
  ../Middlewares/Third_Party/FatFs/src/ff.h ../Inc/sd_diskio.h \
- ../Inc/IVT.h ../Inc/Status.h ../Inc/NLG5.h ../Inc/LTC6811.h \
- ../Inc/PWM_Fan.h
+ ../Inc/IVT.h ../Inc/NVICMutex.h ../Inc/Status.h ../Inc/NLG5.h \
+ ../Inc/LTC6811.h ../Inc/PWM_Fan.h ../Inc/DWTWrapper.h
 
 ../Inc/main.h:
 
@@ -127,6 +127,8 @@ Src/main.o: ../Src/main.cpp ../Inc/main.h \
 
 ../Inc/IVT.h:
 
+../Inc/NVICMutex.h:
+
 ../Inc/Status.h:
 
 ../Inc/NLG5.h:
@@ -134,3 +136,5 @@ Src/main.o: ../Src/main.cpp ../Inc/main.h \
 ../Inc/LTC6811.h:
 
 ../Inc/PWM_Fan.h:
+
+../Inc/DWTWrapper.h:

@@ -28,6 +28,7 @@
 #include "NLG5.h"
 #include "LTC6811.h"
 #include "PWM_Fan.h"
+#include "DWTWrapper.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -194,11 +195,15 @@ int main(void)
                 status->isError(Status::Limping, voltage_status.min < Status::kLimpMinVoltage);
                 nlg5->setChargeCurrent(voltage_status.max);
 
-                if (pwm_fan->getMode() == PWM_Fan::Automatic)
-                    pwm_fan->setDutyCycle(PWM_Fan::calcDutyCycle(temp_status.max));
+                if (pwm_fan->getMode() == PWM_Fan::Automatic) {
+                    auto duty_cycle = PWM_Fan::calcDutyCycle(temp_status.max);
+                    pwm_fan->setDutyCycle(duty_cycle);
+                }
 
-                if (op_mode & Status::Balance)
-                    ltc6811->writeConfigRegisterGroup(ltc6811->makeDischargeConfig(voltage_status));
+                if (op_mode & Status::Balance) {
+                    auto discharge_config = ltc6811->makeDischargeConfig(voltage_status);
+                    ltc6811->writeConfigRegisterGroup(discharge_config);
+                }
 
 #if CHECK_IVT
                 if (!ivt->isLost()) { // This, if anything, will be the cause of error false positives
@@ -936,8 +941,7 @@ uint32_t CANTxVoltageLimpTotal(uint32_t const sum_of_cells, bool const limping) 
     TxHeader.IDE = CAN_ID_STD;
     TxHeader.DLC = 8;
 
-    uint8_t data[8]{
-        // Swap endian-ness of SOC value
+    uint8_t data[8] {
         static_cast<uint8_t>(sum_of_cells >> 24),
                 static_cast<uint8_t>(sum_of_cells >> 16),
                 static_cast<uint8_t>(sum_of_cells >>  8),

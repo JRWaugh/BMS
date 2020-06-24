@@ -50,18 +50,18 @@ public:
     };
 
     /* Conversion mode */
-    enum Mode { Fast = 1, Normal, Filtered };
-    /* Conversion channels */
+    enum Mode   { Fast = 1, Normal, Filtered };
+    /* Cell Conversion Channels */
     enum CellCh { AllCell, OneAndSeven, TwoAndEight, ThreeAndNine, FourAndTen, FiveAndEleven, SixAndTwelve };
-    /* Conversion channels */
+    /* Aux Conversion Channels */
     enum AuxCh  { AllAux, GPIO1, GPIO2, GPIO3, GPIO4, GPIO5, VREF2 };
-    /* Conversion channels */
+    /* Status Conversion Channels */
     enum STSCh  { AllStat, SOC, ITMP, VA, VD };
     /* Controls if Discharging transistors are enabled or disabled during Cell conversions. */
-    enum DCP { Disabled, Enabled };
-
-    enum Group { A, B, C, D };
-
+    enum DCP    { Disabled, Enabled };
+    /* Register Groups */
+    enum Group  { A, B, C, D };
+    /* Behaviour when building discharge config */
     enum DischargeMode { GTMinPlusDelta, MaxOnly, GTMeanPlusDelta };
 
     LTC6811(SPI_HandleTypeDef& hspi, Mode mode = Mode::Normal, DCP dcp = DCP::Disabled,

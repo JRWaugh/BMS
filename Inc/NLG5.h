@@ -9,6 +9,7 @@
 #define NLG5_H_
 
 #include "stm32f4xx_hal.h"
+#include "NVICMutex.h"
 
 struct NLG5 {
     /*** Bit definitions in NLG5 Control Bitmap (NLG5_CTLB) ***/
@@ -23,25 +24,27 @@ struct NLG5 {
             ctrl = C_C_EN;
     }
 
-
-
     void tick() noexcept {
         /* Every fifth time the timeout occurs, ctrl is set to a reset command if charger is in fault state. Otherwise it is set to a charge command.
          * NOTE: It would be nicer if the NLG5 class had a reference to the CAN struct and sent this stuff itself when it was ready. */
+
+        /* Disable interrupts for the duration of this function call */
+        NVICMutex const nvicMutex;
+
         if (++counter >= kChargerEventTimeout) {
             /* This code used to check the below condition and put the charger event stuff in an else if
              * I'm not sure if I inverted the condition properly, which is why this comment is here! */
 #if OLDCODE
-            if ((a_buffer[0] == 136 || a_buffer[0] == 152) && (b_buffer[0] == 136 || b_buffer[0] == 152))
+            if ((a_buffer[0] == 136 || a_buffer[0] == 152) && (b_buffer[0] == 136 || b_buffer[0] == 152)) {}
 #endif
-                if ((a_buffer[0] != 136 && a_buffer[0] != 152) || (b_buffer[0] != 136 && b_buffer[0] != 152)) {
-                    if (++event_counter >= 5) {
-                        ctrl = C_C_EL;
-                        event_counter = 0;
-                    } else {
-                        ctrl = C_C_EN;
-                    }
+            if ((a_buffer[0] != 136 && a_buffer[0] != 152) || (b_buffer[0] != 136 && b_buffer[0] != 152)) {
+                if (++event_counter >= 5) {
+                    ctrl = C_C_EL;
+                    event_counter = 0;
+                } else {
+                    ctrl = C_C_EN;
                 }
+            }
 
             counter = 0;
             charger_flag = true;
@@ -49,7 +52,7 @@ struct NLG5 {
     }
 
     [[nodiscard]] bool isChargerEvent() noexcept {
-        // Basically working like a 1-item queue.
+        // Basically working like a 1-item queue. This is a consequence of this class not sending CAN messages itself when ready.
         bool previous = charger_flag;
 
         charger_flag = false;

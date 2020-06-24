@@ -33,7 +33,6 @@ LTC6811::LTC6811(SPI_HandleTypeDef& hspi, Mode mode, DCP dcp, CellCh cell, AuxCh
     ADSTAT[2] = static_cast<uint8_t>(PEC >> 8);
     ADSTAT[3] = static_cast<uint8_t>(PEC);
 
-    DWTWrapper::getInstance().init();
     WakeFromSleep(); // NOTE: Takes 2.2s to fall asleep so if this has to be called after this, we have problems
 }
 
