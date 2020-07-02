@@ -9,7 +9,7 @@
 #define PWMFAN_H_
 
 #include "stm32f4xx_hal.h"
-
+#include <algorithm>
 class PWM_Fan {
 public:
     enum Mode { Manual, Automatic };
@@ -18,16 +18,11 @@ public:
         setDutyCycle(duty_cycle);
     }
 
-    void setDutyCycle(uint8_t duty_cycle) const noexcept {
-        if (duty_cycle > kMaxDutyCycle)
-            duty_cycle = kMaxDutyCycle;
-        else if (duty_cycle < kMinDutyCycle)
-            duty_cycle = kMinDutyCycle;
-
+    void setDutyCycle(uint8_t const duty_cycle) const noexcept {
         /* PWM period is 20000 cycles, so the duty cycle is:
          * (duty_cycle / 100) * 20000 or, duty_cycle * 200
          * TODO: This is probably not working right! */
-        TIM2->CCR4 = duty_cycle * 200;
+        TIM2->CCR4 = std::clamp(duty_cycle, kMinDutyCycle, kMaxDutyCycle) * 200;
     }
 
     [[nodiscard]] static uint8_t calcDutyCycle(int16_t const max_temp) noexcept {
@@ -36,8 +31,9 @@ public:
         else if (max_temp < kLowTemp)
             return kLowDutyCycle;
         else
-            return kM * max_temp + kB; // y = mx + b. From old BMS code, not sure if it's good.
-    };
+            return kM * max_temp + kB;
+
+    }
 
     void setMode(Mode const mode) noexcept {
         this->mode = mode;

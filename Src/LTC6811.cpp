@@ -226,8 +226,8 @@ bool LTC6811::clearAuxRegisterGroup() noexcept {
             --current_ic;
 
             IC.data[0] = 0xFE;
-            IC.data[4] = DCCx & 0xFF;
-            IC.data[5] = DCCx >> 8 & 0xF;
+            IC.data[4] = DCCx >> 0 & 0xFF;
+            IC.data[5] = DCCx >> 8 & 0x0F;
             IC.PEC = PEC15Calc(IC.data);
         } // 12 * 12 = 144 voltages associated with the entire daisy chain
         break;
@@ -238,8 +238,8 @@ bool LTC6811::clearAuxRegisterGroup() noexcept {
             DCCx |= 1 << voltage_status.max_id % 11;
 
             cfg_register_group[current_ic].data[0] = 0xFE;
-            cfg_register_group[current_ic].data[4] = DCCx & 0xFF;
-            cfg_register_group[current_ic].data[5] = DCCx >> 8 & 0xF;
+            cfg_register_group[current_ic].data[4] = DCCx >> 0 & 0xFF;
+            cfg_register_group[current_ic].data[5] = DCCx >> 8 & 0x0F;
             cfg_register_group[current_ic].PEC = PEC15Calc(cfg_register_group[current_ic].data);
         }
         break;
@@ -261,8 +261,8 @@ bool LTC6811::clearAuxRegisterGroup() noexcept {
             --current_ic;
 
             IC.data[0] = 0xFE;
-            IC.data[4] = DCCx & 0xFF;
-            IC.data[5] = DCCx >> 8 & 0xF;
+            IC.data[4] = DCCx >> 0 & 0xFF;
+            IC.data[5] = DCCx >> 8 & 0x0F;
             IC.PEC = PEC15Calc(IC.data);
         }
     }

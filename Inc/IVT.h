@@ -8,7 +8,7 @@
 #ifndef IVT_H_
 #define IVT_H_
 
-#include "NVICMutex.h"
+#include <atomic>
 
 class IVT {
 public:
@@ -21,9 +21,9 @@ public:
         static constexpr float kPrechargeMaxEndVoltage{ 450.0f };
         static constexpr uint8_t kHysteresis{ 10 };
 
-        float percentage = U1 * 100 / U2;
-        float match_percentage = U2 * 100 / sum_of_cells - 100;
-        bool is_voltage_match = match_percentage < kHysteresis && match_percentage > -kHysteresis;
+        float const percentage = U1 * 100 / U2;
+        float const match_percentage = U2 * 100 / sum_of_cells - 100;
+        bool const is_voltage_match = match_percentage < kHysteresis && match_percentage > -kHysteresis;
 
         if (percentage >= 95 && is_voltage_match && U1 > kPrechargeMinStartVoltage && U2 > kPrechargeMinStartVoltage)
             return Charged;
@@ -34,8 +34,6 @@ public:
     }
 
     void setCurrent(float const I) noexcept {
-        NVICMutex const nvicMutex; // Disable interrupts for the duration of this function
-
         this->I = I;
         mCounter = 0;
     }
@@ -45,8 +43,6 @@ public:
     }
 
     void setVoltage1(float const U1) noexcept {
-        NVICMutex const nvicMutex;
-
         this->U1 = U1;
         mCounter = 0;
     }
@@ -56,8 +52,6 @@ public:
     }
 
     void setVoltage2(float const U2) noexcept {
-        NVICMutex const nvicMutex;
-
         this->U2 = U2;
         mCounter = 0;
     }
@@ -69,7 +63,10 @@ public:
     void tick() noexcept {
         ++mCounter;
 
-        /* Put anything else you want to happen inside this class each systick (every millisecond) */
+        /* Put anything else you want to happen inside this class each systick.
+         * Remember, anything changed inside this function MUST be either:
+         * volatile, if it is being either read from or written to separately, or
+         * atomic, if it is being read from and written to at the same time (such as with the increment operator). */
     }
 
     [[nodiscard]] uint32_t getTicks() const noexcept {
@@ -87,7 +84,7 @@ private:
     float volatile U1; // Voltage1. pre in old code.
     float volatile U2; // Voltage2. air_p in old code.
     float volatile I;  // Current.
-    uint32_t volatile mCounter{ 0 }; // Time in milliseconds.
+    std::atomic<uint32_t> mCounter{ 0 }; // Time in milliseconds.
 };
 
 #endif /* IVT_H_ */

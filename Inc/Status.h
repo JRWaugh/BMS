@@ -11,6 +11,8 @@
 #include "stm32f4xx_hal.h"
 #include "main.h"
 #include <ctime>
+#include <atomic>
+#include "Counter.h"
 
 /* * * Debug functionality enable/disable * * */
 #define BMS_RELAY_CTRL_BYPASS		0
@@ -23,41 +25,7 @@ enum State : bool {
     Open, Closed
 };
 
-class Counter {
-public:
-    Counter(uint16_t const limit) : count{ 0 }, limit{ limit } {}
-
-    Counter& incrementBy(uint16_t const amount) noexcept {
-        // Not guarding against overflow here.
-        count += amount;
-
-        return *this;
-    }
-
-    Counter& decrementBy(uint16_t const amount) noexcept {
-        if (amount >= count) {
-            count = 0;
-        } else {
-            count -= amount;
-        }
-
-        return *this;
-    }
-
-    [[nodiscard]] bool isOverLimit() const noexcept {
-        return count > limit;
-    }
-
-    [[nodiscard]] auto getCount() const noexcept {
-        return count;
-    }
-
-private:
-    uint16_t count;
-    uint16_t const limit;
-};
-
-struct Status {
+class Status {
 public:
     enum Error : uint8_t {
         NoError, OverVoltage, UnderVoltage, Limping, OverTemp, UnderTemp, OverCurrent,
@@ -84,7 +52,7 @@ public:
         mOpMode = opMode;
     }
 
-    [[nodiscard]] uint8_t getOpMode(void) const noexcept {
+    [[nodiscard]] uint8_t getOpMode() const noexcept {
         return mOpMode;
     }
 
@@ -95,7 +63,7 @@ public:
         mPreState = preState;
     }
 
-    [[nodiscard]] State getPrechargeState(void) const noexcept {
+    [[nodiscard]] State getPrechargeState() const noexcept {
         return mPreState;
     }
 
@@ -106,20 +74,21 @@ public:
         mAIRState = AIRState;
     }
 
-    [[nodiscard]] State getAIRState(void) const noexcept {
+    [[nodiscard]] State getAIRState() const noexcept {
         return mAIRState;
     }
 
     bool isError(Error const e, bool const error) noexcept {
         if (error) {
-            if (mErrorCounters[e].incrementBy(1).isOverLimit()) {
+            ++mErrorCounters[e];
+            if (mErrorCounters[e].isOverLimit()) {
                 if (e == Limping)
-                    mErrorCounters[e].incrementBy(9); // Add some amount to the counter when limping so that it takes some time to return to non-limping
+                    mErrorCounters[e] += 9; // Add some amount to the counter when limping so that it takes some time to return to non-limping
                 else
                     goToSafeState(e); // This function call is the most glaring, ugly side-effect in the entire BMS. Should not be hidden away like this.
             }
         } else {
-            mErrorCounters[e].decrementBy(1);
+            --mErrorCounters[e];
         }
 
         return error;
@@ -133,21 +102,24 @@ public:
         return mErrorCounters[e].isOverLimit();
     }
 
-    [[nodiscard]] uint8_t getLastError(void) const noexcept {
+    [[nodiscard]] uint8_t getLastError() const noexcept {
         return mLastError;
     }
 
     [[nodiscard]] uint32_t getUptime() const noexcept {
         /* TODO:
-         * This function is returning time in centiseconds, because that's what it seemed like it was doing on the old BMS.
+         * This function is returning time in deciseconds, because that's what it seemed like it was doing on the old BMS.
          * If this is wrong, remove the divisor to return milliseconds, or divide by 1000 to return seconds. */
-        return mCounter / 100;
+        return mCounter / 10;
     }
 
     void tick() noexcept {
         ++mCounter;
 
-        /* Put anything else you want to happen inside this class each systick (every millisecond) */
+        /* Put anything else you want to happen inside this class each systick.
+         * Remember, anything changed inside this function MUST be either:
+         * volatile, if it is being either read from or written to separately, or
+         * atomic, if it is being read from and written to at the same time (such as with the increment operator). */
     }
 
     struct tm volatile rtc{ 0 };
@@ -157,7 +129,7 @@ private:
     Error mLastError{ NoError };
     State mPreState;
     State mAIRState;
-    uint32_t volatile mCounter{ 0 }; // time in ms
+    std::atomic<uint32_t> mCounter{ 0 }; // time in ms
 
     Counter mErrorCounters[NumberOfErrors] {
         [NoError] = Counter{ 0 },

@@ -36,9 +36,25 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-enum {
-    Success = 0, Fail
+enum { Success, Fail };
+
+enum CAN0_ID {
+    TMPTesting = 77,
+    IVT_I = 0x521, IVT_U1, IVT_U2, IVT_U3, IVT_T, IVT_W, IVT_As // From https://www.isabellenhuette.de/fileadmin/Daten/Praezisionsmesstechnik/Datasheet_IVT-S.pdf
 };
+enum CAN1_ID {
+    OpMode = 8, PECError, Data, VoltTotal,
+    NLGAStat = 1552,
+    NLGACtrl = 1560,
+    NLGBStat = 1568,
+    NLGBCtrl = 1576,
+    Setting = 1902,
+    DishB = 1909,
+    Volt = 1912,
+    Temp = 1948,
+    LoggerReq = 1972, LoggerResp
+};
+
 /* USER CODE BEGIN PV */
 /* USER CODE END ET */
 

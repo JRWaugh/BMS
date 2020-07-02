@@ -33,23 +33,6 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-enum CAN0_ID {
-    TMPTesting = 77,
-    IVT_I = 1313, IVT_U1, IVT_U2, IVT_U3, IVT_T, IVT_P, IVT_E
-};
-enum CAN1_ID {
-    OpMode = 8, PECError, Data, VoltTotal,
-    NLGAStat = 1552,
-    NLGACtrl = 1560,
-    NLGBStat = 1568,
-    NLGBCtrl = 1576,
-    SpamStart = 1900,
-    Setting = 1902,
-    DishB = 1909,
-    Volt = 1912,
-    Temp = 1948,
-    SpamEnd = 1971, LoggerReq, LoggerResp
-};
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -58,7 +41,6 @@ enum CAN1_ID {
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-static constexpr auto kDirectory = "/hpf20";
 static constexpr auto kFile = "/hpf20/data.txt";
 /* USER CODE END PM */
 
@@ -71,12 +53,13 @@ SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN PV */
 TIM_HandleTypeDef htim2;
-CAN_TxHeaderTypeDef TxHeader;
+CAN_TxHeaderTypeDef TxHeader{ 0, 0, CAN_ID_STD, CAN_RTR_DATA, 8, DISABLE };
 NLG5* nlg5{ nullptr };
 Status* status{ nullptr };
 LTC6811* ltc6811{ nullptr };
 IVT* ivt{ nullptr };
 PWM_Fan* pwm_fan{ nullptr };
+uint32_t mailbox{ 0 };
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -88,16 +71,14 @@ static void MX_SDIO_SD_Init(void);
 static void MX_SPI1_Init(void);
 /* USER CODE BEGIN PFP */
 static void MX_TIM2_Init(void);
-uint32_t CAN0_Test(void);
+uint32_t CANTxTest(void);
 uint32_t CANTxData(uint16_t const v_min, uint16_t const v_max, int16_t const t_max);
 uint32_t CANTxVoltageLimpTotal(uint32_t const sum_of_cells, bool const limping);
-uint32_t CANTxDCCfg(const LTC6811::RegisterGroup<uint8_t>& slave_cfg_rx);
-uint32_t CANTxVoltage(const std::array<LTC6811::RegisterGroup<uint16_t>, 4>& cell_data);
-uint32_t CANTxTemperature(const std::array<LTC6811::RegisterGroup<int16_t>, 2>& temp_data);
+uint32_t CANTxDCCfg(LTC6811::RegisterGroup<uint8_t> const& slave_cfg_rx);
+uint32_t CANTxVoltage(std::array<LTC6811::RegisterGroup<uint16_t>, 4> const& cell_data);
+uint32_t CANTxTemperature(std::array<LTC6811::RegisterGroup<int16_t>, 2> const& temp_data);
 uint32_t CANTxStatus(void);
 uint32_t CANTxPECError(void);
-uint32_t CANTxNLGAControl(void);
-uint32_t CANTxNLGBControl(void);
 uint32_t CANTxVolumeSize(uint32_t const size_of_log);
 /* USER CODE END PFP */
 
@@ -106,14 +87,15 @@ uint32_t CANTxVolumeSize(uint32_t const size_of_log);
 extern "C" { void HAL_IncTick(void) {
     uwTick += uwTickFreq;
 
-    if (status != nullptr)
+    if (status != nullptr) {
         status->tick();
+
+        if (nlg5 != nullptr && status->getOpMode() & Status::Charging)
+            nlg5->tick();
+    }
 
     if (ivt != nullptr)
         ivt->tick();
-
-    if (nlg5 != nullptr)
-        nlg5->tick();
 }}
 /* USER CODE END 0 */
 
@@ -146,23 +128,22 @@ int main(void)
 
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
+    MX_FATFS_Init();
     MX_CAN1_Init();
     MX_CAN2_Init();
     MX_SDIO_SD_Init();
     MX_SPI1_Init();
     MX_TIM2_Init();
-    MX_FATFS_Init();
 
     /* USER CODE BEGIN 2 */
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
+    HAL_CAN_ActivateNotification(&hcan1, CAN_IT_TX_MAILBOX_EMPTY | CAN_IT_RX_FIFO0_MSG_PENDING | CAN_IT_RX_FIFO1_MSG_PENDING);
 
-    nlg5 = new NLG5;
+    nlg5 = new NLG5(hcan1, TxHeader);
     ivt = new IVT;
     status = new Status(Status::Core | Status::Logging);
     ltc6811 = new LTC6811(hspi1);
     pwm_fan = new PWM_Fan;
-    f_mount(&SDFatFS, "", 0);
-    f_open(&SDFile, kFile, FA_WRITE | FA_OPEN_APPEND);
     /* USER CODE END 2 */
 
     /* Infinite loop */
@@ -181,33 +162,27 @@ int main(void)
         /* USER CODE BEGIN 3 */
         HAL_GPIO_TogglePin(Led0_GPIO_Port, Led0_Pin);
 
-        auto op_mode = status->getOpMode();
+        auto const op_mode = status->getOpMode();
 
         /*  Core routine for monitoring voltage and temperature of the cells.  */
         if (op_mode & Status::Core) {
-            auto const voltage_status_opt = ltc6811->checkVoltageStatus();
-            auto const temp_status_opt = ltc6811->checkTemperatureStatus();
+            auto const voltage_status = ltc6811->checkVoltageStatus();
+            auto const temp_status = ltc6811->checkTemperatureStatus();
 
-            if (!status->isError(Status::PECError, !voltage_status_opt.has_value()) && !status->isError(Status::PECError, !temp_status_opt.has_value())) {
-                auto const voltage_status = voltage_status_opt.value(); // Hopefully the compiler is clever enough to know that no exception handling is needed here.
-                auto const temp_status = temp_status_opt.value();
+            if (!status->isError(Status::PECError, !voltage_status) && !status->isError(Status::PECError, !temp_status)) {
+                status->isError(Status::Limping, voltage_status->min < Status::kLimpMinVoltage);
+                nlg5->setChargeCurrent(voltage_status->max);
 
-                status->isError(Status::Limping, voltage_status.min < Status::kLimpMinVoltage);
-                nlg5->setChargeCurrent(voltage_status.max);
+                if (pwm_fan->getMode() == PWM_Fan::Automatic)
+                    pwm_fan->setDutyCycle(PWM_Fan::calcDutyCycle(temp_status->max));
 
-                if (pwm_fan->getMode() == PWM_Fan::Automatic) {
-                    auto duty_cycle = PWM_Fan::calcDutyCycle(temp_status.max);
-                    pwm_fan->setDutyCycle(duty_cycle);
-                }
 
-                if (op_mode & Status::Balance) {
-                    auto discharge_config = ltc6811->makeDischargeConfig(voltage_status);
-                    ltc6811->writeConfigRegisterGroup(discharge_config);
-                }
+                if (op_mode & Status::Balance)
+                    ltc6811->writeConfigRegisterGroup(ltc6811->makeDischargeConfig(*voltage_status));
 
 #if CHECK_IVT
                 if (!ivt->isLost()) { // This, if anything, will be the cause of error false positives
-                    switch (ivt->comparePrecharge(voltage_status.sum)) {
+                    switch (ivt->comparePrecharge(voltage_status->sum)) {
                     case IVT::Charged:
                         status->setPrechargeState(Closed);
                         break;
@@ -232,7 +207,7 @@ int main(void)
                         !status->isError(Status::IVTLost, ivt->isLost()) &
 #endif
 #if TEST_OVERPOWER
-                        !status->isError(Status::OverPower, voltage_status.sum * ivt->getCurrent() > Status::kMaxPower) &
+                        !status->isError(Status::OverPower, voltage_status->sum * ivt->getCurrent() > Status::kMaxPower) &
 #endif
 #if TEST_OVERCURRENT
                         !status->isError(Status::OverCurrent, ivt->getCurrent() > Status::kMaxCurrent) &
@@ -242,19 +217,19 @@ int main(void)
 #endif
 #endif
 #if TEST_UNDERVOLTAGE
-                        !status->isError(Status::UnderVoltage, voltage_status.min < Status::kMinVoltage) &
+                        !status->isError(Status::UnderVoltage, voltage_status->min < Status::kMinVoltage) &
 #endif
 #if TEST_OVERVOLTAGE
-                        !status->isError(Status::OverVoltage, voltage_status.max > Status::kMaxVoltage) &
+                        !status->isError(Status::OverVoltage, voltage_status->max > Status::kMaxVoltage) &
 #endif
 #if TEST_UNDERTEMPERATURE
-                        !status->isError(Status::UnderTemp, temp_status.min < Status::kMinTemp) &
+                        !status->isError(Status::UnderTemp, temp_status->min < Status::kMinTemp) &
 #endif
 #if TEST_OVERTEMPERATURE
-                        !status->isError(Status::OverTemp, temp_status.max > Status::kMaxTemp) &
+                        !status->isError(Status::OverTemp, temp_status->max > Status::kMaxTemp) &
 #endif
 #if TEST_OVERTEMPERATURE_CHARGING
-                        !status->isError(Status::OverTempCharging, (op_mode & Status::Charging) && (temp_status.max > Status::kMaxChargeTemp)) &
+                        !status->isError(Status::OverTempCharging, (op_mode & Status::Charging) && (temp_status->max > Status::kMaxChargeTemp)) &
 #endif
                         true
                 ) {
@@ -264,23 +239,13 @@ int main(void)
 #endif
                 }
 #if CAN_ENABLED
-                CANTxData(voltage_status.min, voltage_status.max, temp_status.max);
-                CANTxVoltageLimpTotal(voltage_status.sum, status->isErrorOverLimit(Status::Limping));
+                CANTxData(voltage_status->min, voltage_status->max, temp_status->max);
+                CANTxVoltageLimpTotal(voltage_status->sum, status->isErrorOverLimit(Status::Limping));
 #endif
             }
 #if CAN_ENABLED
             CANTxStatus();
             CANTxPECError();
-#endif
-        }
-
-        /*  Send charger command messages on CAN bus.  */
-#if CAN_ENABLED
-        if (op_mode & Status::Charging) {
-            if (nlg5->isChargerEvent()) {
-                CANTxNLGAControl();
-                CANTxNLGBControl();
-            }
         }
 
 #if CAN_DEBUG
@@ -295,16 +260,10 @@ int main(void)
 
         /*  Log data to SD card.  */
         if (op_mode & Status::Logging) {
-            if (BSP_SD_IsDetected()) {
-                HAL_GPIO_TogglePin(Led2_GPIO_Port, Led2_Pin);
-
-                FILINFO inf;
-
-                if (f_stat(kDirectory, &inf) == FR_NO_FILE)
-                    f_mkdir(kDirectory);
-
-                // Magic number below is probably 500MiB
+            if (retSD == FR_OK) {
                 if (f_size(&SDFile) < 524288000 && f_open(&SDFile, kFile, FA_WRITE | FA_OPEN_APPEND) == FR_OK) {
+                    HAL_GPIO_TogglePin(Led2_GPIO_Port, Led2_Pin);
+
                     /* NOTE: f_printf might be pretty slow compared to f_write. */
                     f_printf(&SDFile, "%u,", status->getUptime());
                     /* ISO 8601 Notation (yyyy-mm-ddThh:mm:ss) */
@@ -314,25 +273,22 @@ int main(void)
 
                     UINT number_written{ 0 };
                     uint16_t buffer[4 * LTC6811::kDaisyChainLength * 3]{ 0 };
-
                     size_t position{ 0 };
+
                     auto const cell_data = ltc6811->getCellData();
-
-                    for (const auto& register_group : cell_data) // 4 voltage register groups
-                        for (const auto& IC : register_group) // N ICs in daisy chain, determined by kDaisyChainLength
-                            for (const auto voltage : IC.data) // 3 voltages in IC.data
+                    for (auto const& register_group : cell_data) // 4 voltage register groups
+                        for (auto const& IC : register_group) // N ICs in daisy chain, determined by kDaisyChainLength
+                            for (auto const voltage : IC.data) // 3 voltages in IC.data
                                 buffer[position++] = voltage;
-
                     f_write(&SDFile, buffer, sizeof(buffer), &number_written);
 
                     position = 0;
+
                     auto const temp_data = ltc6811->getTempData();
-
-                    for (const auto& register_group : temp_data) // 2 temperature register groups
-                        for (const auto& IC : register_group) // N ICs in daisy chain, determined by kDaisyChainLength
-                            for (const auto temperature : IC.data) // 3 temperatures in IC.data
+                    for (auto const& register_group : temp_data) // 2 temperature register groups
+                        for (auto const& IC : register_group) // N ICs in daisy chain, determined by kDaisyChainLength
+                            for (auto const temperature : IC.data) // 3 temperatures in IC.data
                                 buffer[position++] = temperature;
-
                     f_write(&SDFile, buffer, sizeof(buffer) / 2, &number_written);
 
                     f_sync(&SDFile);
@@ -409,7 +365,7 @@ static void MX_CAN1_Init(void)
     /* USER CODE END CAN1_Init 0 */
 
     /* USER CODE BEGIN CAN1_Init 1 */
-    CAN_FilterTypeDef  sFilterConfig;
+
 
     /* USER CODE END CAN1_Init 1 */
     hcan1.Instance = CAN1;
@@ -427,26 +383,20 @@ static void MX_CAN1_Init(void)
     if (HAL_CAN_Init(&hcan1) != HAL_OK)
         Error_Handler();
     /* USER CODE BEGIN CAN1_Init 2 */
-
-    sFilterConfig.FilterBank = 0;
-    sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
-    sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT; // allows two IDs to be set to one filter with IDLIST
-    sFilterConfig.FilterIdHigh = 0x0000; // first ID
-    sFilterConfig.FilterIdLow = 0x0000;
-    sFilterConfig.FilterMaskIdHigh = 0x0000; //second ID
-    sFilterConfig.FilterMaskIdLow = 0x0000; // don't think anything goes here
+    CAN_FilterTypeDef  sFilterConfig;
+    sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST;
+    sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT; // allows 4 IDs to be set to one filter with IDLIST
     sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO1;
     sFilterConfig.FilterActivation = ENABLE;
     sFilterConfig.SlaveStartFilterBank = 14;
 
-    if(HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK) {
-        /* Filter configuration Error */
-        Error_Handler();
-    }
-
-
+    sFilterConfig.FilterBank = 0;
+    sFilterConfig.FilterIdHigh = Setting << 5;
+    sFilterConfig.FilterIdLow = NLGAStat << 5;
+    sFilterConfig.FilterMaskIdHigh = NLGBStat << 5;
+    sFilterConfig.FilterMaskIdLow = LoggerReq << 5;
+    HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig);
     /* USER CODE END CAN1_Init 2 */
-
 }
 
 /**
@@ -458,7 +408,6 @@ static void MX_CAN2_Init(void)
 {
 
     /* USER CODE BEGIN CAN2_Init 0 */
-    CAN_FilterTypeDef  sFilterConfig;
     /* USER CODE END CAN2_Init 0 */
 
     /* USER CODE BEGIN CAN2_Init 1 */
@@ -481,21 +430,20 @@ static void MX_CAN2_Init(void)
         Error_Handler();
     }
     /* USER CODE BEGIN CAN2_Init 2 */
-    sFilterConfig.FilterBank = 0;
-    sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
-    sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT; // allows two IDs to be set to one filter with IDLIST
-    sFilterConfig.FilterIdHigh = 0x0000; // first ID
-    sFilterConfig.FilterIdLow = 0x0000;
-    sFilterConfig.FilterMaskIdHigh = 0x0000; //second ID
-    sFilterConfig.FilterMaskIdLow = 0x0000; // don't think anything goes here
-    sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
+    CAN_FilterTypeDef  sFilterConfig;
+    sFilterConfig.FilterBank = 14;
+    sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST;
+    sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT; // allows two IDs to be set to one filter with IDLIST
     sFilterConfig.FilterActivation = ENABLE;
+    sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
     sFilterConfig.SlaveStartFilterBank = 14;
 
-    if(HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK) {
-        /* Filter configuration Error */
-        Error_Handler();
-    }
+    sFilterConfig.FilterBank = 14;
+    sFilterConfig.FilterIdHigh = IVT_I << 5;
+    sFilterConfig.FilterIdLow = IVT_U1 << 5;
+    sFilterConfig.FilterMaskIdHigh = IVT_U2 << 5;
+    sFilterConfig.FilterMaskIdLow = IVT_U3 << 5;
+    HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig);
     /* USER CODE END CAN2_Init 2 */
 
 }
@@ -583,7 +531,9 @@ static void MX_TIM2_Init(void)
     TIM_OC_InitTypeDef sConfigOC = {0};
 
     /* USER CODE BEGIN TIM2_Init 1 */
-    /* In the code below, prescaler is 800 as 16MHz / 800 == 20kHz. */
+
+    // In the code below, prescaler is 800 as 16MHz / 800 == 20kHz.
+
     /* USER CODE END TIM2_Init 1 */
     htim2.Instance = TIM2;
     htim2.Init.Prescaler = 800;
@@ -703,7 +653,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
     uint8_t data[8]{ 0 };
 
     if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &RxHeader, data) == HAL_OK) {
-        switch(static_cast<CAN0_ID>(RxHeader.StdId)) {
+        switch(RxHeader.StdId) {
         case IVT_I:
             ivt->setCurrent(static_cast<int32_t>(data[2] << 24 | data[3] << 16 | data[4] << 8 | data[5]) / 1000.0f);
             break;
@@ -727,23 +677,23 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
     CAN_RxHeaderTypeDef RxHeader;
     uint8_t data[8]{ 0 };
 
-    if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &RxHeader, data) == HAL_OK) {
-        switch(static_cast<CAN1_ID>(RxHeader.StdId)) {
-        case CAN1_ID::NLGAStat: // possible the order of this array is backwards
+    if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO1, &RxHeader, data) == HAL_OK) {
+        switch(RxHeader.StdId) {
+        case NLGAStat: // possible the order of this array is backwards
             nlg5->a_buffer[0] = data[0];
             nlg5->a_buffer[1] = data[1];
             nlg5->a_buffer[2] = data[2];
             nlg5->a_buffer[3] = data[3];
             break;
 
-        case CAN1_ID::NLGBStat:
+        case NLGBStat:
             nlg5->b_buffer[0] = data[0];
             nlg5->b_buffer[1] = data[1];
             nlg5->b_buffer[2] = data[2];
             nlg5->b_buffer[3] = data[3];
             break;
 
-        case CAN1_ID::LoggerReq: {
+        case LoggerReq: {
             // NOTE: It's possible the switch should happen on data[0] if I got the endianness wrong.
             switch (data[3]) {
             case 0:
@@ -751,18 +701,15 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
                 break;
 
             case 1:
-                if (f_mount(&SDFatFS, "", 0) == FR_OK) {
+                if (retSD == FR_OK)
                     CANTxVolumeSize(f_size(&SDFile));
-                    f_mount(NULL, "", 0); /* Unmount */
-                } else
+                else
                     CANTxVolumeSize(0);
                 break;
 
             case 2:
-                if (f_mount(&SDFatFS, "", 0) == FR_OK) {
+                if (retSD == FR_OK)
                     f_unlink(kFile);
-                    f_mount(NULL, "", 0); /* Unmount */
-                }
                 break;
 
             case 3:
@@ -776,7 +723,7 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
             break;
         }
 
-        case CAN1_ID::Setting:
+        case Setting:
             status->setOpMode(data[2]);
             ltc6811->setDischargeMode(static_cast<LTC6811::DischargeMode>(data[3]));
             nlg5->oc_limit = data[6];
@@ -793,25 +740,23 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
     }
 }
 
-uint32_t CAN0_Test(void) {
-    TxHeader.StdId = CAN0_ID::TMPTesting;
-    TxHeader.IDE = CAN_ID_STD;
+uint32_t CAN0Test(void) {
+    TxHeader.StdId = TMPTesting;
     TxHeader.DLC = 8;
 
     uint8_t data[]{ 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA };
 
-    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
-        return Fail;
-    else
+    if (HAL_CAN_AddTxMessage(&hcan2, &TxHeader, data, &mailbox) == HAL_OK)
         return Success;
+    else
+        return Fail;
 }
 
 uint32_t CANTxStatus(void) {
-    TxHeader.StdId = CAN1_ID::OpMode;
-    TxHeader.IDE = CAN_ID_STD;
+    TxHeader.StdId = OpMode;
     TxHeader.DLC = 8;
 
-    uint32_t uptime = status->getUptime();
+    uint32_t const uptime = status->getUptime();
 
     uint8_t data[] = {
             static_cast<uint8_t>(uptime >> 24),
@@ -824,21 +769,20 @@ uint32_t CANTxStatus(void) {
             status->getAIRState()
     };
 
-    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
-        return Fail;
-    else
+    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, &mailbox) == HAL_OK)
         return Success;
+    else
+        return Fail;
 }
 
 uint32_t CANTxPECError(void) {
-    TxHeader.StdId = CAN1_ID::PECError;
-    TxHeader.IDE = CAN_ID_STD;
+    TxHeader.StdId = PECError;
     TxHeader.DLC = 8;
 
     static uint32_t last_error;
 
-    uint32_t total_error{ status->getErrorCount(Status::PECError) };
-    uint32_t error_change = total_error - last_error;
+    uint32_t const total_error{ status->getErrorCount(Status::PECError) };
+    uint32_t const error_change = total_error - last_error;
     uint8_t data[] = {
             static_cast<uint8_t>(total_error >> 24),
             static_cast<uint8_t>(total_error >> 16),
@@ -852,15 +796,14 @@ uint32_t CANTxPECError(void) {
 
     last_error = total_error;
 
-    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
-        return Fail;
-    else
+    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, &mailbox) == HAL_OK)
         return Success;
+    else
+        return Fail;
 }
 
 uint32_t CANTxData(uint16_t const v_min, uint16_t const v_max, int16_t const t_max) {
-    TxHeader.StdId = CAN1_ID::Data;
-    TxHeader.IDE = CAN_ID_STD;
+    TxHeader.StdId = Data;
     TxHeader.DLC = 8;
 
     uint16_t U1 = static_cast<uint16_t>(ivt->getVoltage1()); // TODO this is bad
@@ -875,15 +818,15 @@ uint32_t CANTxData(uint16_t const v_min, uint16_t const v_max, int16_t const t_m
             static_cast<uint8_t>(t_max >> 0)
     };
 
-    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
-        return Fail;
-    else
+    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, &mailbox) == HAL_OK)
         return Success;
+    else
+        return Fail;
+
 }
 
-uint32_t CANTxVoltage(const std::array<LTC6811::RegisterGroup<uint16_t>, 4>& cell_data) {
-    TxHeader.StdId = CAN1_ID::Volt;
-    TxHeader.IDE = CAN_ID_STD;
+uint32_t CANTxVoltage(std::array<LTC6811::RegisterGroup<uint16_t>, 4> const& cell_data) {
+    TxHeader.StdId = Volt;
     TxHeader.DLC = 8;
 
     uint8_t data[8]{ 0 };
@@ -896,7 +839,7 @@ uint32_t CANTxVoltage(const std::array<LTC6811::RegisterGroup<uint16_t>, 4>& cel
                 data[byte_position++] = static_cast<uint8_t>(voltage);
 
                 if (byte_position == 8) {
-                    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
+                    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, &mailbox) != HAL_OK)
                         return Fail;
 
                     byte_position = 0;
@@ -908,9 +851,8 @@ uint32_t CANTxVoltage(const std::array<LTC6811::RegisterGroup<uint16_t>, 4>& cel
     return Success;
 }
 
-uint32_t CANTxTemperature(const std::array<LTC6811::RegisterGroup<int16_t>, 2>& temp_data) {
-    TxHeader.StdId = CAN1_ID::Temp;
-    TxHeader.IDE = CAN_ID_STD;
+uint32_t CANTxTemperature(std::array<LTC6811::RegisterGroup<int16_t>, 2> const& temp_data) {
+    TxHeader.StdId = Temp;
     TxHeader.DLC = 8;
 
     uint8_t data[8]{ 0 };
@@ -923,7 +865,7 @@ uint32_t CANTxTemperature(const std::array<LTC6811::RegisterGroup<int16_t>, 2>& 
                 data[byte_position++] = static_cast<uint8_t>(temperature);
 
                 if (byte_position == 8) {
-                    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
+                    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, &mailbox) != HAL_OK)
                         return Fail;
 
                     byte_position = 0;
@@ -937,8 +879,7 @@ uint32_t CANTxTemperature(const std::array<LTC6811::RegisterGroup<int16_t>, 2>& 
 }
 
 uint32_t CANTxVoltageLimpTotal(uint32_t const sum_of_cells, bool const limping) {
-    TxHeader.StdId = CAN1_ID::VoltTotal;
-    TxHeader.IDE = CAN_ID_STD;
+    TxHeader.StdId = VoltTotal;
     TxHeader.DLC = 8;
 
     uint8_t data[8] {
@@ -952,16 +893,15 @@ uint32_t CANTxVoltageLimpTotal(uint32_t const sum_of_cells, bool const limping) 
                 0x0
     };
 
-    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
-        return Fail;
-    else
+    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, &mailbox) == HAL_OK)
         return Success;
+    else
+        return Fail;
 }
 
 /* Put discharge flag data on CAN bus. */
-uint32_t CANTxDCCfg(const LTC6811::RegisterGroup<uint8_t>& slave_cfg_rx) {
-    TxHeader.StdId = CAN1_ID::DishB;
-    TxHeader.IDE = CAN_ID_STD;
+uint32_t CANTxDCCfg(LTC6811::RegisterGroup<uint8_t> const& slave_cfg_rx) {
+    TxHeader.StdId = DishB;
     TxHeader.DLC = 8;
 
     uint8_t data[8]{ 0 };
@@ -972,7 +912,7 @@ uint32_t CANTxDCCfg(const LTC6811::RegisterGroup<uint8_t>& slave_cfg_rx) {
         data[byte_position++] = IC.data[4];
 
         if (byte_position == 8) {
-            if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
+            if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, &mailbox) != HAL_OK)
                 return Fail;
 
             byte_position = 0;
@@ -983,53 +923,8 @@ uint32_t CANTxDCCfg(const LTC6811::RegisterGroup<uint8_t>& slave_cfg_rx) {
     return Success;
 }
 
-/* Checks specified chargers MOB status */
-uint32_t CANTxNLGAControl(void) {
-    TxHeader.StdId = CAN1_ID::NLGACtrl;
-    TxHeader.IDE = CAN_ID_STD;
-    TxHeader.DLC = 7;
-
-    uint8_t data[7]{
-        nlg5->ctrl,
-        static_cast<uint8_t>(nlg5->mc_limit >> 8),
-        static_cast<uint8_t>(nlg5->mc_limit),
-        static_cast<uint8_t>(nlg5->ov_limit >> 8),
-        static_cast<uint8_t>(nlg5->ov_limit),
-        static_cast<uint8_t>(nlg5->oc_limit >> 8),
-        static_cast<uint8_t>(nlg5->oc_limit)
-    };
-
-    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
-        return Fail;
-    else
-        return Success;
-}
-
-// TODO This is exactly the same as the function above
-uint32_t CANTxNLGBControl(void) {
-    TxHeader.StdId = CAN1_ID::NLGBCtrl;
-    TxHeader.IDE = CAN_ID_STD;
-    TxHeader.DLC = 7;
-
-    uint8_t data[7]{
-        nlg5->ctrl,
-        static_cast<uint8_t>(nlg5->mc_limit >> 8),
-        static_cast<uint8_t>(nlg5->mc_limit),
-        static_cast<uint8_t>(nlg5->ov_limit >> 8),
-        static_cast<uint8_t>(nlg5->ov_limit),
-        static_cast<uint8_t>(nlg5->oc_limit >> 8),
-        static_cast<uint8_t>(nlg5->oc_limit)
-    };
-
-    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
-        return Fail;
-    else
-        return Success;
-}
-
 uint32_t CANTxVolumeSize(uint32_t const size_of_log) {
-    TxHeader.StdId = CAN1_ID::LoggerResp;
-    TxHeader.IDE = CAN_ID_STD;
+    TxHeader.StdId = LoggerResp;
     TxHeader.DLC = 4;
 
     uint8_t data[] = {
@@ -1039,10 +934,10 @@ uint32_t CANTxVolumeSize(uint32_t const size_of_log) {
             static_cast<uint8_t>(size_of_log >>  0)
     };
 
-    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, (uint32_t *)CAN_TX_MAILBOX0) != HAL_OK)
-        return Fail;
-    else
+    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, &mailbox) == HAL_OK)
         return Success;
+    else
+        return Fail;
 }
 /* USER CODE END 4 */
 
