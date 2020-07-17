@@ -1,15 +1,123 @@
-main.cpp:87:19:void HAL_IncTick()	32	static
-main.cpp:310:6:void SystemClock_Config()	192	static
-main.cpp:106:5:int main()	1000	static
-main.cpp:654:6:void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*)	48	static
-main.cpp:679:6:void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef*)	56	static
-main.cpp:746:10:uint32_t CAN0Test()	24	static
-main.cpp:758:10:uint32_t CANTxStatus()	24	static
-main.cpp:781:10:uint32_t CANTxPECError()	24	static
-main.cpp:808:10:uint32_t CANTxData(uint16_t, uint16_t, int16_t)	32	static
-main.cpp:831:10:uint32_t CANTxVoltage(const std::array<std::array<LTC6811::Register<short unsigned int>, 12>, 4>&)	56	static
-main.cpp:857:10:uint32_t CANTxTemperature(const std::array<std::array<LTC6811::Register<short int>, 12>, 2>&)	56	static
-main.cpp:884:10:uint32_t CANTxVoltageLimpTotal(uint32_t, bool)	24	static
-main.cpp:906:10:uint32_t CANTxDCCfg(LTC6811::RegisterGroup<unsigned char>&)	40	static
-main.cpp:929:10:uint32_t CANTxVolumeSize(uint32_t)	24	static
-main.cpp:951:6:void Error_Handler()	0	static
+atomic_base.h:80:3:constexpr std::memory_order std::operator&(std::memory_order, std::__memory_order_modifier)	16	static
+atomic:741:17:constexpr std::atomic<long unsigned int>::atomic(std::atomic<long unsigned int>::__integral_type)	16	static
+IVT.h:19:28:uint32_t IVT::comparePrecharge(uint32_t) const	32	static
+IVT.h:36:10:void IVT::setCurrent(float)	16	static
+IVT.h:41:25:float IVT::getCurrent() const	16	static
+IVT.h:45:10:void IVT::setVoltage1(float)	16	static
+IVT.h:50:25:float IVT::getVoltage1() const	16	static
+IVT.h:54:10:void IVT::setVoltage2(float)	16	static
+IVT.h:59:25:float IVT::getVoltage2() const	16	static
+IVT.h:63:10:void IVT::tick()	16	static
+IVT.h:76:24:bool IVT::isLost() const	16	static
+Counter.h:13:5:Counter::Counter(uint16_t)	16	static
+Counter.h:23:24:constexpr Counter& Counter::operator++()	16	static
+Counter.h:37:24:constexpr Counter& Counter::operator--()	16	static
+Counter.h:79:24:bool Counter::isOverLimit() const	16	static
+Counter.h:83:24:auto Counter::getCount() const	16	static
+Status.h:46:5:Status::Status(uint8_t)	16	static
+Status.h:51:10:void Status::setOpMode(uint8_t)	16	static
+Status.h:55:27:uint8_t Status::getOpMode() const	16	static
+Status.h:60:10:void Status::setPrechargeState(State)	16	static
+Status.h:66:25:State Status::getPrechargeState() const	16	static
+Status.h:71:10:void Status::setAIRState(State)	16	static
+Status.h:77:25:State Status::getAIRState() const	16	static
+Status.h:81:10:bool Status::isError(Status::Error, bool)	16	static
+Status.h:97:28:uint32_t Status::getErrorCount(Status::Error) const	16	static
+Status.h:101:24:bool Status::isErrorOverLimit(Status::Error) const	16	static
+Status.h:105:27:uint8_t Status::getLastError() const	16	static
+Status.h:109:28:uint32_t Status::getUptime() const	16	static
+Status.h:116:10:void Status::tick()	16	static
+Status.h:152:10:void Status::goToSafeState(Status::Error)	16	static
+NLG5.h:29:5:NLG5::NLG5(CAN_HandleTypeDef&, CAN_TxHeaderTypeDef&, uint16_t, uint16_t, uint16_t)	24	static
+NLG5.h:32:10:void NLG5::setChargeCurrent(uint16_t)	16	static
+NLG5.h:39:10:void NLG5::tick()	32	static
+gthr-default.h:229:1:int __gthread_key_delete(__gthread_key_t)	16	static
+LTC6811.h:102:10:void LTC6811::setDischargeMode(LTC6811::DischargeMode)	16	static
+LTC6811.h:106:31:const auto& LTC6811::getCellData() const	16	static
+LTC6811.h:107:31:const auto& LTC6811::getTempData() const	16	static
+LTC6811.h:108:31:const auto& LTC6811::getSlaveCfg() const	16	static
+PWM_Fan.h:17:5:PWM_Fan::PWM_Fan(uint8_t)	16	static
+stl_algo.h:3719:5:constexpr const _Tp& std::clamp(const _Tp&, const _Tp&, const _Tp&) [with _Tp = unsigned char]	24	static
+PWM_Fan.h:21:10:void PWM_Fan::setDutyCycle(uint8_t) const	16	static
+PWM_Fan.h:28:34:static uint8_t PWM_Fan::calcDutyCycle(int16_t)	16	static
+PWM_Fan.h:38:10:void PWM_Fan::setMode(PWM_Fan::Mode)	16	static
+PWM_Fan.h:42:24:PWM_Fan::Mode PWM_Fan::getMode() const	16	static
+main.cpp:38:35:static RTClock& RTClock::getInstance()	8	static
+main.cpp:50:10:void RTClock::tick()	16	static
+main.cpp:66:15:constexpr RTClock::RTClock()	16	static
+main.cpp:120:19:void HAL_IncTick()	8	static
+atomic_base.h:256:17:constexpr std::__atomic_base<_IntTp>::__atomic_base(std::__atomic_base<_IntTp>::__int_type) [with _ITp = long unsigned int]	16	static
+IVT.h:13:7:IVT::IVT()	16	static
+optional:715:26:constexpr std::optional<_Tp>::operator bool() const [with _Tp = LTC6811::VoltageStatus]	16	static
+optional:385:22:constexpr bool std::_Optional_base<_Tp>::_M_is_engaged() const [with _Tp = LTC6811::VoltageStatus]	16	static
+optional:715:26:constexpr std::optional<_Tp>::operator bool() const [with _Tp = LTC6811::TempStatus]	16	static
+optional:385:22:constexpr bool std::_Optional_base<_Tp>::_M_is_engaged() const [with _Tp = LTC6811::TempStatus]	16	static
+optional:394:7:constexpr const _Tp& std::_Optional_base<_Tp>::_M_get() const [with _Tp = LTC6811::VoltageStatus]	16	static
+optional:692:7:constexpr const _Tp* std::optional<_Tp>::operator->() const [with _Tp = LTC6811::VoltageStatus]	16	static
+move.h:47:5:constexpr _Tp* std::__addressof(_Tp&) [with _Tp = const LTC6811::VoltageStatus]	16	static
+optional:394:7:constexpr const _Tp& std::_Optional_base<_Tp>::_M_get() const [with _Tp = LTC6811::TempStatus]	16	static
+optional:692:7:constexpr const _Tp* std::optional<_Tp>::operator->() const [with _Tp = LTC6811::TempStatus]	16	static
+move.h:47:5:constexpr _Tp* std::__addressof(_Tp&) [with _Tp = const LTC6811::TempStatus]	16	static
+optional:700:7:constexpr const _Tp& std::optional<_Tp>::operator*() const & [with _Tp = LTC6811::VoltageStatus]	16	static
+main.cpp:141:5:int main()	272	static
+main.cpp:342:6:void SystemClock_Config()	184	static
+main.cpp:395:13:void MX_CAN1_Init()	48	static
+main.cpp:442:13:void MX_CAN2_Init()	48	static
+main.cpp:491:13:void MX_SDIO_SD_Init()	4	static
+main.cpp:519:13:void MX_SPI1_Init()	8	static
+main.cpp:557:13:void MX_TIM2_Init()	64	static
+main.cpp:618:13:void MX_GPIO_Init()	48	static
+main.cpp:683:6:void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*)	56	static
+main.cpp:708:6:void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef*)	56	static
+main.cpp:784:10:uint32_t CANTxTest()	16	static
+main.cpp:796:10:uint32_t CANTxStatus()	24	static
+main.cpp:819:10:uint32_t CANTxPECError()	24	static
+main.cpp:846:10:uint32_t CANTxData(uint16_t, uint16_t, int16_t)	32	static
+main.cpp:869:10:uint32_t CANTxVoltage(const std::array<std::array<LTC6811::Register<short unsigned int>, 1>, 4>&)	64	static
+main.cpp:895:10:uint32_t CANTxTemperature(const std::array<std::array<LTC6811::Register<short int>, 1>, 2>&)	64	static
+main.cpp:922:10:uint32_t CANTxVoltageLimpTotal(uint32_t, bool)	24	static
+main.cpp:944:10:uint32_t CANTxDCCfg(LTC6811::RegisterGroup<unsigned char>&)	48	static
+main.cpp:967:10:uint32_t CANTxVolumeSize(uint32_t)	24	static
+main.cpp:989:6:void Error_Handler()	4	static
+atomic_base.h:265:7:std::__atomic_base<_IntTp>::__int_type std::__atomic_base<_IntTp>::operator=(std::__atomic_base<_IntTp>::__int_type) [with _ITp = long unsigned int]	32	static
+atomic_base.h:295:7:std::__atomic_base<_IntTp>::__int_type std::__atomic_base<_IntTp>::operator++() [with _ITp = long unsigned int]	16	static
+atomic_base.h:258:7:std::__atomic_base<_IntTp>::operator std::__atomic_base<_IntTp>::__int_type() const [with _ITp = long unsigned int]	24	static
+Counter.h:52:31:constexpr Counter& operator+=(Counter&, Integer) [with Integer = int; typename std::enable_if<std::is_integral<_Tp>::value, int>::type <anonymous> = 0]	16	static
+atomic_base.h:295:7:std::__atomic_base<_IntTp>::__int_type std::__atomic_base<_IntTp>::operator++() [with _ITp = unsigned char]	16	static
+atomic_base.h:265:7:std::__atomic_base<_IntTp>::__int_type std::__atomic_base<_IntTp>::operator=(std::__atomic_base<_IntTp>::__int_type) [with _ITp = unsigned char]	24	static
+array:130:7:constexpr const value_type* std::array<_Tp, _Nm>::begin() const [with _Tp = std::array<LTC6811::Register<short unsigned int>, 1>; unsigned int _Nm = 4]	16	static
+array:138:7:constexpr const value_type* std::array<_Tp, _Nm>::end() const [with _Tp = std::array<LTC6811::Register<short unsigned int>, 1>; unsigned int _Nm = 4]	16	static
+array:130:7:constexpr const value_type* std::array<_Tp, _Nm>::begin() const [with _Tp = LTC6811::Register<short unsigned int>; unsigned int _Nm = 1]	16	static
+array:138:7:constexpr const value_type* std::array<_Tp, _Nm>::end() const [with _Tp = LTC6811::Register<short unsigned int>; unsigned int _Nm = 1]	16	static
+array:130:7:constexpr const value_type* std::array<_Tp, _Nm>::begin() const [with _Tp = short unsigned int; unsigned int _Nm = 3]	16	static
+array:138:7:constexpr const value_type* std::array<_Tp, _Nm>::end() const [with _Tp = short unsigned int; unsigned int _Nm = 3]	16	static
+array:130:7:constexpr const value_type* std::array<_Tp, _Nm>::begin() const [with _Tp = std::array<LTC6811::Register<short int>, 1>; unsigned int _Nm = 2]	16	static
+array:138:7:constexpr const value_type* std::array<_Tp, _Nm>::end() const [with _Tp = std::array<LTC6811::Register<short int>, 1>; unsigned int _Nm = 2]	16	static
+array:130:7:constexpr const value_type* std::array<_Tp, _Nm>::begin() const [with _Tp = LTC6811::Register<short int>; unsigned int _Nm = 1]	16	static
+array:138:7:constexpr const value_type* std::array<_Tp, _Nm>::end() const [with _Tp = LTC6811::Register<short int>; unsigned int _Nm = 1]	16	static
+array:130:7:constexpr const value_type* std::array<_Tp, _Nm>::begin() const [with _Tp = short int; unsigned int _Nm = 3]	16	static
+array:138:7:constexpr const value_type* std::array<_Tp, _Nm>::end() const [with _Tp = short int; unsigned int _Nm = 3]	16	static
+array:189:7:constexpr const value_type& std::array<_Tp, _Nm>::operator[](std::array<_Tp, _Nm>::size_type) const [with _Tp = LTC6811::Register<short unsigned int>; unsigned int _Nm = 1]	16	static
+array:189:7:constexpr const value_type& std::array<_Tp, _Nm>::operator[](std::array<_Tp, _Nm>::size_type) const [with _Tp = LTC6811::Register<short int>; unsigned int _Nm = 1]	16	static
+array:130:7:constexpr const value_type* std::array<_Tp, _Nm>::begin() const [with _Tp = LTC6811::Register<unsigned char>; unsigned int _Nm = 1]	16	static
+array:138:7:constexpr const value_type* std::array<_Tp, _Nm>::end() const [with _Tp = LTC6811::Register<unsigned char>; unsigned int _Nm = 1]	16	static
+array:189:7:constexpr const value_type& std::array<_Tp, _Nm>::operator[](std::array<_Tp, _Nm>::size_type) const [with _Tp = unsigned char; unsigned int _Nm = 6]	16	static
+array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = std::array<LTC6811::Register<short unsigned int>, 1>; unsigned int _Nm = 4]	16	static
+array:238:7:constexpr const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = std::array<LTC6811::Register<short unsigned int>, 1>; unsigned int _Nm = 4]	16	static
+array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = LTC6811::Register<short unsigned int>; unsigned int _Nm = 1]	16	static
+array:238:7:constexpr const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = LTC6811::Register<short unsigned int>; unsigned int _Nm = 1]	16	static
+array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = short unsigned int; unsigned int _Nm = 3]	16	static
+array:238:7:constexpr const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = short unsigned int; unsigned int _Nm = 3]	16	static
+array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = std::array<LTC6811::Register<short int>, 1>; unsigned int _Nm = 2]	16	static
+array:238:7:constexpr const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = std::array<LTC6811::Register<short int>, 1>; unsigned int _Nm = 2]	16	static
+array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = LTC6811::Register<short int>; unsigned int _Nm = 1]	16	static
+array:238:7:constexpr const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = LTC6811::Register<short int>; unsigned int _Nm = 1]	16	static
+array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = short int; unsigned int _Nm = 3]	16	static
+array:238:7:constexpr const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = short int; unsigned int _Nm = 3]	16	static
+array:55:7:static constexpr _Tp& std::__array_traits<_Tp, _Nm>::_S_ref(const _Tp (&)[_Nm], std::size_t) [with _Tp = LTC6811::Register<short unsigned int>; unsigned int _Nm = 1]	16	static
+array:55:7:static constexpr _Tp& std::__array_traits<_Tp, _Nm>::_S_ref(const _Tp (&)[_Nm], std::size_t) [with _Tp = LTC6811::Register<short int>; unsigned int _Nm = 1]	16	static
+array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = LTC6811::Register<unsigned char>; unsigned int _Nm = 1]	16	static
+array:238:7:constexpr const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = LTC6811::Register<unsigned char>; unsigned int _Nm = 1]	16	static
+array:55:7:static constexpr _Tp& std::__array_traits<_Tp, _Nm>::_S_ref(const _Tp (&)[_Nm], std::size_t) [with _Tp = unsigned char; unsigned int _Nm = 6]	16	static
+main.cpp:994:1:void __static_initialization_and_destruction_0(int, int)	16	static
+main.cpp:994:1:cpp)	8	static

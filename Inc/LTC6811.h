@@ -12,12 +12,14 @@
 #include "main.h"
 #include <array>
 #include <cmath>
+#include <cassert>
 #include <optional>
+#include <DWTWrapper.h>
 
 class LTC6811 {
 public:
     /* * * CELL STACK SIZE * * */
-    constexpr static size_t kDaisyChainLength{ 12 };
+    constexpr static size_t kDaisyChainLength{ 1 };
 
     /* * * TYPE DEFINITIONS * * */
     using Command = std::array<uint8_t, 4>;
@@ -64,7 +66,7 @@ public:
     /* Behaviour when building discharge config */
     enum DischargeMode { GTMinPlusDelta, MaxOnly, GTMeanPlusDelta };
 
-    LTC6811(SPI_HandleTypeDef& hspi, Mode mode = Mode::Normal, DCP dcp = DCP::Disabled,
+    LTC6811(SPI_HandleTypeDef& hspi, Mode mode = Mode::Fast, DCP dcp = DCP::Disabled,
             CellCh cell = AllCell, AuxCh aux = AllAux, STSCh sts = AllStat);
 
     void WakeFromSleep(void) const noexcept;
@@ -110,10 +112,10 @@ private:
 
     DischargeMode volatile discharge_mode{ GTMinPlusDelta };
 
-    RegisterGroup<uint8_t> slave_cfg_rx;
-    std::array<RegisterGroup<uint16_t>, 4> cell_data;
-    std::array<RegisterGroup<int16_t>,  2> temp_data;
-    std::array<RegisterGroup<uint8_t>,  2> status_data;
+    RegisterGroup<uint8_t> slave_cfg_rx{ 0 };
+    std::array<RegisterGroup<uint16_t>, 4> cell_data{ 0 };
+    std::array<RegisterGroup<int16_t>,  2> temp_data{ 0 };
+    std::array<RegisterGroup<uint8_t>,  2> status_data{ 0 };
 
     Command ADCV; 	// Cell Voltage conversion command
     Command ADAX; 	// Aux conversion command
@@ -126,29 +128,25 @@ private:
     template <typename T>
     bool writeRegisterGroup(Command const& command, RegisterGroup<T> const& register_group) const noexcept {
         WakeFromIdle();
-        auto serialized = reinterpret_cast<uint8_t const *>(register_group.data());
+        auto serialized = reinterpret_cast<uint8_t const *>(register_group.cbegin());
 
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-        if (HAL_SPI_Transmit(&hspi, command.data(), sizeof(command), HAL_MAX_DELAY) == HAL_OK &&
-                HAL_SPI_Transmit(&hspi, serialized, sizeof(register_group), HAL_MAX_DELAY) == HAL_OK) {
-            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-            return Success;
-        } else {
-            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-            return Fail;
-        }
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_RESET);
+        auto result = HAL_SPI_Transmit(&hspi, command.data(), sizeof(command), HAL_MAX_DELAY) == HAL_OK && HAL_SPI_Transmit(&hspi, serialized, sizeof(register_group), HAL_MAX_DELAY);
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
+        return result;
     }
 
     /* Read Register Function. Return 0 if success, 1 if failure. */
     template <typename T>
     bool readRegisterGroup(Command const& command, RegisterGroup<T>& register_group) noexcept {
         WakeFromIdle();
+
         auto serialized = reinterpret_cast<uint8_t*>(register_group.data());
 
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-        if (HAL_SPI_Transmit(&hspi, command.data(), sizeof(command), HAL_MAX_DELAY) == HAL_OK) {
-            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_RESET);
+        if (HAL_SPI_Transmit(&hspi, command.data(), sizeof(Command), HAL_MAX_DELAY) == HAL_OK) {
             if (HAL_SPI_Receive(&hspi, serialized, sizeof(register_group), HAL_MAX_DELAY) == HAL_OK) {
+                HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
                 for (auto& IC : register_group)
                     if (IC.PEC != PEC15Calc(IC.data))
                         return Fail; // PEC error
@@ -157,17 +155,20 @@ private:
                 return Fail; // SPI error
             }
         } else {
-            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
             return Fail; // SPI error
         }
+
+        return Fail;
+
     }
 
     bool clearRegisterGroup(Command const& command) const noexcept {
         WakeFromIdle();
 
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_RESET);
         auto result = HAL_SPI_Transmit(&hspi, command.data(), sizeof(Command), HAL_MAX_DELAY);
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
 
         return result;
     }
@@ -202,7 +203,8 @@ private:
             PEC = PEC << 8 ^ crc15Table[addr];
         }
 
-        return PEC << 1; // From documentation: The final PEC is the 15-bit value in the PEC register with a 0 bit appended to its LSB.
+        PEC <<= 1; // From documentation: The final PEC is the 15-bit value in the PEC register with a 0 bit appended to its LSB.
+        return (PEC & 0xFF) << 8 | (PEC & 0xFF00) >> 8; // Swapping byte order because the endianness of the PEC is opposite of the data itself
     }
 };
 

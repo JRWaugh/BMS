@@ -40,6 +40,7 @@ enum { Success, Fail };
 
 enum CAN0_ID {
     TMPTesting = 77,
+    DateTime = 0x7B,
     IVT_I = 0x521, IVT_U1, IVT_U2, IVT_U3, IVT_T, IVT_W, IVT_As // From https://www.isabellenhuette.de/fileadmin/Daten/Praezisionsmesstechnik/Datasheet_IVT-S.pdf
 };
 enum CAN1_ID {
@@ -54,7 +55,6 @@ enum CAN1_ID {
     Temp = 1948,
     LoggerReq = 1972, LoggerResp
 };
-
 /* USER CODE BEGIN PV */
 /* USER CODE END ET */
 
@@ -108,6 +108,8 @@ void Error_Handler(void);
 #define SWDIO_GPIO_Port GPIOA
 #define SWCLK_Pin GPIO_PIN_14
 #define SWCLK_GPIO_Port GPIOA
+#define NSS_Pin GPIO_PIN_6
+#define NSS_GPIO_Port GPIOB
 #define SOS_Pin GPIO_PIN_9
 #define SOS_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */

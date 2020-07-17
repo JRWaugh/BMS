@@ -5,12 +5,15 @@
  *      Author: Joshua
  */
 
-#include <DWTWrapper.h>
+
 #include "LTC6811.h"
 
 LTC6811::LTC6811(SPI_HandleTypeDef& hspi, Mode mode, DCP dcp, CellCh cell, AuxCh aux, STSCh sts) : hspi{ hspi } {
     uint8_t md_bits = (mode & 0x02) >> 1;
     uint16_t PEC{ 0 };
+    RegisterGroup<uint8_t> default_config;
+
+    default_config.fill({ { 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00 }, 0x0000 });
 
     ADCV[0]   = 0x02 | md_bits;
     ADAX[0]   = 0x04 | md_bits;
@@ -22,38 +25,39 @@ LTC6811::LTC6811(SPI_HandleTypeDef& hspi, Mode mode, DCP dcp, CellCh cell, AuxCh
     ADSTAT[1] = md_bits | 0x68 | sts;
 
     PEC = PEC15Calc(ADCV, 2);
-    ADCV[2] = static_cast<uint8_t>(PEC >> 8);
-    ADCV[3] = static_cast<uint8_t>(PEC);
+    ADCV[2] = static_cast<uint8_t>(PEC);
+    ADCV[3] = static_cast<uint8_t>(PEC >> 8);
 
     PEC = PEC15Calc(ADAX, 2);
-    ADAX[2] = static_cast<uint8_t>(PEC >> 8);
-    ADAX[3] = static_cast<uint8_t>(PEC);
+    ADAX[2] = static_cast<uint8_t>(PEC);
+    ADAX[3] = static_cast<uint8_t>(PEC >> 8);
 
     PEC = PEC15Calc(ADSTAT, 2);
-    ADSTAT[2] = static_cast<uint8_t>(PEC >> 8);
-    ADSTAT[3] = static_cast<uint8_t>(PEC);
+    ADSTAT[2] = static_cast<uint8_t>(PEC);
+    ADSTAT[3] = static_cast<uint8_t>(PEC >> 8);
 
     WakeFromSleep(); // NOTE: Takes 2.2s to fall asleep so if this has to be called after this, we have problems
+    writeConfigRegisterGroup(default_config);
 }
 
 void LTC6811::WakeFromSleep() const noexcept {
     static constexpr uint16_t kMaxWakeTime{ 400 }; // Time in us
 
     for (size_t i = 0; i < kDaisyChainLength; ++i) {
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_RESET);
         DWTWrapper::getInstance().delay(kMaxWakeTime); // Guarantees the LTC6811 will be in standby
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
         DWTWrapper::getInstance().delay(10);
     }
 }
 
 void LTC6811::WakeFromIdle() const noexcept {
-    static constexpr uint8_t kData{ 0xFF };
+    uint8_t kDummyData{ 0xFF };
 
     for (size_t i = 0; i < kDaisyChainLength; ++i) {
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-        HAL_SPI_Transmit(&hspi, &kData, 1, HAL_MAX_DELAY); //Guarantees the isoSPI will be in ready mode
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_RESET);
+        HAL_SPI_TransmitReceive(&hspi, &kDummyData, &kDummyData, 1, HAL_MAX_DELAY); //Guarantees the isoSPI will be in ready mode
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
     }
 }
 
@@ -61,35 +65,30 @@ void LTC6811::WakeFromIdle() const noexcept {
  * Returns 0 on success, 1 if either PEC or SPI error.
  */
 bool LTC6811::readVoltageRegisterGroup(Group const group) noexcept {
-    constexpr static std::array<Command, 4> kCommands{ Command{ 0, 4, 7, 194}, Command{ 0, 6, 154, 148 }, Command{ 0, 8, 94, 82 }, Command{ 0, 10, 195, 4 } };
+    constexpr static std::array<Command, 4> kCommands{ Command{ 0, 4, 7, 194}, Command{ 0, 6, 154, 148 }, Command{ 0, 8, 94, 82 }, Command{ 0, 10, 195, 4 }
+    };
 
-    /* Checking array bounds allows us to declare the function noexcept */
-    if (group <= D)
-        return readRegisterGroup(kCommands[group], cell_data[group]);
-    else
-        return Fail;
+    assert(("Invalid Voltage Register Group", group <= D));
+    return readRegisterGroup(kCommands[group], cell_data[group]);
 }
 
 /* Read an auxiliary register group of an LTC6811 daisy chain.
  * Returns 0 on success, 1 if either PEC or SPI error.
  */
 bool LTC6811::readAuxRegisterGroup(Group const group) noexcept {
-    constexpr static std::array<Command, 2> kCommands{ Command{ 0, 12, 239, 204 }, Command{ 0, 14, 114, 154 } };
+    constexpr static std::array<Command, 2> kCommands{ Command{ 0, 12, 239, 204 }, Command{ 0, 14, 114, 154 }};
 
-    if (group <= B)
-        return readRegisterGroup(kCommands[group], temp_data[group]);
-    else
-        return Fail;
+    assert(("Invalid Aux Register Group", group <= B));
+    return readRegisterGroup(kCommands[group], temp_data[group]);
 }
 
 /* Read a status register group of an LTC6811 daisy chain. */
 bool LTC6811::readStatusRegisterGroup(Group const group) {
-    constexpr static std::array<Command, 2> kCommands{ Command{ 0x00, 0x10, 0xED, 0x72 }, Command{ 0x00, 0x12, 0x70, 0x24 } };
+    constexpr static std::array<Command, 2> kCommands{ Command{ 0x00, 0x10, 0xED, 0x72 }, Command{ 0x00, 0x12, 0x70, 0x24 }
+    };
 
-    if (group <= B)
-        return readRegisterGroup(kCommands[group], status_data[group]);
-    else
-        return Fail;
+    assert(("Invalid Stat Register Group", group <= B));
+    return readRegisterGroup(kCommands[group], status_data[group]);
 }
 
 /* Read the configuration register group of an LTC6811 daisy chain */
@@ -278,11 +277,10 @@ void LTC6811::startConversion(Command const& command) const noexcept {
     static constexpr uint16_t kMaxCycleTimeFast{ 1185 }; // Measure 12 Cells. Time in us.
     static constexpr uint16_t kMaxRefWakeupTime{ 4400 }; // Time in us.
 
-    WakeFromIdle(); // It's possible all of these can be removed
+    WakeFromIdle();
 
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_RESET);
     HAL_SPI_Transmit(&hspi, command.data(), sizeof(Command), HAL_MAX_DELAY); // Start cell voltage conversion.
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
     DWTWrapper::getInstance().delay(kMaxRefWakeupTime + kMaxCycleTimeFast); // TODO we aren't in fast conversion mode??? Also these delays aren't in the Linduino library
 }

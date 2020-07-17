@@ -33,6 +33,38 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+class RTClock {
+public:
+    [[nodiscard]] static RTClock& getInstance() noexcept {
+        static RTClock rtc;
+        return rtc;
+    }
+
+    volatile uint8_t year{ 0 };
+    volatile uint8_t month{ 0 };
+    volatile uint8_t days{ 0 };
+    volatile uint8_t hours{ 0 };
+    volatile uint8_t minutes{ 0 };
+    volatile uint8_t seconds{ 0 };
+
+    void tick() noexcept {
+        if (++seconds >= 60) {
+            seconds = 0;
+            if (++minutes >= 60) {
+                minutes = 0;
+                if (++hours >= 24) {
+                    hours = 0;
+                }
+            }
+        }
+    }
+
+    RTClock(RTClock const&)       = delete;
+    void operator=(RTClock const&)   = delete;
+
+private:
+    constexpr RTClock() {};
+};
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -59,6 +91,7 @@ Status* status{ nullptr };
 LTC6811* ltc6811{ nullptr };
 IVT* ivt{ nullptr };
 PWM_Fan* pwm_fan{ nullptr };
+RTClock& rtc = RTClock::getInstance();
 uint32_t mailbox{ 0 };
 /* USER CODE END PV */
 
@@ -96,6 +129,8 @@ extern "C" { void HAL_IncTick(void) {
 
     if (ivt != nullptr)
         ivt->tick();
+
+    rtc.tick();
 }}
 /* USER CODE END 0 */
 
@@ -495,15 +530,15 @@ static void MX_SPI1_Init(void)
     hspi1.Instance = SPI1;
     hspi1.Init.Mode = SPI_MODE_MASTER;
     hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-    hspi1.Init.DataSize = SPI_DATASIZE_8BIT; // correct
-    hspi1.Init.CLKPolarity = SPI_POLARITY_LOW; // correct
-    hspi1.Init.CLKPhase = SPI_PHASE_2EDGE; // I THINK this is now correct (was 0)
+    hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+    hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+    hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
     hspi1.Init.NSS = SPI_NSS_SOFT;
-    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
     hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
     hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
     hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-    hspi1.Init.CRCPolynomial = 10;
+    hspi1.Init.CRCPolynomial = 1;
     if (HAL_SPI_Init(&hspi1) != HAL_OK)
     {
         Error_Handler();
@@ -593,13 +628,13 @@ static void MX_GPIO_Init(void)
 
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(GPIOC, Led0_Pin|Led1_Pin|Led2_Pin|Led3_Pin
-            |IO_1_Pin|IO_2_Pin, GPIO_PIN_SET);
+            |IO_1_Pin|IO_2_Pin, GPIO_PIN_RESET);
 
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(IO_0_GPIO_Port, IO_0_Pin, GPIO_PIN_RESET);
 
     /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(GPIOB, PreCharge_Pin|BMSrelay_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOB, PreCharge_Pin|BMSrelay_Pin|NSS_Pin, GPIO_PIN_RESET);
 
     /*Configure GPIO pins : Led0_Pin Led1_Pin Led2_Pin Led3_Pin
                            IO_1_Pin IO_2_Pin */
@@ -617,20 +652,17 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(IO_0_GPIO_Port, &GPIO_InitStruct);
 
-    /*Configure GPIO pins : PreCharge_Pin BMSrelay_Pin */
+    /*Configure GPIO pins : PreCharge_Pin BMSrelay_Pin NSS_Pin */
     GPIO_InitStruct.Pin = PreCharge_Pin|BMSrelay_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-    /*Configure GPIO pin : FansPWM_Pin */
-    GPIO_InitStruct.Pin = FansPWM_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.Alternate = GPIO_AF1_TIM2;
-    HAL_GPIO_Init(FansPWM_GPIO_Port, &GPIO_InitStruct);
+    GPIO_InitStruct.Pin = NSS_Pin;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     /*Configure GPIO pins : Det_Pin Lock_Pin Det_Lock_Pin */
     GPIO_InitStruct.Pin = Det_Pin|Lock_Pin|Det_Lock_Pin;
@@ -679,6 +711,15 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
 
     if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO1, &RxHeader, data) == HAL_OK) {
         switch(RxHeader.StdId) {
+        case DateTime:
+            rtc.year = data[0] + 2000;
+            rtc.month = data[1];
+            rtc.days = data[2];
+            rtc.hours = data[3];
+            rtc.minutes = data[4];
+            rtc.seconds = data[5];
+            break;
+
         case NLGAStat: // possible the order of this array is backwards
             nlg5->a_buffer[0] = data[0];
             nlg5->a_buffer[1] = data[1];
@@ -740,7 +781,7 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
     }
 }
 
-uint32_t CAN0Test(void) {
+uint32_t CANTxTest(void) {
     TxHeader.StdId = TMPTesting;
     TxHeader.DLC = 8;
 
