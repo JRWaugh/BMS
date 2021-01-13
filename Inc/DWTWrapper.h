@@ -26,7 +26,7 @@ public:
 
     void delay(uint32_t const microseconds) const noexcept {
         uint32_t const startTicks = DWT->CYCCNT;
-        uint32_t const delayTicks = SystemCoreClock / 1000000 * microseconds;
+        uint32_t const delayTicks = (SystemCoreClock / 1'000'000) * microseconds;
 
         while (DWT->CYCCNT - startTicks < delayTicks);
     }

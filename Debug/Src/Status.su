@@ -1,0 +1,6 @@
+Status.cpp:10:1:Status::Status(uint8_t)	16	static
+Status.cpp:15:6:void Status::set_precharge_state(GPIO_PinState) const	16	static
+Status.cpp:20:29:GPIO_PinState Status::get_precharge_state() const	16	static
+Status.cpp:24:6:void Status::set_AIR_state(GPIO_PinState) const	16	static
+Status.cpp:29:29:GPIO_PinState Status::get_AIR_state() const	16	static
+Status.cpp:33:6:bool Status::is_error(Error, bool)	16	static

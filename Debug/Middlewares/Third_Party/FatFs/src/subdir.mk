@@ -8,15 +8,15 @@ C_SRCS += \
 ../Middlewares/Third_Party/FatFs/src/ff.c \
 ../Middlewares/Third_Party/FatFs/src/ff_gen_drv.c 
 
-OBJS += \
-./Middlewares/Third_Party/FatFs/src/diskio.o \
-./Middlewares/Third_Party/FatFs/src/ff.o \
-./Middlewares/Third_Party/FatFs/src/ff_gen_drv.o 
-
 C_DEPS += \
 ./Middlewares/Third_Party/FatFs/src/diskio.d \
 ./Middlewares/Third_Party/FatFs/src/ff.d \
 ./Middlewares/Third_Party/FatFs/src/ff_gen_drv.d 
+
+OBJS += \
+./Middlewares/Third_Party/FatFs/src/diskio.o \
+./Middlewares/Third_Party/FatFs/src/ff.o \
+./Middlewares/Third_Party/FatFs/src/ff_gen_drv.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes

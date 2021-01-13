@@ -37,8 +37,7 @@ public:
     }
 
     void tick() noexcept {
-        /* Every fifth time the timeout occurs, ctrl is set to a reset command if charger is in fault state. Otherwise it is set to a charge command.
-         * NOTE: It would be nicer if the NLG5 class had a reference to the CAN struct and sent this stuff itself when it was ready. */
+        /* Every fifth time the timeout occurs, ctrl is set to a reset command if charger is in fault state. Otherwise it is set to a charge command.  */
 
 #if CAN_ENABLED
         static std::atomic<uint8_t> event_counter{ 0 };
@@ -72,11 +71,6 @@ public:
             HAL_CAN_AddTxMessage(&hcan, &TxHeader, data, &mailbox);
         }
 #endif
-
-        /* Put anything else you want to happen inside this class each systick.
-         * Remember, anything changed inside this function MUST be either:
-         * volatile, if it is being either read from or written to separately, or
-         * atomic, if it is being read from and written to at the same time (such as with the increment operator). */
     }
 
 

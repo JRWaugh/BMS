@@ -36,15 +36,13 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-enum { Success, Fail };
-
 enum CAN0_ID {
     TMPTesting = 77,
     DateTime = 0x7B,
     IVT_I = 0x521, IVT_U1, IVT_U2, IVT_U3, IVT_T, IVT_W, IVT_As // From https://www.isabellenhuette.de/fileadmin/Daten/Praezisionsmesstechnik/Datasheet_IVT-S.pdf
 };
 enum CAN1_ID {
-    OpMode = 8, PECError, Data, VoltTotal,
+    OpMode = 8, PEC_Error, Data, VoltTotal,
     NLGAStat = 1552,
     NLGACtrl = 1560,
     NLGBStat = 1568,
@@ -113,7 +111,12 @@ void Error_Handler(void);
 #define SOS_Pin GPIO_PIN_9
 #define SOS_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
-/*** Test enable/disable ***/
+/* * * Debug functionality enable/disable * * */
+#define BMS_RELAY_CTRL_BYPASS               0
+#define STOP_CORE_ON_SAFE_STATE             1
+#define START_DEBUG_ON_SAFE_STATE           1
+#define BYPASS_INITIAL_CHECK                1
+#define SKIP_PEC_ERROR_ACTIONS              1
 #define CAN_DEBUG                           1
 #define CAN_ENABLED                         1
 #define SD_CARD_DEBUG                       1

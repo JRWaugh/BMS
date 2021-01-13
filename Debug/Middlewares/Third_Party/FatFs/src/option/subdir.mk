@@ -6,11 +6,11 @@
 C_SRCS += \
 ../Middlewares/Third_Party/FatFs/src/option/syscall.c 
 
-OBJS += \
-./Middlewares/Third_Party/FatFs/src/option/syscall.o 
-
 C_DEPS += \
 ./Middlewares/Third_Party/FatFs/src/option/syscall.d 
+
+OBJS += \
+./Middlewares/Third_Party/FatFs/src/option/syscall.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes

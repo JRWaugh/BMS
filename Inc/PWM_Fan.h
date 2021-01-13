@@ -25,13 +25,14 @@ public:
         TIM2->CCR4 = std::clamp(duty_cycle, kMinDutyCycle, kMaxDutyCycle) * 200;
     }
 
-    [[nodiscard]] static uint8_t calcDutyCycle(int16_t const max_temp) noexcept {
+
+    void calcDutyCycle(int16_t const max_temp) noexcept {
         if (max_temp > kHighTemp)
-            return kMaxDutyCycle;
+            setDutyCycle(kMaxDutyCycle);
         else if (max_temp < kLowTemp)
-            return kLowDutyCycle;
+            setDutyCycle(kLowDutyCycle);
         else
-            return kM * max_temp + kB;
+            setDutyCycle(kM * max_temp + kB);
 
     }
 
