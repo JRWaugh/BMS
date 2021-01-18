@@ -12,34 +12,20 @@
 
 class DWTWrapper {
 public:
-    DWTWrapper(DWTWrapper const&)       = delete;
-    void operator=(DWTWrapper const&)   = delete;
-
-    [[nodiscard]] static const DWTWrapper& getInstance() noexcept {
+    static void delay_us(uint32_t const microseconds) noexcept {
         static const DWTWrapper dwtSingleton;
-
-        CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-        DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
-
-        return dwtSingleton;
-    }
-
-    void delay(uint32_t const microseconds) const noexcept {
         uint32_t const startTicks = DWT->CYCCNT;
         uint32_t const delayTicks = (SystemCoreClock / 1'000'000) * microseconds;
-
         while (DWT->CYCCNT - startTicks < delayTicks);
     }
 
-    void setTicks(uint32_t const ticks) const noexcept {
-        DWT->CYCCNT = ticks;
-    }
-
-    [[nodiscard]] uint32_t getTicks() const noexcept {
-        return DWT->CYCCNT;
-    }
+    DWTWrapper(DWTWrapper const&)       = delete;
+    void operator=(DWTWrapper const&)   = delete;
 
 private:
-    constexpr DWTWrapper() {};
+    constexpr DWTWrapper() {
+        CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+        DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+    };
 };
 #endif /* DWTWRAPPER_H_ */

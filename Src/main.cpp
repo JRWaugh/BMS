@@ -146,22 +146,22 @@ int main() {
     /* USER CODE BEGIN 2 */
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
     HAL_CAN_ActivateNotification(&hcan1, CAN_IT_TX_MAILBOX_EMPTY | CAN_IT_RX_FIFO0_MSG_PENDING | CAN_IT_RX_FIFO1_MSG_PENDING);
-    LTC6811::init(&hspi1);
     nlg5 = new NLG5(hcan1, TxHeader);
     pwm_fan = new PWM_Fan;
 
 #if BYPASS_INITIAL_CHECK
     status.set_AIR_state(GPIO_PIN_SET);
-    HAL_Delay(5000);
+    //HAL_Delay(5000);
     status.set_precharge_state(GPIO_PIN_SET);
 #endif
+
+    LTC6811::init(&hspi1);
     /* USER CODE END 2 */
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     while (true) {
         /* USER CODE END WHILE */
         /* USER CODE BEGIN 3 */
-
         HAL_GPIO_TogglePin(Led0_GPIO_Port, Led0_Pin);
         auto const op_mode = status.get_op_mode();
         /*  Core routine for monitoring voltage and temperature of the cells.  */
@@ -446,10 +446,10 @@ static void MX_SPI1_Init() {
     hspi1.Init.Mode = SPI_MODE_MASTER;
     hspi1.Init.Direction = SPI_DIRECTION_2LINES;
     hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-    hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-    hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
+    hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;
+    hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
     hspi1.Init.NSS = SPI_NSS_SOFT;
-    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;
+    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
     hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
     hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
     hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;

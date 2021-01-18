@@ -36,7 +36,6 @@ enum CHST { AllStat, SOC, ITMP, VA, VD };
 enum DischargeMode {
     GTMinPlusDelta, MaxOnly, GTMeanPlusDelta
 };
-using Command = std::array<uint8_t, 4>;
 
 template <typename T>
 struct Register {
@@ -84,8 +83,6 @@ void init(SPI_HandleTypeDef*);
 [[nodiscard]] std::optional<VoltageStatus> read_cell_data(CellData&) noexcept;
 [[nodiscard]] std::optional<TempStatus> read_temp_data(TempData&) noexcept;
 RegisterGroup<uint8_t> const & get_config_register_group() noexcept;
-uint32_t clearVoltageRegisterGroup() noexcept;
-uint32_t clearAuxRegisterGroup() noexcept;
 uint32_t update_config_register_group(CellData const &, VoltageStatus const &, DischargeMode) noexcept;
 }
 

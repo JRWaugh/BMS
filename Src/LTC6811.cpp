@@ -8,9 +8,6 @@
 #include "LTC6811.h"
 
 namespace LTC6811 {
-static SPI_HandleTypeDef* spi;
-static RegisterGroup<uint8_t> config_register_group{ 0 };
-
 static constexpr uint16_t crc15Table[256] {
     0x0000, 0xc599, 0xceab, 0x0b32, 0xd8cf, 0x1d56, 0x1664, 0xd3fd, 0xf407, 0x319e, 0x3aac, 0xff35, 0x2cc8, 0xe951, 0xe263, 0x27fa,
     0xad97, 0x680e, 0x633c, 0xa6a5, 0x7558, 0xb0c1, 0xbbf3, 0x7e6a, 0x5990, 0x9c09, 0x973b, 0x52a2, 0x815f, 0x44c6, 0x4ff4, 0x8a6d,
@@ -53,207 +50,124 @@ template <typename T, size_t S>
     return ((PEC & 0xFF) << 8 | (PEC & 0xFF00) >> 8); // Swapping byte order just because it makes life easier by allowing "if (IC.PEC != PEC15Calc(IC.data))"
 }
 
-/* Start Cell Voltage ADC Conversion and Poll Status */
-static constexpr Command ADCV = []() {
-    Command command{ 0b00000010 | (md & 2) >> 1, 0b01100000 | (md & 1) << 7 | dcp << 4 | ch };
-    uint16_t PEC = PEC15Calc(command, 2);
-    command[2] = static_cast<uint8_t>(PEC);
-    command[3] = static_cast<uint8_t>(PEC >> 8);
-    return command;
-}();
-
-/* Start GPIOs ADC Conversion and Poll Status */
-static constexpr Command ADAX = []() {
-    Command command{ 0b00000100 | (md & 2) >> 1, 0b01100000 | (md & 1) << 7 | chg };
-    uint16_t PEC = PEC15Calc(command, 2);
-    command[2] = static_cast<uint8_t>(PEC);
-    command[3] = static_cast<uint8_t>(PEC >> 8);
-    return command;
-}();
-
-/* Start Status Group ADC Conversion and Poll Status */
-static constexpr Command ADSTAT = []() {
-    Command command{ 0b00000100 | (md & 2) >> 1, 0b01101000 | (md & 1) << 7 | chst };
-    uint16_t PEC = PEC15Calc(command, 2);
-    command[2] = static_cast<uint8_t>(PEC);
-    command[3] = static_cast<uint8_t>(PEC >> 8);
-    return command;
-}();
-
-static void wake_from_sleep() noexcept {
-    static constexpr uint16_t ktWake{ 480 }; // Time in us
-
-    for (size_t i = 0; i < kDaisyChainLength; ++i) {
-        HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_RESET);
-        DWTWrapper::getInstance().delay(ktWake); // Guarantees the LTC6811 will be in standby
-        HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_SET);
-        DWTWrapper::getInstance().delay(10);
-    }
-}
-
-static void wake_from_idle() noexcept {
-    uint8_t dummy = 0xFF;
-
-    for (size_t i = 0; i < kDaisyChainLength; ++i) {
-        HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_RESET);
-        HAL_SPI_TransmitReceive(spi, &dummy, 1, nullptr, 0, HAL_MAX_DELAY);
-        HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_SET);
-    }
-}
-
-/* Start a conversion */
-static uint32_t start_conversion(Command const& command) noexcept {
-    /* Conversion times (in microseconds) taken from Table 39. Numbers multiplied by 1.1 to account for max tCycle times  */
-    static constexpr uint16_t kConversionTime = []() {
-        if constexpr (ch == AllCells) {
-            if constexpr (CFGR0 & 1) { // If ADCOPT bit is set
-                switch (md) {
-                case Default:
-                    return 7200;
-                case Fast:
-                    return 1300;
-                case Normal:
-                    return 3000;
-                case Filtered:
-                    return 4400;
-                }
-            } else {
-                switch (md) {
-                case Default:
-                    return 12800;
-                case Fast:
-                    return 1100;
-                case Normal:
-                    return 2300;
-                case Filtered:
-                    return 0; // Don't use this. Needs to sleep for 201ms.
-                }
-            }
-        } else {
-            if constexpr (CFGR0 & 1) { // If ADCOPT bit is set
-                switch (md) {
-                case Default:
-                    return 1200;
-                case Fast:
-                    return 230;
-                case Normal:
-                    return 501;
-                case Filtered:
-                    return 754;
-                }
-            } else {
-                switch (md) {
-                case Default:
-                    return 2200;
-                case Fast:
-                    return 201;
-                case Normal:
-                    return 405;
-                case Filtered:
-                    return 34000;
-                }
-            }
+static void wakeup() noexcept {
+    static constexpr uint16_t tREADY{ 10 }, tWAKE{ 400 }; // Time in us
+    static constexpr uint16_t tIDLE{ 5 }, tSLEEP{ 2000 }; // Time in ms. tIDLE is rounded down from 5.5, just to be safe.
+    static uint32_t last_tick = 0;
+    auto const pulse_csb = [](uint16_t pulse_length) {
+        for (size_t i = 0; i < kDaisyChainLength; ++i) {
+            HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_RESET);
+            DWTWrapper::delay_us(pulse_length);
+            HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_SET);
         }
-    }() * 1.1f;
+    };
 
-    wake_from_idle();
-
-    HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_RESET);
-    auto result = HAL_SPI_TransmitReceive(spi, command.data(), sizeof(command), nullptr, 0, HAL_MAX_DELAY);
-    HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_SET);
-
-    DWTWrapper::getInstance().delay(kConversionTime);
-
-    return result;
-}
-
-/* Write Register Function. Return 0 if success, 1 if failure. */
-template <typename T>
-static uint32_t write_register_group(Command const& command, RegisterGroup<T> const& register_group) noexcept {
-    auto serialized = reinterpret_cast<uint8_t const *>(&register_group);
-
-    wake_from_idle();
-    HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_RESET);
-
-    auto result = HAL_SPI_TransmitReceive(spi, command.data(), sizeof(command), nullptr, 0, HAL_MAX_DELAY);
-    if (result == HAL_OK)
-        result = HAL_SPI_TransmitReceive(spi, serialized, sizeof(register_group), nullptr, 0, HAL_MAX_DELAY);
-
-    HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_SET);
-
-    return result;
-}
-
-/* Read Register Function. Return 0 if success, 1 if failure. */
-template <typename T>
-static uint32_t read_register_group(Command const& command, RegisterGroup<T>& register_group) noexcept {
-    auto serialized = reinterpret_cast<uint8_t*>(&register_group);
-
-    wake_from_idle();
-    HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_RESET);
-
-    auto result = HAL_SPI_TransmitReceive(spi, command.data(), sizeof(Command), nullptr, 0, HAL_MAX_DELAY);
-    if (result == HAL_OK)
-        result = HAL_SPI_TransmitReceive(spi, nullptr, 0, serialized, sizeof(register_group), HAL_MAX_DELAY);
-
-    HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_SET);
-
-    if (result == HAL_OK) {
-        for (auto& IC : register_group)
-            if (IC.PEC != PEC15Calc(IC.data))
-                return HAL_ERROR; // TODO make this PEC error
+    if (last_tick == 0)
+        pulse_csb(tWAKE);
+    else if (HAL_GetTick() - last_tick > tIDLE) {
+        if (HAL_GetTick() - last_tick > tSLEEP)
+            pulse_csb(tWAKE);
+        else
+            pulse_csb(tREADY);
     }
 
-    return result;
+    last_tick = HAL_GetTick();
 }
 
-static uint32_t clear_register_group(Command const& command) noexcept {
-    wake_from_idle();
-
-    HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_RESET);
-    auto result = HAL_SPI_TransmitReceive(spi, command.data(), sizeof(Command), nullptr, 0, HAL_MAX_DELAY);
-    HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_SET);
-
-    return result;
-}
-
-static uint32_t write_config_register_group(RegisterGroup<uint8_t>& register_group) noexcept {
-    constexpr Command kCommand{ 0x00, 0x01, 0x3D, 0x6E };
-    return write_register_group(kCommand, register_group);
-}
-
-static uint32_t read_voltage_register_group(uint8_t const group_id, CellData& cell_data) noexcept {
-    static constexpr std::array<Command, 4> kCommands{ Command{ 0, 4, 7, 194}, Command{ 0, 6, 154, 148 }, Command{ 0, 8, 94, 82 }, Command{ 0, 10, 195, 4 } };
-    return read_register_group(kCommands[group_id], cell_data[group_id]);
-}
-
-static uint32_t read_aux_register_group(uint8_t const group_id, TempData& temp_data) noexcept {
-    static const std::array<Command, 2> kCommands{ Command{ 0, 12, 239, 204 }, Command{ 0, 14, 114, 154 } };
-    return read_register_group(kCommands[group_id], temp_data[group_id]);
-}
-
-static uint32_t read_status_register_group(uint8_t const group_id, StatusData& status_data) noexcept {
-    static const std::array<Command, 2> kCommands{ Command{ 0x00, 0x10, 0xED, 0x72 }, Command{ 0x00, 0x12, 0x70, 0x24 }};
-    return read_register_group(kCommands[group_id], status_data[group_id]);
-}
-
-void init(SPI_HandleTypeDef* spi_handle) {
-    constexpr auto ktRefup{ 4400 }; // Time in us
-
-    spi = spi_handle;
-
+static SPI_HandleTypeDef* spi;
+static RegisterGroup<uint8_t> config_register_group = []() {
+    RegisterGroup<uint8_t> config_register_group{ 0 };
     for (auto& IC : config_register_group) {
         IC.data[0] = CFGR0;
         IC.PEC = PEC15Calc(IC.data);
     }
+    return config_register_group;
+}();
+static RegisterGroup<uint8_t> rd_cfgr_dump{ 0 };
 
-    wake_from_sleep();
-    write_config_register_group(config_register_group);
-    DWTWrapper::getInstance().delay(ktRefup);
+class Command {
+public:
+    constexpr Command(uint16_t const command_code) : command{ generate_command(command_code) } {}
+    void operator()() const noexcept {
+        wakeup();
+
+        HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_RESET);
+        HAL_SPI_Transmit(spi, command.data(), sizeof(command), HAL_MAX_DELAY);
+        //HAL_SPI_Transmit(spi, poll_adc.data(), sizeof(poll_adc), HAL_MAX_DELAY);
+        for (uint8_t value = 0; value == 0; )
+            HAL_SPI_Receive(spi, &value, 1, HAL_MAX_DELAY);
+        HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_SET);
+    }
+
+protected:
+    std::array<uint8_t, 4> const command;
+    //static constexpr std::array<uint8_t, 4> poll_adc{ generate_command(0b11100010100) };
+private:
+    static constexpr std::array<uint8_t, 4> generate_command(uint16_t const command_code) {
+        std::array<uint8_t, 4> command{ static_cast<uint8_t>(command_code >> 8), static_cast<uint8_t>(command_code) };
+        uint16_t const PEC = PEC15Calc(command, 2);
+        command[2] = PEC >> 0 & 0xFF;
+        command[3] = PEC >> 8 & 0xFF;
+        return command;
+    }
+};
+
+class RD_Command : public Command {
+public:
+    template <typename T>
+    HAL_StatusTypeDef operator()(RegisterGroup<T>& register_group) const noexcept {
+        wakeup();
+        HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_RESET);
+        HAL_SPI_Transmit(spi, command.data(), sizeof(command), HAL_MAX_DELAY);
+        HAL_SPI_Receive(spi, reinterpret_cast<uint8_t*>(&register_group), sizeof(register_group), HAL_MAX_DELAY);
+        HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_SET);
+        for (auto& IC : register_group)
+            if (IC.PEC != PEC15Calc(IC.data))
+                return HAL_ERROR; // TODO make this PEC error
+        return HAL_OK;
+    }
+};
+
+class WR_Command : public Command {
+public:
+    template <typename T>
+    HAL_StatusTypeDef operator()(RegisterGroup<T>& register_group) const noexcept {
+        wakeup();
+        HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_RESET);
+        HAL_SPI_Transmit(spi, command.data(), sizeof(command), HAL_MAX_DELAY);
+        HAL_SPI_Receive(spi, reinterpret_cast<uint8_t*>(&register_group), sizeof(register_group), HAL_MAX_DELAY);
+        HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_SET);
+        for (auto& IC : register_group)
+            if (IC.PEC != PEC15Calc(IC.data))
+                return HAL_ERROR;
+        return HAL_OK;
+    }
+};
+
+// Commands taken from Table 38. Command Codes from LTC6811 datasheet.
+// Write Configuration Register Group A and B
+static constexpr WR_Command WRCFG[]{ { 0b00000000001 }, { 0b00000100100 } };
+// Read Configuration Register Group A and B
+static constexpr RD_Command RDCFG[]{ { 0b00000000010 }, { 0b00000100110 } };
+// Read Cell Voltage Register Group A to F
+static constexpr RD_Command RDCV[] { { 0b00000000100 }, { 0b00000000110 }, { 0b00000001000 }, { 0b00000001010 }, { 0b00000001001 }, { 0b00000001011 } };
+// Read Auxiliary Register Group A to D
+static constexpr RD_Command RDAUX[]{ { 0b00000001100 }, { 0b00000001110 }, { 0b00000001101 }, { 0b00000001111 } };
+// Start Cell Voltage ADC Conversion and Poll Status
+static constexpr Command ADCV   { 0b01001100000 | md << 7 | dcp << 4 | ch };
+// Start GPIOs ADC Conversion and Poll Status
+static constexpr Command ADAX   { 0b10001100000 | md << 7 | chg };
+// Start Status Group ADC Conversion and Poll Status
+static constexpr Command ADSTAT { 0b10001101000 | md << 7 | chst };
+
+void init(SPI_HandleTypeDef* spi_handle) {
+    spi = spi_handle;
+    //wakeup();
+    WRCFG[0](config_register_group);
 };
 
 RegisterGroup<uint8_t> const & get_config_register_group() noexcept {
-    return config_register_group;
+    return config_register_group; // Just replace with RDCFG since it's better to know what's in the registers for sure anyway
 }
 
 uint32_t update_config_register_group(CellData const & cell_data, VoltageStatus const & voltage_status, DischargeMode discharge_mode) noexcept {
@@ -276,8 +190,6 @@ uint32_t update_config_register_group(CellData const & cell_data, VoltageStatus 
                 } // 4 * 3 = 12 voltages associated with each LTC6811 in the daisy chain
             }
             --current_ic;
-
-            IC.data[0] = LTC6811::CFGR0;
             IC.data[4] = DCCx >> 0 & 0xFF;
             IC.data[5] = DCCx >> 8 & 0x0F;
             IC.PEC = LTC6811::PEC15Calc(IC.data);
@@ -288,8 +200,6 @@ uint32_t update_config_register_group(CellData const & cell_data, VoltageStatus 
         if (voltage_status.max - voltage_status.min > kDelta) {
             current_ic = voltage_status.max_id / 3 % 12;
             DCCx |= 1 << voltage_status.max_id % 11;
-
-            config_register_group[current_ic].data[0] = LTC6811::CFGR0;
             config_register_group[current_ic].data[4] = DCCx >> 0 & 0xFF;
             config_register_group[current_ic].data[5] = DCCx >> 8 & 0x0F;
             config_register_group[current_ic].PEC = LTC6811::PEC15Calc(config_register_group[current_ic].data);
@@ -311,8 +221,6 @@ uint32_t update_config_register_group(CellData const & cell_data, VoltageStatus 
                 } // 4 * 3 = 12 voltages associated with each LTC6811 in the daisy chain
             }
             --current_ic;
-
-            IC.data[0] = LTC6811::CFGR0;
             IC.data[4] = DCCx >> 0 & 0xFF;
             IC.data[5] = DCCx >> 8 & 0x0F;
             IC.PEC = LTC6811::PEC15Calc(IC.data);
@@ -321,15 +229,7 @@ uint32_t update_config_register_group(CellData const & cell_data, VoltageStatus 
     }
     }
 
-    return write_config_register_group(config_register_group);
-}
-
-inline uint32_t clear_voltage_register_group() noexcept {
-    return clear_register_group({ 7, 17, 201, 192 });
-}
-
-inline uint32_t clear_aux_register_group() noexcept {
-    return clear_register_group({ 7, 18, 223, 164 });
+    return WRCFG[0](config_register_group);
 }
 
 /* Read cell data and generate a status report of the cell voltage register groups.
@@ -338,16 +238,21 @@ inline uint32_t clear_aux_register_group() noexcept {
     LTC6811::VoltageStatus status;
     size_t count{ 0 };
 
-    start_conversion(ADCV);
+    // wake and cfgr write shouldn't be necessary.
+    //wake_from_sleep();
+    //WRCFG[0](config_register_group);
+    //DWTWrapper::delay_us(500);
+    //RDCFG[0](rd_cfgr_dump);
+    ADCV();
+
     for (size_t i = 0; i < cell_data.size(); ++i)
-        if (read_voltage_register_group(i, cell_data) != HAL_OK)
+        if (RDCV[i](cell_data[i]) != HAL_OK)
             return std::nullopt;
 
     for (const auto& register_group : cell_data) {
         for (const auto& IC : register_group) {
             for (const auto voltage : IC.data) {
                 status.sum += voltage;
-
                 if (voltage < status.min) {
                     status.min = voltage;
                     status.min_id = count;
@@ -375,23 +280,22 @@ inline uint32_t clear_aux_register_group() noexcept {
         constexpr auto C = 0.00000260597f;
         constexpr auto D = 0.0000000632926f;
         auto log = -logf(Vin / NTC_voltage - 1);
-
         return static_cast<int16_t>(100.0f / (A + log * ( B + log * (C + D * log))) - KtoC);
     };
 
     LTC6811::TempStatus status;
     size_t count{ 0 };
 
-    start_conversion(ADAX);
+    ADAX();
+
     for (size_t i = 0; i < temp_data.size(); ++i)
-        if (read_aux_register_group(i, temp_data) != HAL_OK)
+        if (RDAUX[i](temp_data[i]) != HAL_OK)
             return std::nullopt;
 
     for (auto& register_group : temp_data) {
         for (auto& IC : register_group) {
             for (auto& temperature : IC.data) {
                 temperature = steinharthart(temperature);
-
                 if (temperature < status.min) {
                     status.min = temperature;
                     status.min_id = count;
@@ -399,7 +303,6 @@ inline uint32_t clear_aux_register_group() noexcept {
                     status.max = temperature;
                     status.max_id = count;
                 }
-
                 ++count;
             }
         }
