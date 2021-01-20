@@ -15,71 +15,134 @@ Status.h:47:10:void Status::set_op_mode(Op_Mode)	16	static
 Status.h:51:11:Error Status::get_last_error() const	16	static
 Status.h:55:13:uint8_t Status::get_error_count(Error)	16	static
 Status.h:59:10:bool Status::get_error_over_limit(Error)	16	static
-main.cpp:44:10:void RTClock::tick()	16	static
-main.cpp:104:13:auto get_uptime()	4	static
-main.cpp:112:19:void HAL_IncTick()	8	static
-optional:915:22:constexpr bool std::optional<_Tp>::has_value() const [with _Tp = LTC6811::VoltageStatus]	16	static
-optional:431:22:constexpr bool std::_Optional_base_impl<_Tp, _Dp>::_M_is_engaged() const [with _Tp = LTC6811::VoltageStatus; _Dp = std::_Optional_base<LTC6811::VoltageStatus, true, true>]	16	static
-optional:915:22:constexpr bool std::optional<_Tp>::has_value() const [with _Tp = LTC6811::TempStatus]	16	static
-optional:431:22:constexpr bool std::_Optional_base_impl<_Tp, _Dp>::_M_is_engaged() const [with _Tp = LTC6811::TempStatus; _Dp = std::_Optional_base<LTC6811::TempStatus, true, true>]	16	static
-optional:888:7:constexpr const _Tp* std::optional<_Tp>::operator->() const [with _Tp = LTC6811::VoltageStatus]	16	static
-move.h:47:5:constexpr _Tp* std::__addressof(_Tp&) [with _Tp = const LTC6811::VoltageStatus]	16	static
-optional:443:7:constexpr const _Tp& std::_Optional_base_impl<_Tp, _Dp>::_M_get() const [with _Tp = LTC6811::VoltageStatus; _Dp = std::_Optional_base<LTC6811::VoltageStatus, true, true>]	16	static
-optional:269:7:constexpr const _Tp& std::_Optional_payload_base<_Tp>::_M_get() const [with _Tp = LTC6811::VoltageStatus]	16	static
-optional:888:7:constexpr const _Tp* std::optional<_Tp>::operator->() const [with _Tp = LTC6811::TempStatus]	16	static
-move.h:47:5:constexpr _Tp* std::__addressof(_Tp&) [with _Tp = const LTC6811::TempStatus]	16	static
-optional:443:7:constexpr const _Tp& std::_Optional_base_impl<_Tp, _Dp>::_M_get() const [with _Tp = LTC6811::TempStatus; _Dp = std::_Optional_base<LTC6811::TempStatus, true, true>]	16	static
-optional:269:7:constexpr const _Tp& std::_Optional_payload_base<_Tp>::_M_get() const [with _Tp = LTC6811::TempStatus]	16	static
-main.cpp:122:5:int main()	216	static
-main.cpp:297:13:void SystemClock_Config()	184	static
-main.cpp:336:13:void MX_CAN1_Init()	48	static
-main.cpp:376:13:void MX_CAN2_Init()	48	static
-main.cpp:415:13:void MX_SDIO_SD_Init()	4	static
-main.cpp:435:13:void MX_SPI1_Init()	8	static
-main.cpp:465:13:void MX_TIM2_Init()	64	static
-main.cpp:506:13:void MX_GPIO_Init()	48	static
-main.cpp:554:6:void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*)	56	static
-main.cpp:579:6:void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef*)	56	static
-main.cpp:655:19:HAL_StatusTypeDef CANTxStatus()	24	static
-main.cpp:675:19:HAL_StatusTypeDef CANTxPECError()	24	static
-main.cpp:699:19:HAL_StatusTypeDef CANTxData(uint16_t, uint16_t, int16_t)	32	static
+main.cpp:84:13:auto get_uptime()	4	static
+main.cpp:86:19:void HAL_IncTick()	8	static
+main.cpp:115:9:main()::<lambda(bool)>	16	static
+main.cpp:115:9:static void main()::<lambda(bool)>::_FUN(bool)	16	static
+main.cpp:115:9:constexpr main()::<lambda(bool)>::operator void (*)(bool)() const	16	static
+main.cpp:118:9:main()::<lambda(const uint8_t*, std::size_t)>	24	static
+main.cpp:118:9:static void main()::<lambda(const uint8_t*, std::size_t)>::_FUN(const uint8_t*, std::size_t)	16	static
+main.cpp:118:9:constexpr main()::<lambda(const uint8_t*, std::size_t)>::operator void (*)(const uint8_t*, std::size_t)() const	16	static
+main.cpp:121:9:main()::<lambda(uint8_t*, std::size_t)>	24	static
+main.cpp:121:9:static void main()::<lambda(uint8_t*, std::size_t)>::_FUN(uint8_t*, std::size_t)	16	static
+main.cpp:121:9:constexpr main()::<lambda(uint8_t*, std::size_t)>::operator void (*)(uint8_t*, std::size_t)() const	16	static
+optional:915:22:constexpr bool std::optional<_Tp>::has_value() const [with _Tp = VoltageStatus]	16	static
+optional:431:22:constexpr bool std::_Optional_base_impl<_Tp, _Dp>::_M_is_engaged() const [with _Tp = VoltageStatus; _Dp = std::_Optional_base<VoltageStatus, true, true>]	16	static
+optional:915:22:constexpr bool std::optional<_Tp>::has_value() const [with _Tp = TempStatus]	16	static
+optional:431:22:constexpr bool std::_Optional_base_impl<_Tp, _Dp>::_M_is_engaged() const [with _Tp = TempStatus; _Dp = std::_Optional_base<TempStatus, true, true>]	16	static
+optional:888:7:constexpr const _Tp* std::optional<_Tp>::operator->() const [with _Tp = VoltageStatus]	16	static
+move.h:47:5:constexpr _Tp* std::__addressof(_Tp&) [with _Tp = const VoltageStatus]	16	static
+optional:443:7:constexpr const _Tp& std::_Optional_base_impl<_Tp, _Dp>::_M_get() const [with _Tp = VoltageStatus; _Dp = std::_Optional_base<VoltageStatus, true, true>]	16	static
+optional:269:7:constexpr const _Tp& std::_Optional_payload_base<_Tp>::_M_get() const [with _Tp = VoltageStatus]	16	static
+optional:888:7:constexpr const _Tp* std::optional<_Tp>::operator->() const [with _Tp = TempStatus]	16	static
+move.h:47:5:constexpr _Tp* std::__addressof(_Tp&) [with _Tp = const TempStatus]	16	static
+optional:443:7:constexpr const _Tp& std::_Optional_base_impl<_Tp, _Dp>::_M_get() const [with _Tp = TempStatus; _Dp = std::_Optional_base<TempStatus, true, true>]	16	static
+optional:269:7:constexpr const _Tp& std::_Optional_payload_base<_Tp>::_M_get() const [with _Tp = TempStatus]	16	static
+main.cpp:92:5:int main()	304	static
+main.cpp:268:13:void SystemClock_Config()	184	static
+main.cpp:307:13:void MX_CAN1_Init()	56	static
+main.cpp:338:13:void MX_CAN2_Init()	56	static
+main.cpp:368:13:void MX_SDIO_SD_Init()	4	static
+main.cpp:378:13:void MX_SPI1_Init()	8	static
+main.cpp:395:13:void MX_TIM2_Init()	64	static
+main.cpp:430:13:void MX_GPIO_Init()	48	static
 array:130:7:constexpr const value_type* std::array<_Tp, _Nm>::begin() const [with _Tp = short unsigned int; unsigned int _Nm = 3]	16	static
 array:138:7:constexpr const value_type* std::array<_Tp, _Nm>::end() const [with _Tp = short unsigned int; unsigned int _Nm = 3]	16	static
-main.cpp:718:19:HAL_StatusTypeDef CANTxVoltage()	64	static
+main.cpp:466:6:void balance_cells(const CellData&, const VoltageStatus&, DischargeMode)	144	static
+main.cpp:524:44:std::optional<VoltageStatus> read_cell_data(LTC6811::CellData&)	120	static
+main.cpp:560:43:read_temp_data(LTC6811::TempData&)::<lambda(int16_t)>	48	static
+main.cpp:559:41:std::optional<TempStatus> read_temp_data(LTC6811::TempData&)	104	static
+main.cpp:600:6:void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef*)	56	static
+main.cpp:625:6:void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef*)	56	static
+main.cpp:701:19:HAL_StatusTypeDef CANTxStatus()	24	static
+main.cpp:721:19:HAL_StatusTypeDef CANTxPECError()	24	static
+main.cpp:744:19:HAL_StatusTypeDef CANTxData(uint16_t, uint16_t, int16_t)	32	static
+main.cpp:762:19:HAL_StatusTypeDef CANTxVoltage(const CellData&)	64	static
 array:130:7:constexpr const value_type* std::array<_Tp, _Nm>::begin() const [with _Tp = short int; unsigned int _Nm = 3]	16	static
 array:138:7:constexpr const value_type* std::array<_Tp, _Nm>::end() const [with _Tp = short int; unsigned int _Nm = 3]	16	static
-main.cpp:745:19:HAL_StatusTypeDef CANTxTemperature()	56	static
-main.cpp:774:19:HAL_StatusTypeDef CANTxVoltageLimpTotal(uint32_t)	24	static
-array:130:7:constexpr const value_type* std::array<_Tp, _Nm>::begin() const [with _Tp = LTC6811::Register<unsigned char>; unsigned int _Nm = 1]	16	static
-array:138:7:constexpr const value_type* std::array<_Tp, _Nm>::end() const [with _Tp = LTC6811::Register<unsigned char>; unsigned int _Nm = 1]	16	static
-main.cpp:792:19:HAL_StatusTypeDef CANTxDCCfg()	40	static
-main.cpp:817:19:HAL_StatusTypeDef CANTxVolumeSize(uint32_t)	24	static
-main.cpp:831:6:void Error_Handler()	4	static
+main.cpp:785:19:HAL_StatusTypeDef CANTxTemperature(const TempData&)	64	static
+main.cpp:807:19:HAL_StatusTypeDef CANTxVoltageLimpTotal(uint32_t)	24	static
+main.cpp:824:19:HAL_StatusTypeDef CANTxDCCfg()	48	static
+main.cpp:845:19:HAL_StatusTypeDef CANTxVolumeSize(uint32_t)	24	static
+main.cpp:859:6:void Error_Handler()	4	static
 atomic_base.h:279:17:constexpr std::__atomic_base<_IntTp>::__atomic_base(std::__atomic_base<_IntTp>::__int_type) [with _ITp = long unsigned int]	16	static
 atomic_base.h:318:7:std::__atomic_base<_IntTp>::__int_type std::__atomic_base<_IntTp>::operator++() [with _ITp = long unsigned int]	16	static
 atomic_base.h:288:7:std::__atomic_base<_IntTp>::__int_type std::__atomic_base<_IntTp>::operator=(std::__atomic_base<_IntTp>::__int_type) [with _ITp = long unsigned int]	32	static
 atomic_base.h:318:7:std::__atomic_base<_IntTp>::__int_type std::__atomic_base<_IntTp>::operator++() [with _ITp = unsigned char]	16	static
 atomic_base.h:288:7:std::__atomic_base<_IntTp>::__int_type std::__atomic_base<_IntTp>::operator=(std::__atomic_base<_IntTp>::__int_type) [with _ITp = unsigned char]	24	static
-optional:897:7:constexpr const _Tp& std::optional<_Tp>::operator*() const & [with _Tp = LTC6811::VoltageStatus]	16	static
+array:126:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::begin() [with _Tp = LTC6811::Register<unsigned char>; unsigned int _Nm = 1]	16	static
+array:134:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::end() [with _Tp = LTC6811::Register<unsigned char>; unsigned int _Nm = 1]	16	static
+array:185:7:constexpr std::array<_Tp, _Nm>::value_type& std::array<_Tp, _Nm>::operator[](std::array<_Tp, _Nm>::size_type) [with _Tp = unsigned char; unsigned int _Nm = 6]	16	static
+optional:897:7:constexpr const _Tp& std::optional<_Tp>::operator*() const & [with _Tp = VoltageStatus]	16	static
+array:126:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::begin() [with _Tp = std::array<LTC6811::Register<short unsigned int>, 1>; unsigned int _Nm = 4]	16	static
+array:134:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::end() [with _Tp = std::array<LTC6811::Register<short unsigned int>, 1>; unsigned int _Nm = 4]	16	static
 array:130:7:constexpr const value_type* std::array<_Tp, _Nm>::begin() const [with _Tp = LTC6811::Register<short unsigned int>; unsigned int _Nm = 1]	16	static
 array:138:7:constexpr const value_type* std::array<_Tp, _Nm>::end() const [with _Tp = LTC6811::Register<short unsigned int>; unsigned int _Nm = 1]	16	static
+array:126:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::begin() [with _Tp = std::array<LTC6811::Register<short int>, 1>; unsigned int _Nm = 2]	16	static
+array:134:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::end() [with _Tp = std::array<LTC6811::Register<short int>, 1>; unsigned int _Nm = 2]	16	static
 array:130:7:constexpr const value_type* std::array<_Tp, _Nm>::begin() const [with _Tp = LTC6811::Register<short int>; unsigned int _Nm = 1]	16	static
 array:138:7:constexpr const value_type* std::array<_Tp, _Nm>::end() const [with _Tp = LTC6811::Register<short int>; unsigned int _Nm = 1]	16	static
+array:130:7:constexpr const value_type* std::array<_Tp, _Nm>::begin() const [with _Tp = std::array<LTC6811::Register<short unsigned int>, 1>; unsigned int _Nm = 4]	16	static
+array:138:7:constexpr const value_type* std::array<_Tp, _Nm>::end() const [with _Tp = std::array<LTC6811::Register<short unsigned int>, 1>; unsigned int _Nm = 4]	16	static
 array:189:7:constexpr const value_type& std::array<_Tp, _Nm>::operator[](std::array<_Tp, _Nm>::size_type) const [with _Tp = LTC6811::Register<short unsigned int>; unsigned int _Nm = 1]	16	static
 array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = short unsigned int; unsigned int _Nm = 3]	16	static
 array:238:7:constexpr const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = short unsigned int; unsigned int _Nm = 3]	16	static
+array:185:7:constexpr std::array<_Tp, _Nm>::value_type& std::array<_Tp, _Nm>::operator[](std::array<_Tp, _Nm>::size_type) [with _Tp = LTC6811::Register<unsigned char>; unsigned int _Nm = 1]	16	static
+array:175:7:constexpr std::array<_Tp, _Nm>::size_type std::array<_Tp, _Nm>::size() const [with _Tp = std::array<LTC6811::Register<short unsigned int>, 1>; unsigned int _Nm = 4]	16	static
+array:185:7:constexpr std::array<_Tp, _Nm>::value_type& std::array<_Tp, _Nm>::operator[](std::array<_Tp, _Nm>::size_type) [with _Tp = std::array<LTC6811::Register<short unsigned int>, 1>; unsigned int _Nm = 4]	16	static
+optional:197:14:constexpr std::_Optional_payload_base<_Tp>::_Storage<_Up, <anonymous> >::_Storage() [with _Up = VoltageStatus; bool <anonymous> = true; _Tp = VoltageStatus]	16	static
+optional:108:7:constexpr std::_Optional_payload_base<_Tp>::_Optional_payload_base() [with _Tp = VoltageStatus]	16	static
+optional:300:7:constexpr std::_Optional_payload<_Tp, true, true, true>::_Optional_payload() [with _Tp = VoltageStatus]	16	static
+optional:600:17:constexpr std::_Optional_base<_Tp, true, true>::_Optional_base() [with _Tp = VoltageStatus]	16	static
+optional:690:17:constexpr std::optional<_Tp>::optional(std::nullopt_t) [with _Tp = VoltageStatus]	16	static
+optional:698:2:constexpr std::optional<_Tp>::optional(_Up&&) [with _Up = VoltageStatus; typename std::enable_if<__and_v<std::__not_<std::is_same<std::optional<_Tp>, typename std::remove_cv<typename std::remove_reference<_SrcTuple>::type>::type> >, std::__not_<std::is_same<std::in_place_t, typename std::remove_cv<typename std::remove_reference<_SrcTuple>::type>::type> >, std::is_constructible<_Tp, _Up&&>, std::is_convertible<_Up&&, _Tp> >, bool>::type <anonymous> = true; _Tp = VoltageStatus]	24	static
+array:175:7:constexpr std::array<_Tp, _Nm>::size_type std::array<_Tp, _Nm>::size() const [with _Tp = std::array<LTC6811::Register<short int>, 1>; unsigned int _Nm = 2]	16	static
+array:185:7:constexpr std::array<_Tp, _Nm>::value_type& std::array<_Tp, _Nm>::operator[](std::array<_Tp, _Nm>::size_type) [with _Tp = std::array<LTC6811::Register<short int>, 1>; unsigned int _Nm = 2]	16	static
+optional:197:14:constexpr std::_Optional_payload_base<_Tp>::_Storage<_Up, <anonymous> >::_Storage() [with _Up = TempStatus; bool <anonymous> = true; _Tp = TempStatus]	16	static
+optional:108:7:constexpr std::_Optional_payload_base<_Tp>::_Optional_payload_base() [with _Tp = TempStatus]	16	static
+optional:300:7:constexpr std::_Optional_payload<_Tp, true, true, true>::_Optional_payload() [with _Tp = TempStatus]	16	static
+optional:600:17:constexpr std::_Optional_base<_Tp, true, true>::_Optional_base() [with _Tp = TempStatus]	16	static
+optional:690:17:constexpr std::optional<_Tp>::optional(std::nullopt_t) [with _Tp = TempStatus]	16	static
+array:126:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::begin() [with _Tp = LTC6811::Register<short int>; unsigned int _Nm = 1]	16	static
+array:134:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::end() [with _Tp = LTC6811::Register<short int>; unsigned int _Nm = 1]	16	static
+array:126:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::begin() [with _Tp = short int; unsigned int _Nm = 3]	16	static
+array:134:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::end() [with _Tp = short int; unsigned int _Nm = 3]	16	static
+optional:698:2:constexpr std::optional<_Tp>::optional(_Up&&) [with _Up = TempStatus; typename std::enable_if<__and_v<std::__not_<std::is_same<std::optional<_Tp>, typename std::remove_cv<typename std::remove_reference<_SrcTuple>::type>::type> >, std::__not_<std::is_same<std::in_place_t, typename std::remove_cv<typename std::remove_reference<_SrcTuple>::type>::type> >, std::is_constructible<_Tp, _Up&&>, std::is_convertible<_Up&&, _Tp> >, bool>::type <anonymous> = true; _Tp = TempStatus]	24	static
+array:130:7:constexpr const value_type* std::array<_Tp, _Nm>::begin() const [with _Tp = std::array<LTC6811::Register<short int>, 1>; unsigned int _Nm = 2]	16	static
+array:138:7:constexpr const value_type* std::array<_Tp, _Nm>::end() const [with _Tp = std::array<LTC6811::Register<short int>, 1>; unsigned int _Nm = 2]	16	static
 array:189:7:constexpr const value_type& std::array<_Tp, _Nm>::operator[](std::array<_Tp, _Nm>::size_type) const [with _Tp = LTC6811::Register<short int>; unsigned int _Nm = 1]	16	static
 array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = short int; unsigned int _Nm = 3]	16	static
 array:238:7:constexpr const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = short int; unsigned int _Nm = 3]	16	static
-array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = LTC6811::Register<unsigned char>; unsigned int _Nm = 1]	16	static
-array:238:7:constexpr const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = LTC6811::Register<unsigned char>; unsigned int _Nm = 1]	16	static
 array:189:7:constexpr const value_type& std::array<_Tp, _Nm>::operator[](std::array<_Tp, _Nm>::size_type) const [with _Tp = unsigned char; unsigned int _Nm = 6]	16	static
+array:234:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::data() [with _Tp = LTC6811::Register<unsigned char>; unsigned int _Nm = 1]	16	static
+array:55:7:static constexpr _Tp& std::__array_traits<_Tp, _Nm>::_S_ref(const _Tp (&)[_Nm], std::size_t) [with _Tp = unsigned char; unsigned int _Nm = 6]	16	static
+array:234:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::data() [with _Tp = std::array<LTC6811::Register<short unsigned int>, 1>; unsigned int _Nm = 4]	16	static
 array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = LTC6811::Register<short unsigned int>; unsigned int _Nm = 1]	16	static
 array:238:7:constexpr const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = LTC6811::Register<short unsigned int>; unsigned int _Nm = 1]	16	static
+array:234:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::data() [with _Tp = std::array<LTC6811::Register<short int>, 1>; unsigned int _Nm = 2]	16	static
 array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = LTC6811::Register<short int>; unsigned int _Nm = 1]	16	static
 array:238:7:constexpr const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = LTC6811::Register<short int>; unsigned int _Nm = 1]	16	static
+array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = std::array<LTC6811::Register<short unsigned int>, 1>; unsigned int _Nm = 4]	16	static
+array:238:7:constexpr const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = std::array<LTC6811::Register<short unsigned int>, 1>; unsigned int _Nm = 4]	16	static
 array:55:7:static constexpr _Tp& std::__array_traits<_Tp, _Nm>::_S_ref(const _Tp (&)[_Nm], std::size_t) [with _Tp = LTC6811::Register<short unsigned int>; unsigned int _Nm = 1]	16	static
+array:55:7:static constexpr _Tp& std::__array_traits<_Tp, _Nm>::_S_ref(const _Tp (&)[_Nm], std::size_t) [with _Tp = LTC6811::Register<unsigned char>; unsigned int _Nm = 1]	16	static
+array:55:7:static constexpr _Tp& std::__array_traits<_Tp, _Nm>::_S_ref(const _Tp (&)[_Nm], std::size_t) [with _Tp = std::array<LTC6811::Register<short unsigned int>, 1>; unsigned int _Nm = 4]	16	static
+move.h:74:5:constexpr _Tp&& std::forward(typename std::remove_reference<_Tp>::type&) [with _Tp = VoltageStatus]	16	static
+optional:298:42:) [with _Args = {VoltageStatus}][inherited from std::_Optional_payload_base<VoltageStatus>]	32	static
+optional:605:28:>, bool>::type <anonymous> = false; _Tp = VoltageStatus]	32	static
+array:55:7:static constexpr _Tp& std::__array_traits<_Tp, _Nm>::_S_ref(const _Tp (&)[_Nm], std::size_t) [with _Tp = std::array<LTC6811::Register<short int>, 1>; unsigned int _Nm = 2]	16	static
+array:234:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::data() [with _Tp = LTC6811::Register<short int>; unsigned int _Nm = 1]	16	static
+array:234:7:constexpr std::array<_Tp, _Nm>::value_type* std::array<_Tp, _Nm>::data() [with _Tp = short int; unsigned int _Nm = 3]	16	static
+move.h:74:5:constexpr _Tp&& std::forward(typename std::remove_reference<_Tp>::type&) [with _Tp = TempStatus]	16	static
+optional:298:42:) [with _Args = {TempStatus}][inherited from std::_Optional_payload_base<TempStatus>]	32	static
+optional:605:28:>, bool>::type <anonymous> = false; _Tp = TempStatus]	32	static
+array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = std::array<LTC6811::Register<short int>, 1>; unsigned int _Nm = 2]	16	static
+array:238:7:constexpr const value_type* std::array<_Tp, _Nm>::data() const [with _Tp = std::array<LTC6811::Register<short int>, 1>; unsigned int _Nm = 2]	16	static
 array:55:7:static constexpr _Tp& std::__array_traits<_Tp, _Nm>::_S_ref(const _Tp (&)[_Nm], std::size_t) [with _Tp = LTC6811::Register<short int>; unsigned int _Nm = 1]	16	static
-array:55:7:static constexpr _Tp& std::__array_traits<_Tp, _Nm>::_S_ref(const _Tp (&)[_Nm], std::size_t) [with _Tp = unsigned char; unsigned int _Nm = 6]	16	static
-main.cpp:836:1:void __static_initialization_and_destruction_0(int, int)	16	static
-main.cpp:836:1:cpp)	8	static
+array:59:7:static constexpr _Tp* std::__array_traits<_Tp, _Nm>::_S_ptr(const _Tp (&)[_Nm]) [with _Tp = LTC6811::Register<unsigned char>; unsigned int _Nm = 1]	16	static
+optional:201:6:) [with _Args = {VoltageStatus}; _Up = VoltageStatus; bool <anonymous> = true; _Tp = VoltageStatus]	32	static
+optional:113:2:) [with _Args = {VoltageStatus}; _Tp = VoltageStatus]	32	static
+optional:201:6:) [with _Args = {TempStatus}; _Up = TempStatus; bool <anonymous> = true; _Tp = TempStatus]	32	static
+optional:113:2:) [with _Args = {TempStatus}; _Tp = TempStatus]	32	static
+main.cpp:859:23:void __static_initialization_and_destruction_0(int, int)	16	static
+main.cpp:859:23:cpp)	8	static

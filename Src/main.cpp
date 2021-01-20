@@ -1,38 +1,15 @@
-/* USER CODE BEGIN Header */
-/**
- ******************************************************************************
- * @file           : main.c
- * @brief          : Main program body
- ******************************************************************************
- * @attention
- *
- * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
- * All rights reserved.</center></h2>
- *
- * This software component is licensed by ST under BSD 3-Clause license,
- * the "License"; You may not use this file except in compliance with the
- * License. You may obtain a copy of the License at:
- *                        opensource.org/licenses/BSD-3-Clause
- *
- ******************************************************************************
- */
-/* USER CODE END Header */
-
 /* Includes ------------------------------------------------------------------*/
 #include <main.h>
+#include <cmath>
 #include "fatfs.h"
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
 #include "IVT.h"
 #include "NLG5.h"
 #include "LTC6811.h"
 #include "PWM_Fan.h"
 #include "Status.h"
 #include "DWTWrapper.h"
-/* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
 struct RTClock {
     volatile uint16_t year{ 0 };
     volatile uint8_t month{ 0 };
@@ -54,35 +31,36 @@ struct RTClock {
     }
 } rtc;
 
-/* USER CODE END PTD */
+struct VoltageStatus {
+    uint32_t sum{ 0 };
+    uint16_t min{ std::numeric_limits<uint16_t>::max() };
+    size_t min_id{ 0 };
+    uint16_t max{ std::numeric_limits<uint16_t>::min() };
+    size_t max_id{ 0 };
+};
 
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-/* USER CODE END PD */
+struct TempStatus {
+    int16_t min{ std::numeric_limits<int16_t>::max() };
+    size_t min_id{ 0 };
+    int16_t max{ std::numeric_limits<int16_t>::min() };
+    size_t max_id{ 0 };
+};
 
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
 static constexpr auto kFile = "/hpf20/data.txt";
-/* USER CODE END PM */
 
-/* Private variables ---------------------------------------------------------*/
 CAN_HandleTypeDef hcan1; // CAN1
 CAN_HandleTypeDef hcan2; // CAN0. Confusing, I know! Blame the electrical boys.
 SD_HandleTypeDef hsd;
 SPI_HandleTypeDef hspi1;
-
-/* USER CODE BEGIN PV */
 TIM_HandleTypeDef htim2;
 CAN_TxHeaderTypeDef TxHeader{ 0, 0, CAN_ID_STD, CAN_RTR_DATA, 8, DISABLE };
 NLG5* nlg5{ nullptr };
+LTC6811* ltc6811;
 PWM_Fan* pwm_fan{ nullptr };
 IVT ivt;
 uint32_t mailbox{ 0 };
 Status status{ Core | Charging };
-LTC6811::CellData cell_data{ 0 };
-LTC6811::TempData temp_data{ 0 };
-LTC6811::DischargeMode volatile discharge_mode{ LTC6811::GTMinPlusDelta };
-/* USER CODE END PV */
+DischargeMode volatile discharge_mode{ GTMinPlusDelta };
 
 /* Private function prototypes -----------------------------------------------*/
 static void SystemClock_Config();
@@ -91,49 +69,29 @@ static void MX_CAN1_Init();
 static void MX_CAN2_Init();
 static void MX_SDIO_SD_Init();
 static void MX_SPI1_Init();
-/* USER CODE BEGIN PFP */
 static void MX_TIM2_Init();
-HAL_StatusTypeDef CANTxData(uint16_t const v_min, uint16_t const v_max, int16_t const t_max);
-HAL_StatusTypeDef CANTxVoltageLimpTotal(uint32_t const sum_of_cells);
+void balance_cells(LTC6811::CellData const &, VoltageStatus const &, DischargeMode) noexcept;
+[[nodiscard]] std::optional<VoltageStatus> read_cell_data(LTC6811::CellData&) noexcept;
+[[nodiscard]] std::optional<TempStatus> read_temp_data(LTC6811::TempData&) noexcept;
+HAL_StatusTypeDef CANTxData(uint16_t const, uint16_t const, int16_t const);
+HAL_StatusTypeDef CANTxVoltageLimpTotal(uint32_t const);
 HAL_StatusTypeDef CANTxDCCfg();
-HAL_StatusTypeDef CANTxVoltage();
-HAL_StatusTypeDef CANTxTemperature();
+HAL_StatusTypeDef CANTxVoltage(LTC6811::CellData const &);
+HAL_StatusTypeDef CANTxTemperature(LTC6811::TempData const &);
 HAL_StatusTypeDef CANTxStatus();
 HAL_StatusTypeDef CANTxPECError();
-HAL_StatusTypeDef CANTxVolumeSize(uint32_t const size_of_log);
-inline auto get_uptime() {
-    return uwTick / 10;
-}
+HAL_StatusTypeDef CANTxVolumeSize(uint32_t const);
+inline auto get_uptime() { return uwTick / 10; }
 
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
 extern "C" { void HAL_IncTick() {
     uwTick += uwTickFreq;
-
     if (nlg5 != nullptr && status.get_op_mode() & Charging)
         nlg5->tick();
-
-    rtc.tick();
 }}
-/* USER CODE END 0 */
 
 int main() {
-    /* USER CODE BEGIN 1 */
-    /* USER CODE END 1 */
-    /* MCU Configuration--------------------------------------------------------*/
-    /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init();
-
-    /* USER CODE BEGIN Init */
-    /* USER CODE END Init */
-    /* Configure the system clock */
     SystemClock_Config();
-
-    /* USER CODE BEGIN SysInit */
-    /* USER CODE END SysInit */
-    /* Initialize all configured peripherals */
     MX_GPIO_Init();
     HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_SET);
     //MX_FATFS_Init();
@@ -142,8 +100,6 @@ int main() {
     //MX_SDIO_SD_Init();
     MX_SPI1_Init();
     MX_TIM2_Init();
-
-    /* USER CODE BEGIN 2 */
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_4);
     HAL_CAN_ActivateNotification(&hcan1, CAN_IT_TX_MAILBOX_EMPTY | CAN_IT_RX_FIFO0_MSG_PENDING | CAN_IT_RX_FIFO1_MSG_PENDING);
     nlg5 = new NLG5(hcan1, TxHeader);
@@ -155,19 +111,35 @@ int main() {
     status.set_precharge_state(GPIO_PIN_SET);
 #endif
 
-    LTC6811::init(&hspi1);
-    /* USER CODE END 2 */
-    /* Infinite loop */
-    /* USER CODE BEGIN WHILE */
+    ltc6811 = new LTC6811{
+        [](bool level) {
+            HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, static_cast<GPIO_PinState>(level));
+        },
+        [](uint8_t const * tx_buffer, std::size_t size) {
+            HAL_SPI_Transmit(&hspi1, tx_buffer, size, HAL_MAX_DELAY);
+        },
+        [](uint8_t* rx_buffer, std::size_t size) {
+            HAL_SPI_Receive(&hspi1, rx_buffer, size, HAL_MAX_DELAY);
+        }
+    };
+
+    LTC6811::RegisterGroup<uint8_t> default_config{ 0 };
+    for (auto& IC : default_config)
+        IC.data[0] = LTC6811::CFGR0;
+    ltc6811->WRCFG(LTC6811::A, default_config);
+    ltc6811->RDCFG(LTC6811::A, default_config);
+
+    LTC6811::CellData cell_data{ 0 };
+    LTC6811::TempData temp_data{ 0 };
+
     while (true) {
-        /* USER CODE END WHILE */
-        /* USER CODE BEGIN 3 */
         HAL_GPIO_TogglePin(Led0_GPIO_Port, Led0_Pin);
         auto const op_mode = status.get_op_mode();
+
         /*  Core routine for monitoring voltage and temperature of the cells.  */
         if (op_mode & Core) {
-            auto const voltage_status = LTC6811::read_cell_data(cell_data);
-            auto const temp_status = LTC6811::read_temp_data(temp_data);
+            auto const voltage_status = read_cell_data(cell_data);
+            auto const temp_status = read_temp_data(temp_data);
             // The boolean logic here is confusing, I know, but it's correct. The error handling needs a full rewrite.
             if (!status.is_error(PECError, !voltage_status.has_value()) &&
                     !status.is_error(PECError, !temp_status.has_value())) { // If no PEC errors and we have both statuses
@@ -175,7 +147,7 @@ int main() {
                 nlg5->setChargeCurrent(voltage_status->max);
 
                 if (op_mode & Balance)
-                    LTC6811::update_config_register_group(cell_data, *voltage_status, discharge_mode);
+                    balance_cells(cell_data, *voltage_status, discharge_mode);
 
                 if (pwm_fan->getMode() == PWM_Fan::Automatic)
                     pwm_fan->calcDutyCycle(temp_status->max);
@@ -183,12 +155,12 @@ int main() {
 #if CHECK_IVT
                 switch (ivt.compare_precharge(voltage_status->sum)) {
                 case ivt.Charged:
-                    status.set_precharge_state(GPIO_PIN_SET);
-                    break;
+                status.set_precharge_state(GPIO_PIN_SET);
+                break;
 
                 case ivt.NotCharged:
-                    status.set_precharge_state(GPIO_PIN_RESET);
-                    break;
+                status.set_precharge_state(GPIO_PIN_RESET);
+                break;
 
                 case ivt.Hysteresis:
                 case ivt.Lost:
@@ -249,8 +221,8 @@ int main() {
 #if CAN_DEBUG
         /*  Functions for debugging and untested code.  */
         if (op_mode & Debug) {
-            CANTxVoltage();
-            CANTxTemperature();
+            CANTxVoltage(cell_data);
+            CANTxTemperature(temp_data);
             CANTxDCCfg();
         }
 #endif
@@ -292,7 +264,6 @@ int main() {
         }
     }
 }
-/* USER CODE END 3 */
 
 static void SystemClock_Config() {
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -334,14 +305,6 @@ static void SystemClock_Config() {
 }
 
 static void MX_CAN1_Init() {
-    /* USER CODE BEGIN CAN1_Init 0 */
-
-    /* USER CODE END CAN1_Init 0 */
-
-    /* USER CODE BEGIN CAN1_Init 1 */
-
-
-    /* USER CODE END CAN1_Init 1 */
     hcan1.Instance = CAN1;
     hcan1.Init.Prescaler = 16;
     hcan1.Init.Mode = CAN_MODE_NORMAL;
@@ -357,29 +320,22 @@ static void MX_CAN1_Init() {
     if (HAL_CAN_Init(&hcan1) != HAL_OK)
         Error_Handler();
     /* USER CODE BEGIN CAN1_Init 2 */
-    CAN_FilterTypeDef  sFilterConfig;
-    sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST;
-    sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT; // allows 4 IDs to be set to one filter with IDLIST
-    sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO1;
-    sFilterConfig.FilterActivation = ENABLE;
-    sFilterConfig.SlaveStartFilterBank = 14;
-
-    sFilterConfig.FilterBank = 0;
-    sFilterConfig.FilterIdHigh = Setting << 5;
-    sFilterConfig.FilterIdLow = NLGAStat << 5;
-    sFilterConfig.FilterMaskIdHigh = NLGBStat << 5;
-    sFilterConfig.FilterMaskIdLow = LoggerReq << 5;
+    CAN_FilterTypeDef sFilterConfig = {
+            .FilterIdHigh = Setting << 5,
+            .FilterIdLow = NLGAStat << 5,
+            .FilterMaskIdHigh = NLGBStat << 5,
+            .FilterMaskIdLow = LoggerReq << 5,
+            .FilterFIFOAssignment = CAN_RX_FIFO1,
+            .FilterBank = 0,
+            .FilterMode = CAN_FILTERMODE_IDLIST,
+            .FilterScale = CAN_FILTERSCALE_16BIT,
+            .FilterActivation = ENABLE,
+            .SlaveStartFilterBank = 14
+    };
     HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig);
-    /* USER CODE END CAN1_Init 2 */
 }
 
 static void MX_CAN2_Init() {
-    /* USER CODE BEGIN CAN2_Init 0 */
-    /* USER CODE END CAN2_Init 0 */
-
-    /* USER CODE BEGIN CAN2_Init 1 */
-
-    /* USER CODE END CAN2_Init 1 */
     hcan2.Instance = CAN2;
     hcan2.Init.Prescaler = 16;
     hcan2.Init.Mode = CAN_MODE_NORMAL;
@@ -394,32 +350,22 @@ static void MX_CAN2_Init() {
     hcan2.Init.TransmitFifoPriority = DISABLE;
     if (HAL_CAN_Init(&hcan2) != HAL_OK)
         Error_Handler();
-    /* USER CODE BEGIN CAN2_Init 2 */
-    CAN_FilterTypeDef  sFilterConfig;
-    sFilterConfig.FilterBank = 14;
-    sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST;
-    sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT; // allows two IDs to be set to one filter with IDLIST
-    sFilterConfig.FilterActivation = ENABLE;
-    sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
-    sFilterConfig.SlaveStartFilterBank = 14;
-
-    sFilterConfig.FilterBank = 14;
-    sFilterConfig.FilterIdHigh = IVT_I << 5;
-    sFilterConfig.FilterIdLow = IVT_U1 << 5;
-    sFilterConfig.FilterMaskIdHigh = IVT_U2 << 5;
-    sFilterConfig.FilterMaskIdLow = IVT_U3 << 5;
+    CAN_FilterTypeDef sFilterConfig = {
+            .FilterIdHigh = IVT_I << 5,
+            .FilterIdLow = IVT_U1 << 5,
+            .FilterMaskIdHigh = IVT_U2 << 5,
+            .FilterMaskIdLow = IVT_U3 << 5,
+            .FilterFIFOAssignment = CAN_RX_FIFO0,
+            .FilterBank = 14,
+            .FilterMode = CAN_FILTERMODE_IDLIST,
+            .FilterScale = CAN_FILTERSCALE_16BIT,
+            .FilterActivation = ENABLE,
+            .SlaveStartFilterBank = 14,
+    };
     HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig);
-    /* USER CODE END CAN2_Init 2 */
 }
 
 static void MX_SDIO_SD_Init() {
-    /* USER CODE BEGIN SDIO_Init 0 */
-
-    /* USER CODE END SDIO_Init 0 */
-
-    /* USER CODE BEGIN SDIO_Init 1 */
-
-    /* USER CODE END SDIO_Init 1 */
     hsd.Instance = SDIO;
     hsd.Init.ClockEdge = SDIO_CLOCK_EDGE_RISING;
     hsd.Init.ClockBypass = SDIO_CLOCK_BYPASS_DISABLE;
@@ -427,52 +373,26 @@ static void MX_SDIO_SD_Init() {
     hsd.Init.BusWide = SDIO_BUS_WIDE_1B;
     hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
     hsd.Init.ClockDiv = 0;
-    /* USER CODE BEGIN SDIO_Init 2 */
-
-    /* USER CODE END SDIO_Init 2 */
 }
 
 static void MX_SPI1_Init() {
-
-    /* USER CODE BEGIN SPI1_Init 0 */
-
-    /* USER CODE END SPI1_Init 0 */
-
-    /* USER CODE BEGIN SPI1_Init 1 */
-
-    /* USER CODE END SPI1_Init 1 */
-    /* SPI1 parameter configuration*/
     hspi1.Instance = SPI1;
     hspi1.Init.Mode = SPI_MODE_MASTER;
     hspi1.Init.Direction = SPI_DIRECTION_2LINES;
     hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-    hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;
-    hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
+    hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+    hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
     hspi1.Init.NSS = SPI_NSS_SOFT;
-    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
+    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
     hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
     hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
     hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
     hspi1.Init.CRCPolynomial = 1;
     if (HAL_SPI_Init(&hspi1) != HAL_OK)
         Error_Handler();
-    /* USER CODE BEGIN SPI1_Init 2 */
-
-    /* USER CODE END SPI1_Init 2 */
-
 }
 
 static void MX_TIM2_Init() {
-    /* USER CODE BEGIN TIM2_Init 0 */
-
-    /* USER CODE END TIM2_Init 0 */
-
-    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-    TIM_MasterConfigTypeDef sMasterConfig = {0};
-    TIM_OC_InitTypeDef sConfigOC = {0};
-
-    /* USER CODE BEGIN TIM2_Init 1 */
-    /* USER CODE END TIM2_Init 1 */
     htim2.Instance = TIM2;
     htim2.Init.Prescaler = 800; // Prescaler is 800 as 16MHz / 800 == 20kHz, I guess?
     htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -481,26 +401,28 @@ static void MX_TIM2_Init() {
     htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
     if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
         Error_Handler();
+
+    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
     sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
     if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
         Error_Handler();
     if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
         Error_Handler();
+
+    TIM_MasterConfigTypeDef sMasterConfig = {0};
     sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
     sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
     if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
         Error_Handler();
+
+    TIM_OC_InitTypeDef sConfigOC = {0};
     sConfigOC.OCMode = TIM_OCMODE_PWM1;
     sConfigOC.Pulse = 0;
     sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
     sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
     if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
         Error_Handler();
-    /* USER CODE BEGIN TIM2_Init 2 */
-
-    /* USER CODE END TIM2_Init 2 */
     HAL_TIM_MspPostInit(&htim2);
-
 }
 
 static void MX_GPIO_Init() {
@@ -512,41 +434,163 @@ static void MX_GPIO_Init() {
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
 
-    /*Configure GPIO pin Output Level */
+    /*Configure GPIO pin Output Levels */
     HAL_GPIO_WritePin(GPIOC, Led0_Pin|Led1_Pin|Led2_Pin|Led3_Pin|IO_1_Pin|IO_2_Pin, GPIO_PIN_RESET);
-
-    /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(IO_0_GPIO_Port, IO_0_Pin, GPIO_PIN_RESET);
-
-    /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(GPIOB, PreCharge_Pin|BMSrelay_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_SET);
 
-    /*Configure GPIO pins : Led0_Pin Led1_Pin Led2_Pin Led3_Pin IO_1_Pin IO_2_Pin */
-    GPIO_InitStruct.Pin = Led0_Pin|Led1_Pin|Led2_Pin|Led3_Pin|IO_1_Pin|IO_2_Pin;
+    GPIO_InitStruct.Pin = Led0_Pin | Led1_Pin | Led2_Pin | Led3_Pin | IO_1_Pin | IO_2_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-    /*Configure GPIO pin : IO_0_Pin */
     GPIO_InitStruct.Pin = IO_0_Pin;
     HAL_GPIO_Init(IO_0_GPIO_Port, &GPIO_InitStruct);
 
-    /*Configure GPIO pins : PreCharge_Pin BMSrelay_Pin NSS_Pin */
-    GPIO_InitStruct.Pin = PreCharge_Pin|BMSrelay_Pin|NSS_Pin;
+    GPIO_InitStruct.Pin = PreCharge_Pin | BMSrelay_Pin | NSS_Pin;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-    /*Configure GPIO pins : Det_Pin Lock_Pin Det_Lock_Pin */
-    GPIO_InitStruct.Pin = Det_Pin|Lock_Pin|Det_Lock_Pin;
+    GPIO_InitStruct.Pin = Det_Pin |Lock_Pin | Det_Lock_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    /*Configure GPIO pin : SOS_Pin */
     GPIO_InitStruct.Pin = SOS_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     HAL_GPIO_Init(SOS_GPIO_Port, &GPIO_InitStruct);
+}
 
+void balance_cells(LTC6811::CellData const & cell_data, VoltageStatus const & voltage_status, DischargeMode discharge_mode) noexcept {
+    static constexpr uint8_t kDelta{ 100 };
+    uint16_t DCC{ 0 };
+    uint8_t current_cell{ 0 }, current_ic{ LTC6811::kDaisyChainLength - 1 };
+    LTC6811::RegisterGroup<uint8_t> config_register_group{ 0 };
+
+    switch (discharge_mode) {
+    case GTMinPlusDelta:
+        for (auto& IC : config_register_group) { // 12 register groups
+            DCC = 0;
+            current_cell = 0;
+            for (auto const& register_group : cell_data) { // 4 voltage register groups
+                for (auto const voltage : register_group[current_ic].data) { // 3 voltages per IC
+                    if (voltage > voltage_status.min + kDelta)
+                        DCC |= 1 << current_cell;
+                    ++current_cell;
+                } // 4 * 3 = 12 voltages associated with each LTC6811 in the daisy chain
+            }
+            --current_ic;
+            IC.data[4] = DCC >> 0 & 0xFF;
+            IC.data[5] = DCC >> 8 & 0x0F;
+        } // 12 * 12 = 144 voltages associated with the entire daisy chain
+        break;
+
+    case MaxOnly:
+        if (voltage_status.max - voltage_status.min > kDelta) {
+            current_ic = voltage_status.max_id / 3 % 12;
+            DCC |= 1 << voltage_status.max_id % 11;
+            config_register_group[current_ic].data[4] = DCC >> 0 & 0xFF;
+            config_register_group[current_ic].data[5] = DCC >> 8 & 0x0F;
+        }
+        break;
+
+    case GTMeanPlusDelta: {
+        size_t const average_voltage{ voltage_status.sum / (4 * LTC6811::kDaisyChainLength * 3) };
+        for (auto& IC : config_register_group) {
+            DCC = 0;
+            current_cell = 0;
+            for (auto const& register_group : cell_data) { // 4 voltage register groups
+                for (auto const voltage : register_group[current_ic].data) { // 3 voltages per IC
+                    if (voltage > average_voltage + kDelta)
+                        DCC |= 1 << current_cell;
+                    ++current_cell;
+                } // 4 * 3 = 12 voltages associated with each LTC6811 in the daisy chain
+            }
+            --current_ic;
+            IC.data[4] = DCC >> 0 & 0xFF;
+            IC.data[5] = DCC >> 8 & 0x0F;
+        }
+        break;
+    }
+    }
+
+    ltc6811->WRCFG(LTC6811::A, config_register_group);
+}
+
+/* Read cell data and generate a status report of the cell voltage register groups.
+ * Returns a VoltageStatus on success, nullopt if error. */
+[[nodiscard]] std::optional<VoltageStatus> read_cell_data(LTC6811::CellData& cell_data) noexcept {
+    VoltageStatus status;
+    size_t count{ 0 };
+
+    //WRCFG[0](config_register_group);
+    //DWTWrapper::delay_us(500);
+    //RDCFG[0](rd_cfgr_dump);
+    LTC6811::RegisterGroup<uint8_t> config_register_group;
+    ltc6811->ADCV();
+
+    for (size_t i = 0; i < cell_data.size(); ++i)
+        if (ltc6811->RDCV(static_cast<LTC6811::Group>(i), cell_data[i]) == true)
+            return std::nullopt;
+
+    for (const auto& register_group : cell_data) {
+        for (const auto& IC : register_group) {
+            for (const auto voltage : IC.data) {
+                status.sum += voltage;
+                if (voltage < status.min) {
+                    status.min = voltage;
+                    status.min_id = count;
+                } else if (voltage > status.max) {
+                    status.max = voltage;
+                    status.max_id = count;
+                }
+                ++count;
+            }
+        }
+    }
+    status.sum /= 10000; // Convert centiDegC to DegC (with rounding errors, but this is what the old code did...)
+    return status;
+}
+
+/* Read temp data and generate a status report of the current temperatures from aux voltage register groups.
+ * Returns a TempStatus on success, nullopt if error. */
+[[nodiscard]] std::optional<TempStatus> read_temp_data(LTC6811::TempData& temp_data) noexcept {
+    static constexpr auto steinharthart = [](int16_t const NTC_voltage) noexcept {
+        constexpr auto Vin = 30000.0f; // 3[V], or 30000[V * 10-5]
+        constexpr auto KtoC = 27315; // centiKelvin to centiDegCelsius
+        constexpr auto A = 0.003354016f;
+        constexpr auto B = 0.000256524f;
+        constexpr auto C = 0.00000260597f;
+        constexpr auto D = 0.0000000632926f;
+        auto log = -logf(Vin / NTC_voltage - 1);
+        return static_cast<int16_t>(100.0f / (A + log * ( B + log * (C + D * log))) - KtoC);
+    };
+
+    TempStatus status;
+    size_t count{ 0 };
+
+    ltc6811->ADAX();
+
+    for (size_t i = 0; i < temp_data.size(); ++i)
+        if (ltc6811->RDAUX(static_cast<LTC6811::Group>(i), temp_data[i]) == true)
+            return std::nullopt;
+
+    for (auto& register_group : temp_data) {
+        for (auto& IC : register_group) {
+            for (auto& temperature : IC.data) {
+                temperature = steinharthart(temperature);
+                if (temperature < status.min) {
+                    status.min = temperature;
+                    status.min_id = count;
+                } else if (temperature > status.max) {
+                    status.max = temperature;
+                    status.max_id = count;
+                }
+                ++count;
+            }
+        }
+    }
+    return status;
 }
 
 /* USER CODE BEGIN 4 */
@@ -637,7 +681,7 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
 
         case Setting:
             status.set_op_mode(static_cast<Op_Mode>(data[2]));
-            discharge_mode = static_cast<LTC6811::DischargeMode>(data[3]);
+            discharge_mode = static_cast<DischargeMode>(data[3]);
             nlg5->oc_limit = data[6];
             pwm_fan->setMode(static_cast<PWM_Fan::Mode>(data[7] & 0x80));
 
@@ -676,7 +720,7 @@ HAL_StatusTypeDef CANTxPECError() {
     TxHeader.StdId = PECError;
     TxHeader.DLC = 8;
 
-    static uint32_t last_error;
+    static uint32_t last_error{ 0 };
 
     uint32_t const total_error{ status.get_error_count(PECError) };
     uint32_t const error_change = total_error - last_error;
@@ -690,7 +734,6 @@ HAL_StatusTypeDef CANTxPECError() {
             static_cast<uint8_t>(error_change >>  8),
             static_cast<uint8_t>(error_change >>  0),
     };
-
     last_error = total_error;
 
     return HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, &mailbox);
@@ -711,64 +754,52 @@ HAL_StatusTypeDef CANTxData(uint16_t const v_min, uint16_t const v_max, int16_t 
             static_cast<uint8_t>(t_max >> 8),
             static_cast<uint8_t>(t_max >> 0)
     };
-
     return HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, &mailbox);
 }
 
-HAL_StatusTypeDef CANTxVoltage() {
+HAL_StatusTypeDef CANTxVoltage(LTC6811::CellData const & cell_data) {
     TxHeader.StdId = Volt;
     TxHeader.DLC = 8;
 
     uint8_t data[8]{ 0 };
-    uint8_t byte_position{ 0 };
-    HAL_StatusTypeDef result{ HAL_OK };
-
-    for (size_t current_ic = 0; current_ic < LTC6811::kDaisyChainLength; ++current_ic) {
+    for (size_t current_ic = 0, byte_position = 0; current_ic < LTC6811::kDaisyChainLength; ++current_ic) {
         for (const auto& register_group : cell_data) { // 4 voltage register groups
-            for (const auto voltage : register_group[current_ic].data) { // 3 voltages per IC
-                data[byte_position++] = static_cast<uint8_t>(voltage >> 8);
-                data[byte_position++] = static_cast<uint8_t>(voltage);
+            for (const auto value : register_group[current_ic].data) { // 3 voltages per IC
+                data[byte_position++] = static_cast<uint8_t>(value >> 8);
+                data[byte_position++] = static_cast<uint8_t>(value);
 
                 if (byte_position == 8) {
-                    result = HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, &mailbox);
-                    return result;
-
+                    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, &mailbox) != HAL_OK)
+                        return HAL_ERROR;
                     byte_position = 0;
                     ++TxHeader.StdId;
                 }
             } // 4 * 3 == 12 voltages associated with each LTC6811 in the daisy chain
         }
     } // 4 * 3 * kDaisyChainLength == all voltages associated with the daisy chain
-    return result;
+    return HAL_OK;
 }
 
-HAL_StatusTypeDef CANTxTemperature() {
+HAL_StatusTypeDef CANTxTemperature(LTC6811::TempData const & temp_data) {
     TxHeader.StdId = Temp;
     TxHeader.DLC = 8;
 
     uint8_t data[8]{ 0 };
-    uint8_t byte_position{ 0 };
-    HAL_StatusTypeDef result{ HAL_OK };
-
-    for (size_t current_ic = 0; current_ic < LTC6811::kDaisyChainLength; ++current_ic) {
+    for (size_t current_ic = 0, byte_position = 0; current_ic < LTC6811::kDaisyChainLength; ++current_ic) {
         for (const auto& register_group : temp_data) { // 2 voltage register groups
             for (const auto temperature : register_group[current_ic].data) { // 3 temperatures per IC
                 data[byte_position++] = static_cast<uint8_t>(temperature >> 8);
                 data[byte_position++] = static_cast<uint8_t>(temperature);
-
                 if (byte_position == 8) {
-                    result = HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, &mailbox);
-                    if (result != HAL_OK)
-                        return result;
-
+                    if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, &mailbox) != HAL_OK)
+                        return HAL_ERROR;
                     byte_position = 0;
                     ++TxHeader.StdId;
                 }
             } // 2 * 3 == 6 temperatures associated with each LTC6811 in the daisy chain
         }
     } // 2 * 3 * kDaisyChainLength == all temperatures associated with the daisy chain
-
-    return result;
+    return HAL_OK;
 }
 
 HAL_StatusTypeDef CANTxVoltageLimpTotal(uint32_t const sum_of_cells) {
@@ -784,7 +815,6 @@ HAL_StatusTypeDef CANTxVoltageLimpTotal(uint32_t const sum_of_cells) {
                 0x0,
                 0x0
     };
-
     return HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, &mailbox);
 }
 
@@ -795,23 +825,19 @@ HAL_StatusTypeDef CANTxDCCfg() {
 
     uint8_t data[8]{ 0 };
     uint8_t byte_position{ 0 };
-    HAL_StatusTypeDef result{ HAL_OK };
-
-    for (const auto& IC : LTC6811::get_config_register_group()) {
+    LTC6811::RegisterGroup<uint8_t> config_register_group;
+    ltc6811->RDCFG(LTC6811::A, config_register_group);
+    for (const auto& IC : config_register_group) {
         data[byte_position++] = IC.data[5];
         data[byte_position++] = IC.data[4];
-
         if (byte_position == 8) {
-            result  = HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, &mailbox);
-            if (result != HAL_OK)
-                return result;
-
+            if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, &mailbox) != HAL_OK)
+                return HAL_ERROR;
             byte_position = 0;
             ++TxHeader.StdId;
         }
     }
-
-    return result;
+    return HAL_OK;
 }
 
 HAL_StatusTypeDef CANTxVolumeSize(uint32_t const size_of_log) {
@@ -828,11 +854,6 @@ HAL_StatusTypeDef CANTxVolumeSize(uint32_t const size_of_log) {
     return HAL_CAN_AddTxMessage(&hcan1, &TxHeader, data, &mailbox);
 }
 
-void Error_Handler() {
-    /* USER CODE BEGIN Error_Handler_Debug */
-    /* User can add his own implementation to report the HAL error return state */
-
-    /* USER CODE END Error_Handler_Debug */
-}
+void Error_Handler() {}
 /* USER CODE END 4 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
